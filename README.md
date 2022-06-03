@@ -1,9 +1,2 @@
-allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
-  
-  
+implementation 'com.github.Dinhvietanhk5:NSCustomUtils:Tag'
 
