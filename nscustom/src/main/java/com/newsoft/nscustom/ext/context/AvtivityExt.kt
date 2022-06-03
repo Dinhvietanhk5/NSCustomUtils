@@ -2,7 +2,6 @@ package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
 import android.content.Intent
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -43,13 +42,11 @@ inline fun <reified T : Activity> Activity.startActivityExtFinish(
 }
 
 inline fun <reified T : Activity> Activity.startActivityExt(
-    requestCode: Int = -1,
-    options: Bundle? = null,
     vararg params: Pair<String, Any>
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
-    startActivityForResult(intent, requestCode, options)
+    startActivityForResult(intent, Activity.RESULT_OK)
 }
 
 inline fun <reified T : Activity> View.startActivityExt(

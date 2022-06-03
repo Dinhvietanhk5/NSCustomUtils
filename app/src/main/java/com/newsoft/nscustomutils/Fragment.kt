@@ -29,7 +29,7 @@ class Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         btnIntentActivity.setOnClickListener {
-//            requireActivity().startActivityExt("title" to "Intent Activity", IntentActivity::class)
+            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
         }
         btnIntentFragment.setOnClickListener {
             switchFragmentBackStack<IntentFragment>(R.id.container, "title" to "Intent Fragment")
