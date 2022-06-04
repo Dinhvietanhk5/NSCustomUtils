@@ -1,20 +1,23 @@
 package com.newsoft.nscustomutils
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.newsoft.nscustom.ext.context.getDataExtras
 import com.newsoft.nscustom.ext.context.startActivityExt
 import com.newsoft.nscustom.ext.context.switchFragmentBackStack
 import kotlinx.android.synthetic.main.fragment.*
 
-class Fragment : Fragment() {
+class MainFragment : Fragment() {
 
-    lateinit var mainActivity: MainActivity
+    var type = TypeConnectEnums.CONNECT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        type = getDataExtras("type", TypeConnectEnums.CONNECT)
     }
 
     override fun onCreateView(
@@ -27,6 +30,8 @@ class Fragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.e("type", type.toString())
 
         btnIntentActivity.setOnClickListener {
             requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")

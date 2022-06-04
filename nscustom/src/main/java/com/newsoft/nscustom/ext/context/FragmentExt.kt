@@ -1,5 +1,6 @@
 package com.newsoft.nscustom.ext.context
 
+import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -19,7 +20,6 @@ inline fun <reified T : Fragment> newInstance(vararg params: Pair<String, Any>):
     T::class.java.newInstance().apply {
         arguments = bundleOf(*params)
     }
-
 
 /**
  * New Instance Fragment Back Stack
@@ -85,63 +85,15 @@ fun Fragment.backStack() {
  * Get Intent Activity
  */
 
-inline fun <reified T> Fragment.getDataExtras(key: String, defaultValue: Any): T {
-    var dataIntent = Any()
-    try {
-        when (T::class) {
-            Byte::class,
-            Char::class,
-            Long::class,
-            Float::class,
-            Short::class,
-            Double::class,
-            Boolean::class,
-            String::class,
-            Serializable::class,
-            CharSequence::class,
-            Int::class -> {
-                requireArguments().getSerializable(key)?.let { dataIntent = it } ?: kotlin.run {
-                    dataIntent = defaultValue
-                }
-            }
-            Bundle::class -> requireArguments().getBundle(key)?.let { dataIntent = it }
-                ?: kotlin.run {
-                    dataIntent = Bundle()
-                }
-            IntArray::class -> requireArguments().getIntArray(key)?.let { dataIntent = it }
-            ByteArray::class -> requireArguments().getByteArray(key)?.let { dataIntent = it }
-            CharArray::class -> requireArguments().getCharArray(key)?.let { dataIntent = it }
-            LongArray::class -> requireArguments().getLongArray(key)?.let { dataIntent = it }
-                ?: kotlin.run { dataIntent = LongArray(0) }
-            FloatArray::class -> requireArguments().getFloatArray(key)?.let { dataIntent = it }
-                ?: kotlin.run { dataIntent = FloatArray(0) }
-            Parcelable::class -> requireArguments().getParcelableArray(key)?.let { dataIntent = it }
-            ShortArray::class -> requireArguments().getShortArray(key)?.let { dataIntent = it }
-            DoubleArray::class -> requireArguments().getDoubleArray(key)?.let { dataIntent = it }
-                ?: kotlin.run { dataIntent = DoubleArray(0) }
-            BooleanArray::class -> requireArguments().getBooleanArray(key)?.let { dataIntent = it }
-                ?: kotlin.run { dataIntent = BooleanArray(0) }
-            CharSequence::class -> requireArguments().getCharArray(key)?.let { dataIntent = it }
-//             Array<*> -> dataIntent = {
-//                when {
-//                    defaultValue.isArrayOf<String>() ->
-//                        requireArguments().getStringArrayExtra(key)?.let { defaultValue as Array<String> = it }
-//                    defaultValue.isArrayOf<Parcelable>() ->
-//                        putExtra(key, value as Array<Parcelable?>)
-//                    defaultValue.isArrayOf<CharSequence>() ->
-//                        putExtra(key, value as Array<CharSequence?>)
-//                    else -> putExtra(key, defaultValue)
-//                }
-//            }
-//            is Serializable -> requireArguments().getSerializableExtra(key)?.let { (defaultValue as Serializable) =it }
-        }
-        return dataIntent as T
-
+fun <T> Fragment.getDataExtras(key: String, defaultValue: Any): T {
+    var serializable: Serializable? = null
+    return try {
+        requireArguments().getSerializable(key)?.let { serializable = it }
+        (serializable as T)!!
     } catch (e: Exception) {
         e.printStackTrace()
-        dataIntent = defaultValue
-        Log.e("DataExtras error:", "$key exist")
-        return dataIntent as T
+        Log.e("DataExtras error:", "$key ${e.message}")
+        (defaultValue as? T)!!
     }
 }
 
@@ -158,7 +110,6 @@ fun <T> Bundle.fromJsonArrayExtra(key: String, classOfT: Class<T>?): ArrayList<T
     val json: String? = getString(key)
     return fromJsonArray(json, classOfT)
 }
-
 
 /**
  * Get color resource

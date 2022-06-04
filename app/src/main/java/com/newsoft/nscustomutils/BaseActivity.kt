@@ -11,12 +11,12 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
-    public fun switchFragment(fragment: Fragment) {
-        switchFragment(R.id.container, fragment)
+    public fun switchFragment(mainFragment: MainFragment) {
+        switchFragment(R.id.container, mainFragment)
     }
 
-    public fun switchFragment(fragment: Fragment, isTaskBack: Boolean) {
-        switchFragment(R.id.container, fragment, isTaskBack)
+    public fun switchFragment(mainFragment: MainFragment, isTaskBack: Boolean) {
+        switchFragment(R.id.container, mainFragment, isTaskBack)
     }
 
 }

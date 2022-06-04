@@ -213,66 +213,12 @@ inline fun <reified T> Bundle.getDataExtra(key: String): T? {
 }
 
 inline fun <reified T> Activity.getDataExtras(key: String, defaultValue: Any): T {
-    var dataIntent = Any()
-
-    if (intent.hasExtra(key)) {
-        try {
-            when (T::class) {
-                Byte::class,
-                Char::class,
-                Long::class,
-                Float::class,
-                Short::class,
-                Double::class,
-                Boolean::class,
-                String::class,
-                Serializable::class,
-                CharSequence::class,
-                Int::class -> {
-                    intent.getSerializableExtra(key)?.let { dataIntent = it } ?: kotlin.run {
-                        dataIntent = defaultValue
-                    }
-                }
-                Bundle::class -> intent.getBundleExtra(key)?.let { dataIntent = it } ?: kotlin.run {
-                    dataIntent = Bundle()
-                }
-                IntArray::class -> dataIntent = intent.getIntExtra(key, defaultValue as Int)
-                ByteArray::class -> dataIntent =
-                    intent.getByteExtra(key, defaultValue as Byte) //Byte.MIN_VALUE
-                CharArray::class -> dataIntent =
-                    intent.getCharExtra(key, defaultValue as Char) //new::class -> Char(0)
-                LongArray::class -> intent.getLongArrayExtra(key)?.let { dataIntent = it }
-                    ?: kotlin.run { dataIntent = LongArray(0) }
-                FloatArray::class -> intent.getFloatArrayExtra(key)?.let { dataIntent = it }
-                    ?: kotlin.run { dataIntent = FloatArray(0) }
-                Parcelable::class -> intent.getParcelableExtra<Parcelable?>(key)
-                    ?.let { dataIntent = it }
-                ShortArray::class -> intent.getShortArrayExtra(key)?.let { dataIntent = it }
-                DoubleArray::class -> intent.getDoubleArrayExtra(key)?.let { dataIntent = it }
-                    ?: kotlin.run { dataIntent = DoubleArray(0) }
-                BooleanArray::class -> intent.getBooleanArrayExtra(key)?.let { dataIntent = it }
-                    ?: kotlin.run { dataIntent = BooleanArray(0) }
-//             Array<*>::class -> dataIntent = {
-//                when {
-//                    defaultValue.isArrayOf<String>()  ->
-//                        intent.getStringArrayExtra(key)?.let { defaultValue as Array<String> = it }
-//                    defaultValue.isArrayOf<Parcelable>() ->
-//                        putExtra(key, value as Array<Parcelable?>)
-//                    defaultValue.isArrayOf<CharSequence>() ->
-//                        putExtra(key, value as Array<CharSequence?>)
-//                    else -> putExtra(key, defaultValue)
-//                }
-//            }
-//            is Serializable -> intent.getSerializableExtra(key)?.let { (defaultValue as Serializable) =it }
-            }
-        } catch (e: Exception) {
-            Log.e("DataExtras error exception:", "$key ${e.message}")
-        }
-        return dataIntent as T
-    } else {
-        dataIntent = defaultValue
-        Log.e("DataExtras error:", "$key exist")
-        return dataIntent as T
+    return try {
+        intent.getSerializableExtra(key) as T
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Log.e("DataExtras error:", "$key ${e.message}")
+        (defaultValue as? T)!!
     }
 }
 
