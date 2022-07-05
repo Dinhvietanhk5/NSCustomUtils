@@ -34,7 +34,8 @@ class MainFragment : Fragment() {
         Log.e("type", type.toString())
 
         btnIntentActivity.setOnClickListener {
-            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
+            requireActivity().supportFragmentManager.popBackStack()
+//            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
         }
         btnIntentFragment.setOnClickListener {
             switchFragmentBackStack<IntentFragment>(R.id.container, "title" to "Intent Fragment")

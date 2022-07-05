@@ -63,10 +63,34 @@ inline fun <reified T : Activity> View.startActivityExt(
  *  New Fragment In Activity
  */
 
+fun AppCompatActivity.switchFragmentUpDown(
+    container: Int,
+    fragment: Fragment?,
+    isBackTask: Boolean
+) {
+    val tag = fragment!!.javaClass.simpleName
+    hideSoftKeyboard()
+    val fragmentTransaction =
+        supportFragmentManager
+            .beginTransaction().setCustomAnimations(
+                R.animator.slide_in_bottom,
+                R.animator.slide_out_top,
+                R.animator.slide_in_top,
+                R.animator.slide_out_bottom
+            )
+            .replace(container, fragment, tag)
+    if (isBackTask) fragmentTransaction.addToBackStack(tag)
+    fragmentTransaction.commit()
+}
+
+/**
+ *  New Fragment In Activity
+ */
+
 fun AppCompatActivity.switchFragment(
     container: Int,
     fragment: Fragment?,
-    isTaskback: Boolean
+    isBackTask: Boolean
 ) {
     val tag = fragment!!.javaClass.simpleName
     hideSoftKeyboard()
@@ -77,7 +101,7 @@ fun AppCompatActivity.switchFragment(
                 R.animator.slide_out_right, R.animator.slide_in_right
             )
             .replace(container, fragment, tag)
-    if (isTaskback) fragmentTransaction.addToBackStack(tag)
+    if (isBackTask) fragmentTransaction.addToBackStack(tag)
     fragmentTransaction.commit()
 }
 
