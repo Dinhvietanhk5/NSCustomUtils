@@ -25,6 +25,21 @@ inline fun <reified T : Fragment> newInstance(vararg params: Pair<String, Any>):
  * New Instance Fragment Back Stack
  */
 
+inline fun <reified T : Fragment> Fragment.switchFragmentBackStackUpDown(
+    container: Int,
+    isBackTask: Boolean,
+    vararg params: Pair<String, Any>
+) {
+    val fragment = T::class.java.newInstance().apply {
+        arguments = bundleOf(*params)
+    }
+    (requireActivity() as AppCompatActivity).switchFragment(container, fragment, isBackTask)
+}
+
+/**
+ * New Instance Fragment Back Stack
+ */
+
 inline fun <reified T : Fragment> Fragment.switchFragmentBackStack(
     container: Int,
     vararg params: Pair<String, Any>

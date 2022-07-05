@@ -2,10 +2,12 @@ package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -287,3 +289,13 @@ fun Activity.getCompatColor(colorRes: Int) = ContextCompat.getColor(this, colorR
  * Get drawable resource
  */
 fun Activity.getCompatDrawable(drawableRes: Int) = ContextCompat.getDrawable(this, drawableRes)
+
+/**
+ * set Transparent in Activity
+ */
+fun Activity.setTransparentActivity(){
+    window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+    val attrib = window.attributes
+    attrib.layoutInDisplayCutoutMode =
+        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+}
