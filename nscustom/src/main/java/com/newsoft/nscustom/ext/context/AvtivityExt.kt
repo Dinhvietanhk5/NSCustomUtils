@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -142,6 +144,33 @@ fun AppCompatActivity.switchFragment(container: Int, fragment: Fragment) {
         ft.show(fragment1)
     } else { // fragment needs to be added to frame container
         ft.add(container, fragment, tag)
+    }
+    val fragments =
+        supportFragmentManager.fragments
+    if (fragments.size > 0) {
+        for (frag in fragments) {
+            if (frag !== fragment1) {
+                if (frag.isAdded) ft.hide(frag)
+            }
+        }
+    }
+    ft.commit()
+}
+
+
+/**
+ *  New Fragment In Activity
+ */
+
+fun AppCompatActivity.switchFragment(container: ViewGroup, fragment: Fragment) {
+    val tag = fragment.javaClass.simpleName
+    val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+    val fragment1 = supportFragmentManager.findFragmentByTag(tag)
+    if (fragment1 != null && fragment1.isAdded) { // if the fragment is already in container
+        ft.show(fragment1)
+    } else { // fragment needs to be added to frame container
+        ft.add(container.id, fragment, tag)
     }
     val fragments =
         supportFragmentManager.fragments

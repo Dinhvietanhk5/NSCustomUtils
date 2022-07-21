@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.newsoft.nscustom.ext.context.getDataExtras
 import com.newsoft.nscustom.ext.context.startActivityExt
+import com.newsoft.nscustom.ext.context.startActivityExtFinish
 import com.newsoft.nscustom.ext.context.switchFragmentBackStack
 import kotlinx.android.synthetic.main.fragment.*
 

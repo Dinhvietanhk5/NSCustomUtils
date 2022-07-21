@@ -1,9 +1,11 @@
 package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -95,6 +97,43 @@ fun Fragment.backStack() {
     requireActivity().hideSoftKeyboard()
     requireActivity().supportFragmentManager.popBackStack()
 }
+
+
+/**
+ * Extensions for simpler launching of Fragment
+ */
+
+inline fun <reified T : Activity> Fragment.startActivityExtFinish(
+    requestCode: Int = -1,
+    options: Bundle? = null,
+    vararg params: Pair<String, Any>
+) {
+    val activity = (requireActivity() as AppCompatActivity)
+    val intent = Intent(activity, T::class.java)
+    intent.putDataExtras(*params)
+    activity.startActivityForResult(intent, requestCode, options)
+    activity.finish()
+}
+
+inline fun <reified T : Activity> Fragment.startActivityExtFinish(
+    vararg params: Pair<String, Any>
+) {
+    val activity = (requireActivity() as AppCompatActivity)
+    val intent = Intent(activity, T::class.java)
+    intent.putDataExtras(*params)
+    activity.startActivityForResult(intent, -1)
+    activity.finish()
+}
+
+inline fun <reified T : Activity> Fragment.startActivityExt(
+    vararg params: Pair<String, Any>
+) {
+    val activity = (requireActivity() as AppCompatActivity)
+    val intent = Intent(activity, T::class.java)
+    intent.putDataExtras(*params)
+    activity.startActivityForResult(intent, Activity.RESULT_OK)
+}
+
 
 /**
  * Get Intent Activity
