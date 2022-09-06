@@ -129,7 +129,6 @@ fun Activity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
         onAccepted = onAccepted
     )
 }
-
 fun Activity.handlePermission(
     textPermission: String,
     permission: String,
@@ -154,8 +153,8 @@ fun Activity.handlePermission(
                 .setMessage("Vui lòng cấp quyền $textPermission truy cập trong cài đặt. Đi tới quyền -> $textPermission -> cho phép")
                 .addButton(
                     "Cài đặt",
-                    ContextCompat.getColor(this, R.color.white),
-                    ContextCompat.getColor(this, R.color.colorPrimary),
+                    ContextCompat.getColor(this, R.color.cfdialog_positive_button_color),
+                    ContextCompat.getColor(this, R.color.bg_btn_asset),
                     CFAlertDialog.CFAlertActionStyle.NEGATIVE,
                     CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
                 ) { dialog, which ->
@@ -170,8 +169,8 @@ fun Activity.handlePermission(
                 }
                 .addButton(
                     "Hủy",
-                    ContextCompat.getColor(this, R.color.white),
                     ContextCompat.getColor(this, R.color.black),
+                    ContextCompat.getColor(this, R.color.bg_btn_asset),
                     CFAlertDialog.CFAlertActionStyle.NEGATIVE,
                     CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
                 ) { dialog, which ->
@@ -189,8 +188,8 @@ fun Activity.handlePermission(
                 .setMessage("Vui lòng cho phép truy cập $textPermission của thiết bị trong mục cài đặt để sử dụng chức năng này!")
                 .addButton(
                     "Chấp nhận",
-                    ContextCompat.getColor(this, R.color.white),
-                    ContextCompat.getColor(this, R.color.colorPrimary),
+                    ContextCompat.getColor(this, R.color.cfdialog_positive_button_color),
+                    ContextCompat.getColor(this, R.color.bg_btn_asset),
                     CFAlertDialog.CFAlertActionStyle.NEGATIVE,
                     CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
                 ) { dialog, which ->
@@ -200,8 +199,8 @@ fun Activity.handlePermission(
                 }
                 .addButton(
                     "Hủy",
-                    ContextCompat.getColor(this, R.color.white),
                     ContextCompat.getColor(this, R.color.black),
+                    ContextCompat.getColor(this, R.color.bg_btn_asset),
                     CFAlertDialog.CFAlertActionStyle.NEGATIVE,
                     CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
                 ) { dialog, which ->

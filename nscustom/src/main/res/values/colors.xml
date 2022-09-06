@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="black">#000000</color>
     <color name="gray_text_color">#696969</color>
+    <color name="bg_btn_asset">#DADADA</color>
     <color name="grey">#C3C3C3</color>
     <color name="white">#FFFFFF</color>
 
