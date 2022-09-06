@@ -1,11 +1,29 @@
 package com.newsoft.nscustom.ext.context
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.IntentSender
+import android.location.Location
+import android.location.LocationManager
+import android.location.LocationRequest
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.fondesa.kpermissions.extension.*
+import com.newsoft.nscustom.R
+import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
+import org.jetbrains.anko.newTask
+import java.util.*
+
 
 /**
  * Camera permission handler
@@ -65,11 +83,17 @@ fun Activity.handleWriteStoragePermission(onAccepted: (() -> Unit)? = null) {
 /**
  * Location permission handler
  */
-fun Activity.handleFineLocationPermission(onAccepted: (() -> Unit)? = null) {
+fun Activity.handleFineLocationPermission(
+    onAccepted: (() -> Unit)? = null,
+    onDenied: (() -> Unit)? = null,
+    openSetting: (() -> Unit)? = null
+) {
     handlePermission(
-        textPermission = "Location",
+        textPermission = "Vị trí",
         permission = Manifest.permission.ACCESS_FINE_LOCATION,
-        onAccepted = onAccepted
+        onAccepted = onAccepted,
+        onDenied = onDenied,
+        openSetting = openSetting
     )
 }
 
@@ -95,35 +119,95 @@ fun Activity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
     )
 }
 
+/**
+ * Read phone state permission handler
+ */
+fun Activity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Call Phone State",
+        permission = Manifest.permission.CALL_PHONE,
+        onAccepted = onAccepted
+    )
+}
+
 fun Activity.handlePermission(
     textPermission: String,
     permission: String,
-    onAccepted: (() -> Unit)?
+    onAccepted: (() -> Unit)?,
+    onDenied: (() -> Unit)? = null,
+    openSetting: (() -> Unit)? = null
 ) {
+    var timerStart = Calendar.getInstance().timeInMillis
     // permission handler
     val permissionRequest = permissionsBuilder(permission).build()
     permissionRequest.onAccepted {
         onAccepted?.invoke()
     }.onDenied {
         permissionRequest.send()
+        onDenied?.invoke()
     }.onPermanentlyDenied {
-        // prompt user to update permissions in settings
-//        showIndefiniteSnackbar(
-//            message = "$textPermission access required. Go to Permissions -> Switch $textPermission ON",
-//            actionText = "GO TO\nSETTINGS",
-//            actionHandler = {
-//                val intent =
-//                    Intent(
-//                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-//                        Uri.fromParts("package", packageName, null)
-//                    )
-//                startActivity(intent.newTask())
-//            })
+        val timeNow = Calendar.getInstance().timeInMillis
+        if (timeNow - timerStart < 500L) {
+            val builder = CFAlertDialog.Builder(this)
+                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+                .setTitle("Thông báo")
+                .setMessage("Vui lòng cấp quyền $textPermission truy cập trong cài đặt. Đi tới quyền -> $textPermission -> cho phép")
+                .addButton(
+                    "Cài đặt",
+                    ContextCompat.getColor(this, R.color.white),
+                    ContextCompat.getColor(this, R.color.colorPrimary),
+                    CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                    CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+                ) { dialog, which ->
+                    openSetting?.invoke()
+                    val intent =
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", packageName, null)
+                        )
+                    startActivity(intent.newTask())
+                    dialog.dismiss()
+                }
+                .addButton(
+                    "Hủy",
+                    ContextCompat.getColor(this, R.color.white),
+                    ContextCompat.getColor(this, R.color.black),
+                    CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                    CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+                ) { dialog, which ->
+                    dialog.dismiss()
+                }
+            builder.show()
+        }
     }.onShouldShowRationale { _, permissionNonce ->
-        // request for permission
-//        showIndefiniteSnackbar(
-//            message = "$textPermission access required",
-//            actionText = "REQUEST\nPERMISSION",
-//            actionHandler = { permissionNonce.use() })
+        val timeNow = Calendar.getInstance().timeInMillis
+        if (timeNow - timerStart < 500L) {
+            // request for permission
+            val builder = CFAlertDialog.Builder(this)
+                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+                .setTitle("Thông báo")
+                .setMessage("Vui lòng cho phép truy cập $textPermission của thiết bị trong mục cài đặt để sử dụng chức năng này!")
+                .addButton(
+                    "Chấp nhận",
+                    ContextCompat.getColor(this, R.color.white),
+                    ContextCompat.getColor(this, R.color.colorPrimary),
+                    CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                    CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+                ) { dialog, which ->
+                    timerStart = Calendar.getInstance().timeInMillis
+                    permissionNonce.use()
+                    dialog.dismiss()
+                }
+                .addButton(
+                    "Hủy",
+                    ContextCompat.getColor(this, R.color.white),
+                    ContextCompat.getColor(this, R.color.black),
+                    CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                    CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+                ) { dialog, which ->
+                    dialog.dismiss()
+                }
+            builder.show()
+        }
     }.send()    // check
 }

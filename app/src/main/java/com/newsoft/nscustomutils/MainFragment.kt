@@ -6,10 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.newsoft.nscustom.ext.context.getDataExtras
-import com.newsoft.nscustom.ext.context.startActivityExt
-import com.newsoft.nscustom.ext.context.startActivityExtFinish
-import com.newsoft.nscustom.ext.context.switchFragmentBackStack
+import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.fragment.*
 
 class MainFragment : Fragment() {
@@ -31,7 +28,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+//        requireActivity().checkHideKeyboardOnTouchScreen(view)
         Log.e("type", type.toString())
 
         btnIntentActivity.setOnClickListener {

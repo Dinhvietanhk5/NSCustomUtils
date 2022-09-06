@@ -2,14 +2,12 @@ package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,7 +16,6 @@ import com.newsoft.nscustom.ext.value.fromJsonArray
 import com.google.gson.Gson
 import com.newsoft.nscustom.R
 import java.io.Serializable
-import kotlin.reflect.KClass
 
 
 /**
@@ -307,7 +304,6 @@ fun Activity.getStringExt(key: String): String {
         ""
     }
 }
-
 
 /**
  * Get color resource
