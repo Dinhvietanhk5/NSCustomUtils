@@ -668,12 +668,9 @@ public class CFAlertDialog extends AppCompatDialog {
                 checkBox.setText(item);
                 checkBox.setChecked(selectedItems[i]);
                 final int position = i;
-                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (onMultiChoiceClickListener != null) {
-                            onMultiChoiceClickListener.onClick(CFAlertDialog.this, position, isChecked);
-                        }
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (onMultiChoiceClickListener != null) {
+                        onMultiChoiceClickListener.onClick(CFAlertDialog.this, position, isChecked);
                     }
                 });
                 selectableItemsContainer.addView(view);
@@ -699,12 +696,9 @@ public class CFAlertDialog extends AppCompatDialog {
                 if (position == selectedItem) {
                     radioButton.setChecked(true);
                 }
-                radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked && onClickListener != null) {
-                            onClickListener.onClick(CFAlertDialog.this, position);
-                        }
+                radioButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked && onClickListener != null) {
+                        onClickListener.onClick(CFAlertDialog.this, position);
                     }
                 });
                 radioGroup.addView(radioButton);
@@ -763,12 +757,7 @@ public class CFAlertDialog extends AppCompatDialog {
             @Override
             public void onAnimationEnd(Animation animation) {
                 Handler handler = new Handler();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        CFAlertDialog.super.dismiss();
-                    }
-                });
+                handler.post(() -> CFAlertDialog.super.dismiss());
             }
 
             @Override

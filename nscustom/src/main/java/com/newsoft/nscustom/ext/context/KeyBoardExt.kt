@@ -2,6 +2,7 @@ package com.newsoft.nscustom.ext.context
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Rect
 import android.view.View
@@ -50,7 +51,11 @@ fun Context.hidesSoftInputOnTouch(rootLayout: ViewGroup) {
 /**
  * Listen for keyboard state changes
  */
-fun Context.softInputStateChangeListener(viewGroup: ViewGroup, shown: () -> Unit, hidden: () -> Unit) {
+fun Context.softInputStateChangeListener(
+    viewGroup: ViewGroup,
+    shown: () -> Unit,
+    hidden: () -> Unit
+) {
     with(viewGroup) {
         viewTreeObserver.addOnGlobalLayoutListener {
             val r = Rect()
@@ -72,11 +77,26 @@ fun Context.softInputStateChangeListener(viewGroup: ViewGroup, shown: () -> Unit
  */
 
 @SuppressLint("ClickableViewAccessibility")
-fun Activity.checkHideKeyboardOnTouchScreen(view: View){
+fun Activity.checkHideKeyboardOnTouchScreen(view: View) {
     if (view !is EditText) {
         view.setOnTouchListener { _, _ ->
             hideSoftKeyboard()
             false
         }
     }
+}
+
+fun Dialog.hideSoftKeyboard() {
+    try {
+        val windowToken = window!!.decorView.rootView
+        val imm =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+    } catch (ex: java.lang.Exception) {
+    }
+}
+
+fun Context.hideKeyboard(view: View) {
+    val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }

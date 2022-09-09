@@ -25,7 +25,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
-    var context: Context? = null
+    private var context: Context? = null
     private var viewEmpty: View? = null
     private var recyclerViewEventLoad: RecyclerViewEventLoad? = null
     private var recyclerView: RecyclerView? = null
@@ -33,7 +33,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     private val TAG = "BaseAdapter"
     private var swRefresh: SwipeRefreshLayout? = null
     private var countTest = 0
-    private var parent: ViewGroup?=null
+    private var parent: ViewGroup? = null
     var isItemView = false //TODO: false itemview click, true không phải itemview click
 
     /**
@@ -41,6 +41,10 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      */
     init {
         items = ArrayList()
+    }
+
+    fun requireContext(): Context {
+        return context ?: throw IllegalStateException("Fragment $this not attached to a context.")
     }
 
     /**
@@ -81,6 +85,12 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         recyclerViewEventLoad?.setLoaded()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun addItem(item: T?) {
+        this.items!!.add(item!!)
+        notifyDataSetChanged()
+    }
+
     /**
      * setEmptyItems
      * check recyclerView visibility
@@ -115,7 +125,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
                 onBindView(holder, null, position, realCount())
 
             if (mOnAdapterListener != null && !isItemView) {
-                holder!!.itemView.setOnClickListener {
+                holder.itemView.setOnClickListener {
                     mOnAdapterListener!!.onItemClick(
                         0,
                         if (items!!.size > 0) items!![position] else null, position
@@ -142,10 +152,8 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     fun setView(layout: Int): View {
-        return LayoutInflater.from(context)
-            .inflate(layout, parent, false)
+        return LayoutInflater.from(context).inflate(layout, parent, false)
     }
-
 
     /**
      * setCountItemTest
@@ -164,7 +172,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     /**
-     * onclick not itemview
+     * onClick not itemview
      */
     fun setOnAdapterNotItemViewListener(listener: OnAdapterListener<T>?) {
         mOnAdapterListener = listener
@@ -295,7 +303,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
             editText,
             recyclerViewLoadMoreListener
         )
-        recyclerView!!.addOnScrollListener(recyclerViewEventLoad!!)
+        recyclerView?.addOnScrollListener(recyclerViewEventLoad!!)
 //        } else {
 //            Log.e(TAG, "Not set load more")
 //        }
@@ -308,7 +316,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      */
 
     fun resetLoadMore() {
-        recyclerViewEventLoad!!.reset()
+        recyclerViewEventLoad?.let { it.reset() }
     }
 
     /**
@@ -316,22 +324,26 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * index = 0
      */
     fun reloadData() {
-        recyclerViewEventLoad!!.reload(0)
+        recyclerViewEventLoad?.let { it.reload(0) }
     }
 
 
     fun destroy() {
-        itemsCache!!.clear()
-        items!!.clear()
-        mOnAdapterListener = null
-        viewHolder = null
-        context = null
-        viewEmpty = null
-        recyclerViewEventLoad = null
-        recyclerView = null
-        swRefresh = null
-        countTest = 0
-        isItemView = false
+        try {
+            itemsCache?.clear()
+            items?.clear()
+            mOnAdapterListener = null
+            viewHolder = null
+            context = null
+            viewEmpty = null
+            recyclerViewEventLoad = null
+            recyclerView = null
+            swRefresh = null
+            countTest = 0
+            isItemView = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

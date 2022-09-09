@@ -9,6 +9,7 @@
     android:clickable="true"
     android:gravity="center">
 
+
     <RelativeLayout
         android:id="@+id/cfdialog_container"
         android:layout_width="match_parent"
