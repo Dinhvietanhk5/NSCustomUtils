@@ -43,7 +43,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         items = ArrayList()
     }
 
-    fun requireContext(): Context {
+    fun requireContextAdapter(): Context {
         return context ?: throw IllegalStateException("Fragment $this not attached to a context.")
     }
 
