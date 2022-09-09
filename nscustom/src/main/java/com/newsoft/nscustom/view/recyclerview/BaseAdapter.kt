@@ -21,7 +21,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     RecyclerView.Adapter<VH>(),
     IViewHolder<T, VH> {
 
-    protected var items: ArrayList<T>?
+     var items: ArrayList<T>?
     protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
