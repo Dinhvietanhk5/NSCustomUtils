@@ -1,6 +1,7 @@
 package com.newsoft.nscustom.view.datepicker
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
@@ -87,23 +88,27 @@ class NsDateView : TextView {
     }
 
     private fun pickMonth() {
-        DatePickerDialog(
+        val dateDialog = DatePickerDialog(
             context,
             android.R.style.Theme_Holo_Light_Dialog,
             datePickerListener,
             calendar!![Calendar.YEAR],
             calendar!![Calendar.MONTH],
             calendar!![Calendar.DAY_OF_MONTH]
-        ).show()
+        )
+        dateDialog.datePicker.minDate = Calendar.getInstance().timeInMillis
+        dateDialog.show()
     }
 
     private fun pickDate() {
 
-        DatePickerDialog(
+        val datePickerDialog = DatePickerDialog(
             context, datePickerListener, calendar!![Calendar.YEAR],
             calendar!![Calendar.MONTH],
             calendar!![Calendar.DAY_OF_MONTH]
-        ).show()
+        )
+        datePickerDialog.datePicker.minDate = Calendar.getInstance().timeInMillis
+        datePickerDialog.show()
     }
 
     @SuppressLint("SetTextI18n")
@@ -114,10 +119,12 @@ class NsDateView : TextView {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         // Date Picker Dialog
-        val datePickerDialog = DatePickerDialog(context,
+        val datePickerDialog = DatePickerDialog(
+            context,
             { view, year, monthOfYear, dayOfMonth ->
 //                date.text = "$dayOfMonth $monthOfYear, $year"
-            }, year, month, day)
+            }, year, month, day
+        )
 
         return datePickerDialog
 
@@ -125,7 +132,7 @@ class NsDateView : TextView {
     }
 
     private fun customDatePicker(): DatePickerDialog? {
-        Log.e("customDatePicker"," ")
+        Log.e("customDatePicker", " ")
         val dpd = DatePickerDialog(
             context, datePickerListener, calendar!![Calendar.YEAR],
             calendar!![Calendar.MONTH],
@@ -175,7 +182,8 @@ class NsDateView : TextView {
         val hour = mcurrentTime[Calendar.HOUR_OF_DAY]
         val minute = mcurrentTime[Calendar.MINUTE]
         val mTimePicker =
-            TimePickerDialog(context, timePickerListener, hour, minute, true) //Yes 24 hour time
+            TimePickerDialog(context,
+                AlertDialog.THEME_HOLO_LIGHT, timePickerListener, hour, minute, true) //Yes 24 hour time
         mTimePicker.show()
     }
 

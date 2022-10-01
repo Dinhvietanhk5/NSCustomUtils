@@ -12,18 +12,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.newsoft.nscustom.ext.value.fromJsonArray
 import com.google.gson.Gson
 import com.newsoft.nscustom.R
+import com.newsoft.nscustom.ext.value.fromJsonArray
 import java.io.Serializable
 
+
+const val RESULT_FINISH_ACTIVITY = 110
+const val RESULT_START_ACTIVITY = 111
 
 /**
  * Extensions for simpler launching of Activities
  */
 
 inline fun <reified T : Activity> Activity.startActivityExtFinish(
-    requestCode: Int = -1,
+    requestCode: Int = RESULT_START_ACTIVITY,
     options: Bundle? = null,
     vararg params: Pair<String, Any>
 ) {
@@ -34,24 +37,26 @@ inline fun <reified T : Activity> Activity.startActivityExtFinish(
 }
 
 inline fun <reified T : Activity> Activity.startActivityExtFinish(
+    requestCode: Int = RESULT_START_ACTIVITY,
     vararg params: Pair<String, Any>
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
-    startActivityForResult(intent, -1)
+    startActivityForResult(intent, requestCode)
     finish()
 }
 
 inline fun <reified T : Activity> Activity.startActivityExt(
-    vararg params: Pair<String, Any>
+    requestCode: Int = RESULT_START_ACTIVITY,
+    vararg params: Pair<String, Any>,
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
-    startActivityForResult(intent, Activity.RESULT_OK)
+    startActivityForResult(intent, requestCode)
 }
 
 inline fun <reified T : Activity> View.startActivityExt(
-    requestCode: Int = -1,
+    requestCode: Int = RESULT_START_ACTIVITY,
     options: Bundle? = null,
     vararg params: Pair<String, Any>
 ) {
@@ -186,12 +191,21 @@ fun AppCompatActivity.switchFragment(container: ViewGroup, fragment: Fragment) {
  */
 
 fun Activity.finishActivityForResultExt(
-    requestCode: Int = -1,
+    requestCode: Int = RESULT_FINISH_ACTIVITY,
     vararg params: Pair<String, Any>
 ) {
     val intent = Intent()
     intent.putDataExtras(*params)
     setResult(requestCode, intent)
+    finishActivityExt()
+}
+
+fun Activity.finishActivityForResultExt(
+    vararg params: Pair<String, Any>
+) {
+    val intent = Intent()
+    intent.putDataExtras(*params)
+    setResult(RESULT_FINISH_ACTIVITY, intent)
     finishActivityExt()
 }
 
@@ -318,7 +332,7 @@ fun Activity.getCompatDrawable(drawableRes: Int) = ContextCompat.getDrawable(thi
 /**
  * set Transparent in Activity
  */
-fun Activity.setTransparentActivity(){
+fun Activity.setTransparentActivity() {
     window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     val attrib = window.attributes
     attrib.layoutInDisplayCutoutMode =

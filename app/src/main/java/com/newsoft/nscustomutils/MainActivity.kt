@@ -1,11 +1,9 @@
 package com.newsoft.nscustomutils
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.newsoft.nscustom.ext.context.checkHideKeyboardOnTouchScreen
-import com.newsoft.nscustom.ext.context.handleFineLocationPermission
-import com.newsoft.nscustom.ext.context.newInstance
-import com.newsoft.nscustom.ext.context.switchFragmentUpDown
+import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
@@ -24,12 +22,23 @@ class MainActivity : BaseActivity() {
             Log.e("handleFineLocationPermission", " 3 ")
         })
         btnNext.setOnClickListener {
-            switchFragmentUpDown(
-                R.id.container,
-                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
-                true
-            )
+//            switchFragmentUpDown(
+//                R.id.container,
+//                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
+//                true
+//            )
+            startActivityExt<IntentActivity>()
+//            finishActivityExt()
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_FINISH_ACTIVITY) {
+            val intet = data?.getIntExtra("intemnt",0)
+            Log.e("onActivityResultMain", " $resultCode $intet")
+
+        }
     }
 }

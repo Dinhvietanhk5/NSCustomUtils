@@ -131,7 +131,7 @@ inline fun <reified T : Activity> Fragment.startActivityExt(
     val activity = (requireActivity() as AppCompatActivity)
     val intent = Intent(activity, T::class.java)
     intent.putDataExtras(*params)
-    activity.startActivityForResult(intent, Activity.RESULT_OK)
+    activity.startActivityForResult(intent, Activity.RESULT_CANCELED)
 }
 
 
