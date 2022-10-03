@@ -60,19 +60,16 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         if (this.items == null)
             this.items = ArrayList()
 
-        items?.let {
-            if (it.size == 0) {
-                if (index <= 10) setEmptyItems()
-                return
-            }
-        } ?: kotlin.run {
+        if (items == null || items.size == 0) {
             if (index == 0)
-                viewEmpty?.let { it.visibility = View.VISIBLE }
+                setEmptyItems()
+
+//            recyclerViewEventLoad?.let {
+//                it.index = index - 10
+//            }
+            return
         }
 
-        //TODO: trường hợp load more items null, index != 0
-        if (items == null)
-            return
         viewEmpty?.let { it.visibility = View.GONE }
         recyclerView?.let { it.visibility = View.VISIBLE }
 
