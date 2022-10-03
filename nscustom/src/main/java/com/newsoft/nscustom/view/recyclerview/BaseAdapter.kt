@@ -21,7 +21,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     RecyclerView.Adapter<VH>(),
     IViewHolder<T, VH> {
 
-     var items: ArrayList<T>?
+    var items: ArrayList<T>?
     protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
@@ -57,10 +57,12 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         recyclerViewEventLoad?.let {
             it.index = index
         }
-        if (this.items == null) this.items = ArrayList()
+        if (this.items == null)
+            this.items = ArrayList()
+
         items?.let {
-            if (it.size == 0 && index <= 10) {
-                setEmptyItems()
+            if (it.size == 0) {
+                if (index <= 10) setEmptyItems()
                 return
             }
         } ?: kotlin.run {
@@ -76,9 +78,9 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
         if (index <= 11) {
             this.items = items
-            this.itemsCache = items
+//            this.itemsCache = items
         } else {
-            this.itemsCache!!.addAll(items)
+//            this.itemsCache!!.addAll(items)
             this.items!!.addAll(items)
         }
         notifyDataSetChanged()

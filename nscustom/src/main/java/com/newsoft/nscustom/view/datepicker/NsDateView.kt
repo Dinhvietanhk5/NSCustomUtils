@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -178,24 +179,33 @@ class NsDateView : TextView {
 
     // Time picker
     private fun pickTime() {
-        val mcurrentTime = Calendar.getInstance()
-        val hour = mcurrentTime[Calendar.HOUR_OF_DAY]
-        val minute = mcurrentTime[Calendar.MINUTE]
+//        val mcurrentTime = Calendar.getInstance()
+        val hour = calendar!![Calendar.HOUR_OF_DAY]
+        val minute = calendar!![Calendar.MINUTE]
+        val theme = if (context.isDarkThemeOn()) AlertDialog.THEME_HOLO_DARK else AlertDialog.THEME_HOLO_LIGHT
         val mTimePicker =
-            TimePickerDialog(context,
-                AlertDialog.THEME_HOLO_LIGHT, timePickerListener, hour, minute, true) //Yes 24 hour time
+            TimePickerDialog(
+                context,
+                theme, timePickerListener, hour, minute, true
+            ) //Yes 24 hour time
         mTimePicker.show()
     }
 
     private val timePickerListener =
-        TimePickerDialog.OnTimeSetListener { _, selectedHour, selectedMinute ->
-            calendar!![Calendar.HOUR] = selectedHour
+        TimePickerDialog.OnTimeSetListener { time, selectedHour, selectedMinute ->
+            calendar!![Calendar.HOUR_OF_DAY] = selectedHour
             calendar!![Calendar.MINUTE] = selectedMinute
             @SuppressLint("SimpleDateFormat")
             val sdf = SimpleDateFormat(timeFormat)
             text = sdf.format(calendar!!.time)
             listener?.onListener()
         }
+
+    fun Context.isDarkThemeOn(): Boolean {
+        return resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+
 
     interface NsDateViewListener {
         fun onListener()
