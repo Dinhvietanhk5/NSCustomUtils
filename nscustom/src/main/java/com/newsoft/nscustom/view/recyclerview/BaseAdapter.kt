@@ -61,7 +61,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
             this.items = ArrayList()
 
         if (items == null || items.size == 0) {
-            if (index == 0)
+            if (index < 10)
                 setEmptyItems()
 
 //            recyclerViewEventLoad?.let {
