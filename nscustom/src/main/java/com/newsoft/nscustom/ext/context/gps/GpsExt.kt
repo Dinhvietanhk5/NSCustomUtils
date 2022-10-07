@@ -225,6 +225,7 @@ fun Activity.requestDeviceLocationSettings(
             }
         }
 
+
     } catch (e: Exception) {
         offGPS?.invoke()
         e.printStackTrace()
