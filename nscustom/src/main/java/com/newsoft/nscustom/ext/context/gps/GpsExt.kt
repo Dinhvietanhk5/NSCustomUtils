@@ -205,6 +205,7 @@ fun Activity.requestDeviceLocationSettings(
                 offGPS?.invoke()
             }
         }
+
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
                 //TODO: Cài đặt vị trí không hài lòng, nhưng điều này có thể được khắc phục bằng cách hiển thị cho người dùng một hộp thoại.
