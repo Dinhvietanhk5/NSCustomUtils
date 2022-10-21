@@ -3,9 +3,9 @@ package com.newsoft.nscustomutils
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.newsoft.nscustom.constants.DefaultsUtils
 import com.newsoft.nscustom.ext.context.*
-import com.newsoft.nscustom.ext.value.convertDateSend
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
@@ -16,28 +16,31 @@ class MainActivity : BaseActivity() {
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))
 
-        handleFineLocationPermission({
-            Log.e("handleFineLocationPermission", " 1 ")
-        }, {
-            Log.e("handleFineLocationPermission", " 2 ")
-        }, {
-            Log.e("handleFineLocationPermission", " 3 ")
-        })
+//        handleFineLocationPermission({
+//            Log.e("handleFineLocationPermission", " 1 ")
+//        }, {
+//            Log.e("handleFineLocationPermission", " 2 ")
+//        }, {
+//            Log.e("handleFineLocationPermission", " 3 ")
+//        })
+//
+//        btnNext.setOnClickListener {
+////            switchFragmentUpDown(
+////                R.id.container,
+////                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
+////                true
+////            )
+//            startActivityExt<IntentActivity>()
+////            finishActivityExt()
+//        }
 
-        btnNext.setOnClickListener {
-//            switchFragmentUpDown(
-//                R.id.container,
-//                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
-//                true
-//            )
-            startActivityExt<IntentActivity>()
-//            finishActivityExt()
+
+        val adapter = TestAdapter()
+        adapter.apply {
+            setRecyclerView(
+                rvList
+            )
         }
-
-        Log.e(
-            "MainActivity",
-            "${convertDateSend("2022-10-04T16:43:39+0700","yyyy-MM-dd'T'HH:mm:ssZ", DefaultsUtils.DATE_FORMAT2)}"
-        )
 
     }
 

@@ -5,37 +5,50 @@
     android:id="@+id/packed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/btnNext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingVertical="12dp"
-        android:text="next" />
+    <!--    <TextView-->
+    <!--        android:id="@+id/btnNext"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:gravity="center"-->
+    <!--        android:paddingVertical="12dp"-->
+    <!--        android:text="next" />-->
 
-    <!--    <EditText-->
+    <!--    &lt;!&ndash;    <EditText&ndash;&gt;-->
+    <!--    &lt;!&ndash;        android:id="@+id/edt"&ndash;&gt;-->
+    <!--    &lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+    <!--    &lt;!&ndash;        android:layout_height="wrap_content" />&ndash;&gt;-->
+
+    <!--    <com.newsoft.nscustom.view.edittext.NSEdittext-->
     <!--        android:id="@+id/edt"-->
     <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content" />-->
-
-    <com.newsoft.nscustom.view.edittext.NSEdittext
-        android:id="@+id/edt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:inputType="phone" />
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:inputType="phone" />-->
 
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-    <com.newsoft.nscustom.view.datepicker.NsDateView
+    <!--    <com.newsoft.nscustom.view.datepicker.NsDateView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <include
+        android:id="@+id/viewEp"
+        layout="@layout/item_view_empty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

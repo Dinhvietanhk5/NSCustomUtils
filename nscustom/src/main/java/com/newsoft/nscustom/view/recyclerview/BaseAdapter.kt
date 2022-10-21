@@ -29,7 +29,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     private var viewEmpty: View? = null
     private var recyclerViewEventLoad: RecyclerViewEventLoad? = null
     private var recyclerView: RecyclerView? = null
-    private var recycleViewLayoutManagerEnums = RvLayoutManagerEnums.LinearLayout_VERTICAL
     private val TAG = "BaseAdapter"
     private var swRefresh: SwipeRefreshLayout? = null
     private var countTest = 0
@@ -158,7 +157,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * countTest == 0 viewEmpty VISIBLE & , recyclerView GONE
      * countTest != 0 viewEmpty GONE & , recyclerView VISIBLE
      */
-    fun setCountItemTest(countTest: Int) {
+    private fun setCountItemTest(countTest: Int) {
         this.countTest = countTest
         if (countTest != 0) {
             viewEmpty?.let { it.visibility = View.GONE }
@@ -189,71 +188,38 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * init RecyclerView
      */
 
-    fun setRecyclerView(recyclerView: RecyclerView, type: RvLayoutManagerEnums) {
-        recycleViewLayoutManagerEnums = type
-        setLayoutManager(recyclerView, type)
-    }
-
-    fun setRecyclerView(recyclerView: RecyclerView, countTest: Int, type: RvLayoutManagerEnums) {
-        recycleViewLayoutManagerEnums = type
-        this.countTest = countTest
-        if (countTest != 0) {
-            viewEmpty?.let { it.visibility = View.GONE }
-            recyclerView?.let { it.visibility = View.VISIBLE }
-        } else {
-            viewEmpty?.let { it.visibility = View.VISIBLE }
-            recyclerView?.let { it.visibility = View.GONE }
+    fun setRecyclerView(
+        recyclerView: RecyclerView,
+        viewEmpty: View? = null,
+        type: RvLayoutManagerEnums = RvLayoutManagerEnums.LinearLayout_VERTICAL,
+        countTest: Int = 0
+    ) {
+        var layout: RecyclerView.LayoutManager = LinearLayoutManager(context)
+        layout = when (type) {
+            RvLayoutManagerEnums.LinearLayout_VERTICAL -> LinearLayoutManager(context)
+            RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            RvLayoutManagerEnums.LinearLayout_INVALID_OFFSET -> LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false)
+            RvLayoutManagerEnums.GridLayoutManager_spanCount1 -> GridLayoutManager(context, 1)
+            RvLayoutManagerEnums.GridLayoutManager_spanCount2 -> GridLayoutManager(context, 2)
+            RvLayoutManagerEnums.GridLayoutManager_spanCount3 -> GridLayoutManager(context, 3)
+            RvLayoutManagerEnums.StaggeredGridLayoutManager_spanCount2 -> StaggeredGridLayoutManager(2, LinearLayout.VERTICAL)
         }
-        setLayoutManager(recyclerView, type)
+        setRecyclerView(recyclerView, viewEmpty, layout, countTest)
     }
 
     fun setRecyclerView(
         recyclerView: RecyclerView,
-        viewEmpty: ViewGroup,
-        type: RvLayoutManagerEnums
+        viewEmpty: View? = null,
+        layoutManager: RecyclerView.LayoutManager,
+        countTest: Int = 0
     ) {
-        recycleViewLayoutManagerEnums = type
-        this.viewEmpty = viewEmpty
-        setLayoutManager(recyclerView, type)
-    }
-
-    fun setRecyclerView(recyclerView: RecyclerView, viewEmpty: View) {
-        this.viewEmpty = viewEmpty
-        setLayoutManager(recyclerView, RvLayoutManagerEnums.LinearLayout_VERTICAL)
-    }
-
-    fun setRecyclerView(recyclerView: RecyclerView) {
-        setLayoutManager(recyclerView, RvLayoutManagerEnums.LinearLayout_VERTICAL)
-    }
-
-    fun setRecyclerView(recyclerView: RecyclerView, layoutManager: RecyclerView.LayoutManager) {
-        this.recyclerView = recyclerView
-        recyclerView.adapter = this
-        recyclerView.layoutManager = layoutManager
-    }
-
-    private fun setLayoutManager(recyclerView: RecyclerView, type: RvLayoutManagerEnums?) {
-        when (type) {
-            RvLayoutManagerEnums.LinearLayout_VERTICAL -> recyclerView.layoutManager =
-                LinearLayoutManager(context)
-            RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            RvLayoutManagerEnums.LinearLayout_INVALID_OFFSET -> recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false)
-            RvLayoutManagerEnums.GridLayoutManager_spanCount1 -> recyclerView.layoutManager =
-                GridLayoutManager(context, 1)
-            RvLayoutManagerEnums.GridLayoutManager_spanCount2 -> recyclerView.layoutManager =
-                GridLayoutManager(context, 2)
-            RvLayoutManagerEnums.GridLayoutManager_spanCount3 -> recyclerView.layoutManager =
-                GridLayoutManager(context, 3)
-            RvLayoutManagerEnums.StaggeredGridLayoutManager_spanCount2 -> recyclerView.layoutManager =
-                StaggeredGridLayoutManager(2, LinearLayout.VERTICAL)
+        viewEmpty?.let {
+            this.viewEmpty = it
         }
-        recyclerView.adapter = this
+        setCountItemTest(countTest)
         this.recyclerView = recyclerView
-//
-//        recyclerView.visibility = View.GONE
-//        viewEmpty?.let { it.visibility = View.GONE }
+        this.recyclerView!!.adapter = this
+        this.recyclerView!!.layoutManager = layoutManager
     }
 
     /**
