@@ -15,7 +15,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.IViewHolder
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.OnAdapterListener
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.RecyclerViewLoadMoreListener
-import java.util.*
 
 abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     RecyclerView.Adapter<VH>(),
@@ -34,6 +33,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     private var countTest = 0
     private var parent: ViewGroup? = null
     var isItemView = false //TODO: false itemview click, true không phải itemview click
+    private var isReload = true  //TODO: false khong reload, true reload
 
     /**
      * init Adapter
@@ -94,7 +94,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * check viewEmpty visibility
      */
     private fun setEmptyItems() {
-
 //        swRefresh?.let { it.visibility = View.GONE }
         recyclerView!!.visibility = View.GONE
         viewEmpty?.let { it.visibility = View.VISIBLE }
@@ -233,29 +232,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         this.recyclerView!!.layoutManager = layoutManager
     }
 
-    /**
-     * set Load More SwipeRefreshLayout
-     *
-     * @param recyclerViewLoadMoreListener
-     */
-    fun setLoadData(
-        recyclerViewLoadMoreListener: RecyclerViewLoadMoreListener
-    ) {
-        setLoadData(null, null, recyclerViewLoadMoreListener)
-    }
-
-    /**
-     * set Load More SwipeRefreshLayout
-     *
-     * @param swRefresh
-     * @param recyclerViewLoadMoreListener
-     */
-    fun setLoadData(
-        swRefresh: SwipeRefreshLayout?,
-        recyclerViewLoadMoreListener: RecyclerViewLoadMoreListener
-    ) {
-        setLoadData(swRefresh, null, recyclerViewLoadMoreListener)
-    }
 
     /**
      * set Load More SwipeRefreshLayout, Edt search
@@ -269,9 +245,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         editText: EditText? = null,
         recyclerViewLoadMoreListener: RecyclerViewLoadMoreListener
     ) {
-        this.swRefresh = swRefresh
-//        if (recycleViewLayoutManagerEnums == RvLayoutManagerEnums.LinearLayout_VERTICAL || recycleViewLayoutManagerEnums == RvLayoutManagerEnums.LinearLayout_HORIZONTAL
-//        ) {
         recyclerViewEventLoad = RecyclerViewEventLoad(
             recyclerView!!.layoutManager!!,
             swRefresh,
@@ -279,11 +252,92 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
             recyclerViewLoadMoreListener
         )
         recyclerView?.addOnScrollListener(recyclerViewEventLoad!!)
-//        } else {
-//            Log.e(TAG, "Not set load more")
-//        }
     }
 
+
+    /**
+     * init NSRecyclerview
+     */
+
+    fun setRecyclerView(
+        nsRecyclerView: NSRecyclerview,
+        type: RvLayoutManagerEnums = RvLayoutManagerEnums.LinearLayout_VERTICAL,
+        countTest: Int = 0
+    ) {
+        var layout: RecyclerView.LayoutManager = LinearLayoutManager(context)
+        layout = when (type) {
+            RvLayoutManagerEnums.LinearLayout_VERTICAL -> LinearLayoutManager(context)
+            RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            RvLayoutManagerEnums.LinearLayout_INVALID_OFFSET -> LinearLayoutManager(
+                context,
+                LinearLayoutManager.INVALID_OFFSET,
+                false
+            )
+            RvLayoutManagerEnums.GridLayoutManager_spanCount1 -> GridLayoutManager(context, 1)
+            RvLayoutManagerEnums.GridLayoutManager_spanCount2 -> GridLayoutManager(context, 2)
+            RvLayoutManagerEnums.GridLayoutManager_spanCount3 -> GridLayoutManager(context, 3)
+            RvLayoutManagerEnums.StaggeredGridLayoutManager_spanCount2 -> StaggeredGridLayoutManager(
+                2,
+                LinearLayout.VERTICAL
+            )
+        }
+        viewEmpty = nsRecyclerView.viewEmpty
+        swRefresh = nsRecyclerView.swRefresh
+        recyclerView = nsRecyclerView.recyclerView
+
+        setRecyclerView(nsRecyclerView, layout, countTest)
+    }
+
+    fun setRecyclerView(
+        nsRecyclerView: NSRecyclerview,
+        layoutManager: RecyclerView.LayoutManager,
+        countTest: Int = 0
+    ) {
+        viewEmpty = nsRecyclerView.viewEmpty
+        swRefresh = nsRecyclerView.swRefresh
+        recyclerView = nsRecyclerView.recyclerView
+
+        viewEmpty?.let {
+            this.viewEmpty = it
+        }
+        setCountItemTest(countTest)
+        this.recyclerView = nsRecyclerView.recyclerView
+        this.recyclerView!!.adapter = this
+        this.recyclerView!!.layoutManager = layoutManager
+    }
+
+    /**
+     * set Load More NSRecyclerview, Edt search
+     *
+     * @param editText
+     * @param recyclerViewLoadMoreListener
+     */
+    fun setLoadData(
+        editText: EditText? = null,
+        recyclerViewLoadMoreListener: RecyclerViewLoadMoreListener,
+    ) {
+        if (!isReload) {
+            swRefresh?.apply {
+                isRefreshing=false
+                isEnabled = false
+            }
+        }
+        recyclerViewEventLoad = RecyclerViewEventLoad(
+            recyclerView!!.layoutManager!!,
+            swRefresh,
+            editText,
+            recyclerViewLoadMoreListener
+        )
+        recyclerView?.addOnScrollListener(recyclerViewEventLoad!!)
+    }
+
+    fun disableReload() {
+        isReload = false
+    }
 
     /**
      * resetLoadMore
@@ -313,7 +367,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
             viewEmpty = null
             recyclerViewEventLoad = null
             recyclerView = null
-            swRefresh = null
             countTest = 0
             isItemView = false
         } catch (e: Exception) {

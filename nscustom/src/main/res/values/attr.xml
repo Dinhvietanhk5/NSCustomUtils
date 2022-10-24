@@ -72,4 +72,9 @@
         <attr name="defaultDate" format="boolean" />
         <attr name="start7Day" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="NSRecyclerview">
+        <attr name="imageEmpty" format="reference|color" />
+        <attr name="textEmpty" format="string" />
+    </declare-styleable>
 </resources>

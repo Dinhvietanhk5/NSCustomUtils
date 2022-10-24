@@ -42,7 +42,7 @@ class RecyclerViewEventLoad : RecyclerView.OnScrollListener {
     }
 
     private fun initView(editText: EditText?) {
-        editText?.let {edt->
+        editText?.let { edt ->
             edt.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     charSequence: CharSequence,
