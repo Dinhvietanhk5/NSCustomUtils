@@ -3,8 +3,6 @@ package com.newsoft.nscustomutils
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.newsoft.nscustom.constants.DefaultsUtils
 import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -34,12 +32,9 @@ class MainActivity : BaseActivity() {
 ////            finishActivityExt()
 //        }
 
-
         val adapter = TestAdapter()
         adapter.apply {
-            setRecyclerView(
-                rvList
-            )
+            setRecyclerView(rvList)
         }
 
     }

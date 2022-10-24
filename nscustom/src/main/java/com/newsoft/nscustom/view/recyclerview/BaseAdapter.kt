@@ -197,12 +197,23 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         var layout: RecyclerView.LayoutManager = LinearLayoutManager(context)
         layout = when (type) {
             RvLayoutManagerEnums.LinearLayout_VERTICAL -> LinearLayoutManager(context)
-            RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            RvLayoutManagerEnums.LinearLayout_INVALID_OFFSET -> LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false)
+            RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            RvLayoutManagerEnums.LinearLayout_INVALID_OFFSET -> LinearLayoutManager(
+                context,
+                LinearLayoutManager.INVALID_OFFSET,
+                false
+            )
             RvLayoutManagerEnums.GridLayoutManager_spanCount1 -> GridLayoutManager(context, 1)
             RvLayoutManagerEnums.GridLayoutManager_spanCount2 -> GridLayoutManager(context, 2)
             RvLayoutManagerEnums.GridLayoutManager_spanCount3 -> GridLayoutManager(context, 3)
-            RvLayoutManagerEnums.StaggeredGridLayoutManager_spanCount2 -> StaggeredGridLayoutManager(2, LinearLayout.VERTICAL)
+            RvLayoutManagerEnums.StaggeredGridLayoutManager_spanCount2 -> StaggeredGridLayoutManager(
+                2,
+                LinearLayout.VERTICAL
+            )
         }
         setRecyclerView(recyclerView, viewEmpty, layout, countTest)
     }
@@ -254,8 +265,8 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * @param recyclerViewLoadMoreListener
      */
     fun setLoadData(
-        swRefresh: SwipeRefreshLayout?,
-        editText: EditText?,
+        swRefresh: SwipeRefreshLayout? = null,
+        editText: EditText? = null,
         recyclerViewLoadMoreListener: RecyclerViewLoadMoreListener
     ) {
         this.swRefresh = swRefresh
