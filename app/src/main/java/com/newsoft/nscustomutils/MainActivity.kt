@@ -1,9 +1,11 @@
 package com.newsoft.nscustomutils
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.newsoft.nscustom.ext.context.*
+import com.tbruyelle.rxpermissions3.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
@@ -32,10 +34,19 @@ class MainActivity : BaseActivity() {
 ////            finishActivityExt()
 //        }
 
-        val adapter = TestAdapter()
-        adapter.apply {
-            setRecyclerView(rvList)
+//        val adapter = TestAdapter()
+//        adapter.apply {
+//            setRecyclerView(rvList)
+//        }
+
+        btnNext.setOnClickListener {
+            handleWriteStoragePermission {
+                Log.e("handleCameraPermission", " ")
+            }
+
+
         }
+
 
     }
 

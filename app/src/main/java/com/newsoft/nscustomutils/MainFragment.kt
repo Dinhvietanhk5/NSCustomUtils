@@ -36,10 +36,10 @@ class MainFragment : Fragment() {
 //            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
         }
         btnIntentFragment.setOnClickListener {
-            switchFragmentBackStack<IntentFragment>(R.id.container, "title" to "Intent Fragment")
+//            switchFragmentBackStack<IntentFragment>(R.id.container, "title" to "Intent Fragment")
         }
         btnGetFile.setOnClickListener {
-            switchFragmentBackStack<GetFileFragment>(R.id.container, "title" to "Intent Fragment")
+//            switchFragmentBackStack<GetFileFragment>(R.id.container, "title" to "Intent Fragment")
         }
 
     }

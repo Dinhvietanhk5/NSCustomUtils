@@ -50,4 +50,6 @@ dependencies {
 
     // Get Image/Video
     implementation 'io.github.ParkSangGwon:tedimagepicker:1.2.8'
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
+
 }

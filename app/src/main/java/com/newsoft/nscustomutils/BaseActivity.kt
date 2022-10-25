@@ -16,11 +16,11 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     public fun switchFragment(mainFragment: MainFragment) {
-        switchFragment(R.id.container, mainFragment)
+//        switchFragment(R.id.container, mainFragment)
     }
 
     public fun switchFragment(mainFragment: MainFragment, isTaskBack: Boolean) {
-        switchFragment(R.id.container, mainFragment, isTaskBack)
+//        switchFragment(R.id.container, mainFragment, isTaskBack)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
