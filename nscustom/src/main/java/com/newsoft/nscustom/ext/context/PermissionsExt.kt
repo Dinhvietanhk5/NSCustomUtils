@@ -1,12 +1,12 @@
 package com.newsoft.nscustom.ext.context
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.newsoft.nscustom.R
 import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 import com.tbruyelle.rxpermissions3.Permission
@@ -17,7 +17,7 @@ import org.jetbrains.anko.newTask
 /**
  * Camera permission handler
  */
-fun AppCompatActivity.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Camera",
         permissions = arrayOf(Manifest.permission.CAMERA),
@@ -28,7 +28,7 @@ fun AppCompatActivity.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
 /**
  * Contacts permission handler
  */
-fun AppCompatActivity.handleReadContactsPermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleReadContactsPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Read Contacts",
         permissions = arrayOf(Manifest.permission.READ_CONTACTS),
@@ -39,7 +39,7 @@ fun AppCompatActivity.handleReadContactsPermission(onAccepted: (() -> Unit)? = n
 /**
  * NFC permission handler
  */
-fun AppCompatActivity.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "NFC",
         permissions = arrayOf(Manifest.permission.NFC),
@@ -50,7 +50,7 @@ fun AppCompatActivity.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
 /**
  * Audio permission handler
  */
-fun AppCompatActivity.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Record Audio",
         permissions = arrayOf(Manifest.permission.RECORD_AUDIO),
@@ -61,7 +61,7 @@ fun AppCompatActivity.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = n
 /**
  * Location permission handler
  */
-fun AppCompatActivity.handleFineLocationPermission(
+fun FragmentActivity.handleFineLocationPermission(
     onAccepted: (() -> Unit)? = null,
     onDenied: (() -> Unit)? = null,
     openSetting: (() -> Unit)? = null
@@ -78,7 +78,7 @@ fun AppCompatActivity.handleFineLocationPermission(
 /**
  * SMS permission handler
  */
-fun AppCompatActivity.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Send SMS",
         permissions = arrayOf(Manifest.permission.SEND_SMS),
@@ -89,7 +89,7 @@ fun AppCompatActivity.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) 
 /**
  * Read phone state permission handler
  */
-fun AppCompatActivity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Read Phone State",
         permissions = arrayOf(Manifest.permission.READ_PHONE_STATE),
@@ -100,7 +100,7 @@ fun AppCompatActivity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? =
 /**
  * Read phone state permission handler
  */
-fun AppCompatActivity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
         textPermission = "Call Phone State",
         permissions = arrayOf(Manifest.permission.CALL_PHONE),
@@ -111,7 +111,7 @@ fun AppCompatActivity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? =
 /**
  * Write Storage permission handler
  */
-fun AppCompatActivity.handleWriteStoragePermission(onAccepted: (() -> Unit)? = null) {
+fun FragmentActivity.handleWriteStoragePermission(onAccepted: (() -> Unit)? = null) {
     val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     handlePermission(
         "Write Storage",
@@ -120,7 +120,7 @@ fun AppCompatActivity.handleWriteStoragePermission(onAccepted: (() -> Unit)? = n
     )
 }
 
-fun AppCompatActivity.handlePermission(
+fun FragmentActivity.handlePermission(
     textPermission: String,
     vararg permissions: String,
     onAccepted: (() -> Unit)?,
@@ -145,7 +145,7 @@ fun AppCompatActivity.handlePermission(
 }
 
 
-private fun AppCompatActivity.onOpenDialogSetting(
+private fun FragmentActivity.onOpenDialogSetting(
     textPermission: String,
     openSetting: (() -> Unit)? = null
 ) {

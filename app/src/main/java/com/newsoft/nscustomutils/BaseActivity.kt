@@ -6,9 +6,10 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.newsoft.nscustom.ext.context.switchFragment
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 
 
-open class BaseActivity : AppCompatActivity() {
+open class BaseActivity : RxAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
