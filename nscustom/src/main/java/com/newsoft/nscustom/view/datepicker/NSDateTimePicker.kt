@@ -534,7 +534,7 @@ class NSDateTimePicker(
         private const val SET = 102
         private const val CANCEL = 103
 
-        fun convertDate(_date: String, fromFormat: String, toFormat: String): String {
+       private fun convertDate(_date: String, fromFormat: String, toFormat: String): String {
             var date = _date
             try {
                 var simpleDateFormat = SimpleDateFormat(fromFormat)
@@ -552,7 +552,7 @@ class NSDateTimePicker(
             return date
         }
 
-        fun pad(integerToPad: Int): String {
+      private  fun pad(integerToPad: Int): String {
             return if (integerToPad >= 10 || integerToPad < 0)
                 integerToPad.toString()
             else

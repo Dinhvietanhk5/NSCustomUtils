@@ -77,4 +77,5 @@
         <attr name="imageEmpty" format="reference|color" />
         <attr name="textEmpty" format="string" />
     </declare-styleable>
+
 </resources>

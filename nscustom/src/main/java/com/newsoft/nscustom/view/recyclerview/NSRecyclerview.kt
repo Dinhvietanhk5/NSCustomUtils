@@ -60,11 +60,11 @@ class NSRecyclerview : LinearLayout {
                 R.styleable.NSRecyclerview, 0, 0
             )
 
+
             val idImage = typedArray.getDrawable(R.styleable.NSRecyclerview_imageEmpty)
-            val textEmpty = typedArray.getString(R.styleable.NSRecyclerview_textEmpty) as String
+            val textEmpty = typedArray.getString(R.styleable.NSRecyclerview_textEmpty)
 
-
-            if (idImage != null || textEmpty.isNotEmpty()) {
+            if (idImage != null || textEmpty != null) {
                 viewEmpty!!.visibility = View.VISIBLE
                 imageEmpty?.setImageDrawable(idImage)
                 tvContentEmpty?.text = textEmpty

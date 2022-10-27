@@ -264,8 +264,11 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         type: RvLayoutManagerEnums = RvLayoutManagerEnums.LinearLayout_VERTICAL,
         countTest: Int = 0
     ) {
-        var layout: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        layout = when (type) {
+        recyclerView = nsRecyclerView.recyclerView
+        viewEmpty = nsRecyclerView.viewEmpty
+        swRefresh = nsRecyclerView.swRefresh
+
+        val layout = when (type) {
             RvLayoutManagerEnums.LinearLayout_VERTICAL -> LinearLayoutManager(context)
             RvLayoutManagerEnums.LinearLayout_HORIZONTAL -> LinearLayoutManager(
                 context,
@@ -285,9 +288,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
                 LinearLayout.VERTICAL
             )
         }
-        viewEmpty = nsRecyclerView.viewEmpty
-        swRefresh = nsRecyclerView.swRefresh
-        recyclerView = nsRecyclerView.recyclerView
 
         setRecyclerView(nsRecyclerView, layout, countTest)
     }
@@ -295,16 +295,17 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     fun setRecyclerView(
         nsRecyclerView: NSRecyclerview,
         layoutManager: RecyclerView.LayoutManager,
-        countTest: Int = 0
+        countTest: Int? = 0
     ) {
         viewEmpty = nsRecyclerView.viewEmpty
         swRefresh = nsRecyclerView.swRefresh
         recyclerView = nsRecyclerView.recyclerView
 
+
         viewEmpty?.let {
             this.viewEmpty = it
         }
-        setCountItemTest(countTest)
+        setCountItemTest(countTest!!)
         this.recyclerView = nsRecyclerView.recyclerView
         this.recyclerView!!.adapter = this
         this.recyclerView!!.layoutManager = layoutManager

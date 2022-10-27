@@ -9,30 +9,20 @@ import android.view.ViewGroup
 import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.fragment.*
 
-class MainFragment : Fragment() {
+class MainFragment : BaseFragment(R.layout.fragment) {
 
     var type = TypeConnectEnums.CONNECT
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate() {
         type = getDataExtras("type", TypeConnectEnums.CONNECT)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-//        requireActivity().checkHideKeyboardOnTouchScreen(view)
+    override fun onViewCreated(view: View) {
         Log.e("type", type.toString())
 
         btnIntentActivity.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            requireActivity().handleWriteStoragePermission {
+                Log.e("handleCameraPermission", " ")
+            }
 //            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
         }
         btnIntentFragment.setOnClickListener {

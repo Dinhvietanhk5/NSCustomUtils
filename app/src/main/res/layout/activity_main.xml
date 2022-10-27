@@ -30,11 +30,10 @@
     <!--        app:inputType="phone" />-->
 
 
-<!--    <FrameLayout-->
-<!--        android:id="@+id/container"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:visibility="gone" />-->
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"  />
 
 <!--    &lt;!&ndash;    <com.newsoft.nscustom.view.datepicker.NsDateView&ndash;&gt;-->
 <!--    &lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->

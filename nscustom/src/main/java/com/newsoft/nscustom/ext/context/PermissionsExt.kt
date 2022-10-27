@@ -1,11 +1,12 @@
 package com.newsoft.nscustom.ext.context
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.newsoft.nscustom.R
 import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
@@ -14,8 +15,9 @@ import com.tbruyelle.rxpermissions3.RxPermissions
 import org.jetbrains.anko.newTask
 
 
+//TODO ----------------------------------------------------------------- Activity ---------------------------------------------------------------------------------------------
 /**
- * Camera permission handler
+ * Camera Activity permission handler
  */
 fun FragmentActivity.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -26,7 +28,7 @@ fun FragmentActivity.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
 }
 
 /**
- * Contacts permission handler
+ * Contacts Activity permission handler
  */
 fun FragmentActivity.handleReadContactsPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -37,7 +39,7 @@ fun FragmentActivity.handleReadContactsPermission(onAccepted: (() -> Unit)? = nu
 }
 
 /**
- * NFC permission handler
+ * NFC Activity permission handler
  */
 fun FragmentActivity.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -48,7 +50,7 @@ fun FragmentActivity.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
 }
 
 /**
- * Audio permission handler
+ * Audio Activity permission handler
  */
 fun FragmentActivity.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -59,7 +61,7 @@ fun FragmentActivity.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = nu
 }
 
 /**
- * Location permission handler
+ * Location Activity permission handler
  */
 fun FragmentActivity.handleFineLocationPermission(
     onAccepted: (() -> Unit)? = null,
@@ -76,7 +78,7 @@ fun FragmentActivity.handleFineLocationPermission(
 }
 
 /**
- * SMS permission handler
+ * SMS Activity permission handler
  */
 fun FragmentActivity.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -87,7 +89,7 @@ fun FragmentActivity.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) {
 }
 
 /**
- * Read phone state permission handler
+ * Read phone state Activity permission handler
  */
 fun FragmentActivity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -98,7 +100,7 @@ fun FragmentActivity.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = 
 }
 
 /**
- * Read phone state permission handler
+ * Read phone state Activity permission handler
  */
 fun FragmentActivity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
     handlePermission(
@@ -109,7 +111,7 @@ fun FragmentActivity.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = 
 }
 
 /**
- * Write Storage permission handler
+ * Write Storage Activity permission handler
  */
 fun FragmentActivity.handleWriteStoragePermission(onAccepted: (() -> Unit)? = null) {
     val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -144,8 +146,141 @@ fun FragmentActivity.handlePermission(
         }
 }
 
+//TODO ----------------------------------------------------------------- Fragment ---------------------------------------------------------------------------------------------
 
-private fun FragmentActivity.onOpenDialogSetting(
+
+/**
+ * Camera Fragment permission handler
+ */
+fun Fragment.handleCameraPermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Camera",
+        permissions = arrayOf(Manifest.permission.CAMERA),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Contacts Fragment permission handler
+ */
+fun Fragment.handleReadContactsPermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Read Contacts",
+        permissions = arrayOf(Manifest.permission.READ_CONTACTS),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * NFC Fragment permission handler
+ */
+fun Fragment.handleNFCPermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "NFC",
+        permissions = arrayOf(Manifest.permission.NFC),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Audio Fragment permission handler
+ */
+fun Fragment.handleRecordAudioPermissions(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Record Audio",
+        permissions = arrayOf(Manifest.permission.RECORD_AUDIO),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Location Fragment permission handler
+ */
+fun Fragment.handleFineLocationPermission(
+    onAccepted: (() -> Unit)? = null,
+    onDenied: (() -> Unit)? = null,
+    openSetting: (() -> Unit)? = null
+) {
+    handlePermission(
+        "Vị trí",
+        permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+        onAccepted = onAccepted,
+        onDenied = onDenied,
+        openSetting = openSetting
+    )
+}
+
+/**
+ * SMS Fragment permission handler
+ */
+fun Fragment.handleSendSMSPermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Send SMS",
+        permissions = arrayOf(Manifest.permission.SEND_SMS),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Read phone state Fragment permission handler
+ */
+fun Fragment.handleReadPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Read Phone State",
+        permissions = arrayOf(Manifest.permission.READ_PHONE_STATE),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Read phone state Fragment permission handler
+ */
+fun Fragment.handleCallPhoneStatePermission(onAccepted: (() -> Unit)? = null) {
+    handlePermission(
+        textPermission = "Call Phone State",
+        permissions = arrayOf(Manifest.permission.CALL_PHONE),
+        onAccepted = onAccepted
+    )
+}
+
+/**
+ * Write Storage Fragment permission handler
+ */
+fun Fragment.handleWriteStoragePermission(onAccepted: (() -> Unit)? = null) {
+    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    handlePermission(
+        "Write Storage",
+        *permissions,
+        onAccepted = onAccepted,
+    )
+}
+
+fun Fragment.handlePermission(
+    textPermission: String,
+    vararg permissions: String,
+    onAccepted: (() -> Unit)?,
+    onDenied: (() -> Unit)? = null,
+    openSetting: (() -> Unit)? = null
+) {
+    RxPermissions(this)
+        .requestEachCombined(*permissions)
+        .subscribe { permission: Permission ->  // will emit 2 Permission objects
+            if (permission.granted) {
+                // `allow.name` được cấp!
+                onAccepted?.invoke()
+            } else if (permission.shouldShowRequestPermissionRationale) {
+                // Bị từ chối cho phép mà không hỏi lại lần nữa
+                onDenied?.invoke()
+            } else {
+                // Bị từ chối quyền với yêu cầu không bao giờ lặp lại
+                // Cần đi đến cài đặt
+                this.requireContext().onOpenDialogSetting(textPermission, openSetting)
+            }
+        }
+}
+
+
+private fun Context.onOpenDialogSetting(
     textPermission: String,
     openSetting: (() -> Unit)? = null
 ) {

@@ -38,14 +38,15 @@ class MainActivity : BaseActivity() {
 //        adapter.apply {
 //            setRecyclerView(rvList)
 //        }
+        switchFragmentBackStack(R.id.container,MainFragment())
 
-        btnNext.setOnClickListener {
-            handleWriteStoragePermission {
-                Log.e("handleCameraPermission", " ")
-            }
-
-
-        }
+//        btnNext.setOnClickListener {
+//            handleWriteStoragePermission {
+//                Log.e("handleCameraPermission", " ")
+//            }
+//
+//
+//        }
 
 
     }
