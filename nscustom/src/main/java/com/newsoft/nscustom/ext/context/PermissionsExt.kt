@@ -9,10 +9,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.newsoft.nscustom.R
+import com.newsoft.nscustom.ext.value.newTask
 import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 import com.tbruyelle.rxpermissions3.Permission
 import com.tbruyelle.rxpermissions3.RxPermissions
-import org.jetbrains.anko.newTask
 
 
 //TODO ----------------------------------------------------------------- Activity ---------------------------------------------------------------------------------------------
