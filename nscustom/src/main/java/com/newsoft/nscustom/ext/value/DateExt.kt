@@ -89,9 +89,9 @@ fun convertStringDateToDate(
 }
 
 // lấy thứ trong tuần
-fun getDayOfWeek(time: String): String {
+fun getDayOfWeek(time: String, formatDateIn: String): String {
     val calendar = Calendar.getInstance()
-    calendar.time = convertStringDateToDate(time = time)!!
+    calendar.time = convertStringDateToDate(time = time, formatDateIn)!!
     return calendar[Calendar.DAY_OF_WEEK].toString()
 }
 
@@ -132,7 +132,7 @@ fun setDateFaceBook(
                     .toTypedArray()
             if (time_total < 172800) // 1 ngày
                 textView.text = "hôm qua" else textView.text =
-                "Thứ " + getDayOfWeek(time) + ", " + Integer.valueOf(
+                "Thứ " + getDayOfWeek(time, formatDateIn) + ", " + Integer.valueOf(
                     day[0]
                 ) + " Thg " + +day[1].toInt()
 

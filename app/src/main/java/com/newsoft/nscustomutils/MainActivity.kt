@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.newsoft.nscustom.constants.DefaultsUtils
 import com.newsoft.nscustom.ext.context.*
+import com.newsoft.nscustom.ext.value.setDateFaceBook
 import com.tbruyelle.rxpermissions3.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -38,17 +40,16 @@ class MainActivity : BaseActivity() {
 //        adapter.apply {
 //            setRecyclerView(rvList)
 //        }
-        switchFragmentBackStack(R.id.container,MainFragment())
+//        switchFragmentBackStack(R.id.container,MainFragment())
 
 //        btnNext.setOnClickListener {
 //            handleWriteStoragePermission {
 //                Log.e("handleCameraPermission", " ")
 //            }
-//
-//
 //        }
+        setDateFaceBook(btnNext,"2022-10-18T17:50:53.242Z",DefaultsUtils.DATE_FORMAT_TIME_ZONE)
 
-
+        Log.e("MainActivity"," ")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,7 +57,6 @@ class MainActivity : BaseActivity() {
         if (resultCode == RESULT_FINISH_ACTIVITY) {
             val intet = data?.getIntExtra("intemnt", 0)
             Log.e("onActivityResultMain", " $resultCode $intet")
-
         }
     }
 }
