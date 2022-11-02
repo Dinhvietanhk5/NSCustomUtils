@@ -309,7 +309,6 @@ class NSEdittext @JvmOverloads constructor(
         isHintEnabled = isHintTextInputLayout
         gravity = mGravity
         setPadding(0, 0, 0, 0)
-
     }
 
 
@@ -326,7 +325,7 @@ class NSEdittext @JvmOverloads constructor(
 //        }
             val formatter: NumberFormat =
                 DecimalFormat("###,###,###,###,###,###,###,###,###,###,###")
-            var resp = formatter.format(number)
+            val resp = formatter.format(number)
 //            resp = resp.replace(".", ",")
             resp
         } catch (e: Exception) {
@@ -361,15 +360,9 @@ class NSEdittext @JvmOverloads constructor(
             var isValidate = false
             when (mInputType) {
                 Constant.TEXT_NOCHECK -> isValidate = true
-                Constant.TEXT_ALPHA -> isValidate = validateTor.isAlpha(
-                    text
-                )
-                Constant.TEXT_ALPHANUMERIC -> isValidate = validateTor.isAlphanumeric(
-                    text
-                )
-                Constant.TEXT_NUMERIC -> isValidate = validateTor.isNumeric(
-                    text
-                )
+                Constant.TEXT_ALPHA -> isValidate = validateTor.isAlpha(text)
+                Constant.TEXT_ALPHANUMERIC -> isValidate = validateTor.isAlphanumeric(text)
+                Constant.TEXT_NUMERIC -> isValidate = validateTor.isNumeric(text)
                 Constant.TEXT_NUMERIC_RANGE -> isValidate =
                     Utility.isNumericRangeValidator(editText, min, max)
                 Constant.TEXT_FLOAT_NUMERIC_RANGE -> isValidate =
@@ -377,27 +370,18 @@ class NSEdittext @JvmOverloads constructor(
                 Constant.TEXT_REGEXP -> isValidate =
                     Utility.isRegexpValidator(editText, customRegexp)
                 Constant.TEXT_CREDITCARD -> isValidate = Utility.isCreditCardValidator(editText)
-                Constant.TEXT_EMAIL -> isValidate = validateTor.isEmail(
-                    text
-                )
+                Constant.TEXT_EMAIL -> isValidate = validateTor.isEmail(text)
                 Constant.TEXT_PHONE -> isValidate = Utility.isPhone(editText) && text!!.length > 8
-                Constant.TEXT_DOMAINNAME -> isValidate = validateTor.isDecimal(
-                    text
-                )
-                Constant.TEXT_IPADDRESS -> isValidate = validateTor.isIPAddress(
-                    text
-                )
+                Constant.TEXT_DOMAINNAME -> isValidate = validateTor.isDecimal(text)
+                Constant.TEXT_IPADDRESS -> isValidate = validateTor.isIPAddress(text)
                 Constant.TEXT_PERSONNAME -> isValidate = Utility.isPersonNameValidator(editText)
                 Constant.TEXT_PERSONFULLNAME -> isValidate =
                     Utility.isPersonFullNameValidator(editText)
                 Constant.TEXT_WEBURL -> isValidate = Utility.isWebUrlValidator(editText)
                 Constant.TEXT_DATE -> isValidate = Utility.isDateValidator(editText)
-                Constant.TEXT_TEXT -> isValidate = !validateTor.isEmpty(
-                    text
-                )
-                Constant.TEXT_CONTAINS -> isValidate = validateTor.containsSubstring(
-                    text, strContains
-                )
+                Constant.TEXT_TEXT -> isValidate = !validateTor.isEmpty(text)
+                Constant.TEXT_CONTAINS -> isValidate =
+                    validateTor.containsSubstring(text, strContains)
                 Constant.TEXT_PASS -> {
 
                     if (!TextUtils.isEmpty(pass)) {

@@ -64,11 +64,21 @@ class NSRecyclerview : LinearLayout {
             val idImage = typedArray.getDrawable(R.styleable.NSRecyclerview_imageEmpty)
             val textEmpty = typedArray.getString(R.styleable.NSRecyclerview_textEmpty)
 
+            val paddingTop = typedArray.getDimension(R.styleable.NSRecyclerview_paddingTopRecyclerview,0f).toInt()
+            val paddingBottom = typedArray.getDimension(R.styleable.NSRecyclerview_paddingBottomRecyclerview,0f).toInt()
+            val paddingStart = typedArray.getDimension(R.styleable.NSRecyclerview_paddingStartRecyclerview,0f).toInt()
+            val paddingEnd = typedArray.getDimension(R.styleable.NSRecyclerview_paddingEndRecyclerview,0f).toInt()
+            val clipToPadding = typedArray.getBoolean(R.styleable.NSRecyclerview_clipToPaddingRecyclerview,true)
+
+            recyclerView!!.clipToPadding = clipToPadding
+            recyclerView!!.setPadding(paddingStart, paddingTop, paddingEnd, paddingBottom)
+
             if (idImage != null || textEmpty != null) {
                 viewEmpty!!.visibility = View.VISIBLE
                 imageEmpty?.setImageDrawable(idImage)
                 tvContentEmpty?.text = textEmpty
             }
+
             addView(viewRecyclerview)
 
         } catch (e: Exception) {

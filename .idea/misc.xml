@@ -5,6 +5,8 @@
       <map>
         <entry key="../../../../../../../../layout/custom_preview.xml" value="0.36096014492753625" />
         <entry key="../../../../../layout/custom_preview.xml" value="0.2867274569402229" />
+        <entry key="../../../../layout/custom_preview.xml" value="0.3596014492753623" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.397" />
         <entry key="app/src/main/res/layout/activity_intent.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.5635416666666667" />
         <entry key="app/src/main/res/layout/fragment.xml" value="0.37025641025641026" />
@@ -15,7 +17,9 @@
         <entry key="app/src/main/res/layout/item_view_empty.xml" value="0.5625" />
         <entry key="nscustom/src/main/res/drawable/selector_grey_rd4.xml" value="0.3415" />
         <entry key="nscustom/src/main/res/layout/cfalert_layout.xml" value="0.5635416666666667" />
+        <entry key="nscustom/src/main/res/layout/cfdialog_imageview_header.xml" value="0.5635416666666667" />
         <entry key="nscustom/src/main/res/layout/layout.xml" value="0.5635416666666667" />
+        <entry key="nscustom/src/main/res/layout/view_nsedt.xml" value="0.5625" />
         <entry key="nscustom/src/main/res/layout/view_recyclerview_utils.xml" value="0.5635416666666667" />
       </map>
     </option>
