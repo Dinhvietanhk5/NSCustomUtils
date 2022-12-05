@@ -2,6 +2,10 @@ package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -9,11 +13,12 @@ import android.view.View.OnTouchListener
 import android.widget.EditText
 import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.ByteArrayOutputStream
 
 
 class MainActivity : BaseActivity() {
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,20 +33,38 @@ class MainActivity : BaseActivity() {
 //            Log.e("handleFineLocationPermission", " 3 ")
 //        })
 //
-//        btnNext.setOnClickListener {
-////            switchFragmentUpDown(
-////                R.id.container,
-////                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
-////                true
-////            )
+        image.setOnClickListener {
+//            switchFragmentUpDown(
+//                R.id.container,
+//                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
+//                true
+//            )
 //            startActivityExt<IntentActivity>()
-////            finishActivityExt()
-//        }
+//            finishActivityExt()
+            Log.e("validate","${edt.validate()}")
 
-        val adapter = TestAdapter()
-        adapter.apply {
-            setRecyclerView(rvList, countTest = 200)
         }
+
+//        val imageStream = this.resources.openRawResource(R.raw.joda_atlantic_faroe)
+////        val b = BitmapFactory.decodeStream(imageStream)
+////
+////        val d: Drawable = BitmapDrawable(b)
+////
+////        val bitmapDrawable = d as BitmapDrawable
+////        val bitmap = bitmapDrawable.bitmap
+////        val stream = ByteArrayOutputStream()
+////        bitmap.compress(CompressFormat.PNG, 100, stream) //use the compression format of your need
+//
+//        val d = Drawable.createFromStream(imageStream, "res/raw/joda_atlantic_faroe")
+//
+//        image.setImageDrawable(d)
+//
+//
+//
+//        val adapter = TestAdapter()
+//        adapter.apply {
+//            setRecyclerView(rvList, countTest = 200)
+//        }
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0
@@ -80,20 +103,20 @@ class MainActivity : BaseActivity() {
 //        }
 //        setDateFaceBook(btnNext,"2022-10-18T17:50:53.242Z",DefaultsUtils.DATE_FORMAT_TIME_ZONE)
 
-        edt.setOnTouchListener(OnTouchListener { v, event ->
-            val DRAWABLE_LEFT = 0
-            val DRAWABLE_TOP = 1
-            val DRAWABLE_RIGHT = 2
-            val DRAWABLE_BOTTOM = 3
-            if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= edt.right - edt.compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
-                    // your action here
-                    Log.e("setDrawableRightTouch", " DRAWABLE_RIGHT")
-                    return@OnTouchListener true
-                }
-            }
-            false
-        })
+//        edt.setOnTouchListener(OnTouchListener { v, event ->
+//            val DRAWABLE_LEFT = 0
+//            val DRAWABLE_TOP = 1
+//            val DRAWABLE_RIGHT = 2
+//            val DRAWABLE_BOTTOM = 3
+//            if (event.action == MotionEvent.ACTION_UP) {
+//                if (event.rawX >= edt.right - edt.compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
+//                    // your action here
+//                    Log.e("setDrawableRightTouch", " DRAWABLE_RIGHT")
+//                    return@OnTouchListener true
+//                }
+//            }
+//            false
+//        })
 
         Log.e("MainActivity", " ")
     }

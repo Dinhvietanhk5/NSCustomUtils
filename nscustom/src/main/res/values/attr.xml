@@ -48,7 +48,7 @@
             <enum name="money" value="20" />
         </attr>
 
-        <attr name="errorText" format="string" />
+        <attr name="unit_number" format="string" />
         <attr name="custom_pattern" format="string" />
         <attr name="customRegexp" format="string" />
         <attr name="customFormat" format="string" />
@@ -58,7 +58,20 @@
         <attr name="maxNumber" format="integer" />
         <attr name="floatminNumber" format="float" />
         <attr name="floatmaxNumber" format="float" />
-        <attr name="hintInputLayoutEnabled" format="boolean" />
+
+        <attr name="errorBackground" format="reference|color" />
+        <attr name="errorPaddingStart" format="dimension" />
+        <attr name="errorPaddingEnd" format="dimension" />
+        <attr name="errorPaddingHorizontal" format="dimension" />
+        <attr name="errorPaddingTop" format="dimension" />
+        <attr name="errorText" format="string" />
+        <attr name="errorTextColor" format="reference|color" />
+        <attr name="errorTextSize" format="dimension" />
+        <attr name="errorTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
 
     </declare-styleable>
 
@@ -80,7 +93,7 @@
         <attr name="paddingBottomRecyclerview" format="dimension" />
         <attr name="paddingStartRecyclerview" format="dimension" />
         <attr name="paddingEndRecyclerview" format="dimension" />
-        <attr name="clipToPaddingRecyclerview" format="boolean"/>
+        <attr name="clipToPaddingRecyclerview" format="boolean" />
     </declare-styleable>
 
 </resources>

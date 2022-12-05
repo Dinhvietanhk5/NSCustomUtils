@@ -46,11 +46,21 @@
         app:clipToPaddingRecyclerview="false"
         app:paddingBottomRecyclerview="100dp" />
 
-    <EditText
+    <com.newsoft.nscustom.view.edittext.NSEdittext
         android:id="@+id/edt"
         android:layout_width="match_parent"
-        android:drawableEnd="@drawable/ic_launcher_background"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@color/grey"
+        android:fontFamily="@font/nunito_medium"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="12dp"
+        app:inputType="textEmpty" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/black" />
 
 
     <!--    <include-->

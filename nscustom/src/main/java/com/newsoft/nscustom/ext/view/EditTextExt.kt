@@ -1,8 +1,11 @@
 package com.newsoft.nscustom.ext.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import kotlinx.coroutines.*
@@ -74,5 +77,29 @@ fun EditText.doAfterTextChangedDelayed(delayMillis: Long = 500, input: (String) 
 
         override fun beforeTextChanged(cs: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(cs: CharSequence?, start: Int, before: Int, count: Int) {}
+    })
+}
+
+@SuppressLint("ClickableViewAccessibility")
+fun EditText.onClickDrawerEnd(listener: () -> Unit) {
+    setOnTouchListener(View.OnTouchListener { v, event ->
+        val DRAWABLE_LEFT = 0
+        val DRAWABLE_TOP = 1
+        val DRAWABLE_RIGHT = 2
+        val DRAWABLE_BOTTOM = 3
+        try {
+            if (this.compoundDrawables != null) {
+                if (event.action == MotionEvent.ACTION_UP) {
+                    if (event.rawX >= right - compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
+                        // your action here
+                        listener.invoke()
+                        return@OnTouchListener true
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        false
     })
 }

@@ -20,7 +20,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     RecyclerView.Adapter<VH>(),
     IViewHolder<T, VH> {
 
-    var items: ArrayList<T>?
+    var items: ArrayList<T>
     protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
@@ -56,7 +56,6 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         recyclerViewEventLoad?.let {
             it.index = index
         }
-        if (this.items == null)
             this.items = ArrayList()
 
         if (items == null || items.size == 0) {
@@ -76,7 +75,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 //            this.itemsCache = items
         } else {
 //            this.itemsCache!!.addAll(items)
-            this.items!!.addAll(items)
+            this.items.addAll(items)
         }
         notifyDataSetChanged()
         recyclerViewEventLoad?.setLoaded()
@@ -84,7 +83,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(item: T?) {
-        this.items!!.add(item!!)
+        this.items.add(item!!)
         notifyDataSetChanged()
     }
 
@@ -100,7 +99,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     fun getItems(position: Int): T {
-        return items!![position]
+        return items[position]
     }
 
     /**
@@ -110,13 +109,13 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     fun clearItem() {
         recyclerViewEventLoad?.let { it.index = 0 }
-        items?.let { it.clear() }
+        items.let { it.clear() }
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         try {
             viewHolder = holder
-            if (items!!.size > 0) onBindView(holder, items!![position], position, realCount())
+            if (items.size > 0) onBindView(holder, items[position], position, realCount())
             else if (countTest != 0)
                 onBindView(holder, null, position, realCount())
 
@@ -124,7 +123,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
                 holder.itemView.setOnClickListener {
                     mOnAdapterListener!!.onItemClick(
                         0,
-                        if (items!!.size > 0) items!![position] else null, position
+                        if (items.size > 0) items[position] else null, position
                     )
                 }
             }
@@ -144,7 +143,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     private fun realCount(): Int {
-        return if (items!!.size == 0) countTest else items!!.size
+        return if (items.size == 0) countTest else items.size
     }
 
     fun setView(layout: Int): View {

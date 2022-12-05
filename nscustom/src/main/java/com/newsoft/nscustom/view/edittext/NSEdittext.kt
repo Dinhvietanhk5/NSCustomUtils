@@ -3,71 +3,73 @@ package com.newsoft.nscustom.view.edittext
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.ColorFilter
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import androidx.core.content.res.ResourcesCompat
 import com.newsoft.nscustom.R
+import com.newsoft.nscustom.ext.view.onClickDrawerEnd
+import com.newsoft.nscustom.ext.view.onTextChangeListener
 import com.newsoft.nscustom.view.validatetor.ValidateTor
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
-import kotlin.Exception
 
 @SuppressLint("AppCompatCustomView")
-class NSEdittext @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : TextInputLayout(context, attrs, defStyleAttr) {
+class NSEdittext : LinearLayout {
 
-    var editText: TextInputEditText? = null
+
+    var editText: EditText? = null
+    var tvError: TextView? = null
+    var imvLeft: ImageView? = null
     var validateTor = ValidateTor()
-    private var mPaddingTop = 0f
-    private var mPaddingBottom = 0f
-    private var mPaddingStart = 0f
-    private var mPaddingEnd = 0f
-    private var mPaddingVertical = 0f
-    private var mPaddingHorizontal = 0f
-    private var mEtBg = 0
-    private var mEdtColorHint = 0
-    private var mFont: String? = null
-    private var mText: String? = ""
-    private var mHint: String? = ""
+
+    //
+//    private var mPaddingTop = 0f
+//    private var mPaddingBottom = 0f
+//    private var mPaddingStart = 0f
+//    private var mPaddingEnd = 0f
+//    private var mPaddingVertical = 0f
+//    private var mPaddingHorizontal = 0f
+//    private var mEtBg = 0
+//    private var mEdtColorHint = 0
+//    private var mFont: String? = null
+//    private var mText: String? = ""
+//    private var mHint: String? = ""
     private var mInputType = 0
-    private var mImeOptions = 0
-    private var mEdtStyle = 0
-    private var mGravity = 0
-    private var mEdtSize = 0
-    private var mEdtColor = 0
-    private var mEdtAllCaps = false
-    protected var emptyAllowed = false
-    protected var classType: String? = null
-    protected var customRegexp: String? = null
-    protected var customFormat: String? = null
-    protected var errorString: String? = null
-    protected var minNumber = 0
-    protected var maxNumber = 0
-    protected var floatminNumber = 0f
-    protected var floatmaxNumber = 0f
-    private var isHintTextInputLayout = false
+
+    //    private var mImeOptions = 0
+//    private var mEdtStyle = 0
+//    private var mGravity = 0
+//    private var mEdtSize = 0
+//    private var mEdtColor = 0
+//    private var mEdtAllCaps = false
+//    protected var emptyAllowed = false
+//    protected var classType: String? = null
+    protected var customRegexp = ""
+    protected var msgError = ""
+    private var mUnitMoney = "đ"
+//    protected var customFormat: String? = null
+//    protected var errorString: String? = null
+//    protected var minNumber = 0
+//    protected var maxNumber = 0
+//    protected var floatminNumber = 0f
+//    protected var floatmaxNumber = 0f
 
     //TODO: value validation
     private var min = 0
@@ -78,241 +80,345 @@ class NSEdittext @JvmOverloads constructor(
     var pass: String? = null
     private var imeOptionsListener: EdittextImeOptionsListener? = null
 
+
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        init(context!!, attrs)
+    }
+
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context!!, attrs)
+    }
+
     /**
      * init View
      *
      * @param attrs
      */
-    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
-        setWillNotDraw(false)
-        editText = TextInputEditText(getContext())
-        createEditBox(editText!!)
+    private fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.NSEdittext, 0, 0
         )
-        parseStyledAttributes(typedArray)
+        val view = LayoutInflater.from(context).inflate(R.layout.view_edittext, null, false)
+        editText = view.findViewById(R.id.edt)
+        tvError = view.findViewById(R.id.tvError)
+        imvLeft = view.findViewById(R.id.imvLeft)
 
-//        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//        if (imm.isAcceptingText) {
-//            Log.e("NSEdittext", "Software Keyboard was shown")
-//        } else {
-//            Log.e("NSEdittext", "Software Keyboard was not shown")
-//        }
-        setTextInputLayout()
-        setEditText()
+        initEditText(typedArray, context)
+        initTextErrorNotification(typedArray, context)
+
+        view.layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        addView(view)
+        setPadding(0, 0, 0, 0)
+        this.background = null
+        gravity = Gravity.CENTER_VERTICAL
+        orientation = VERTICAL
     }
 
-    @SuppressLint("RtlHardcoded")
-    private fun parseStyledAttributes(typedArray: TypedArray) {
+    @SuppressLint("ClickableViewAccessibility", "ResourceAsColor")
+    private fun initEditText(typedArray: TypedArray, context: Context) {
+
+        val mFont = typedArray.getResourceId(R.styleable.NSEdittext_android_fontFamily, 0)
+        var mTypeface: Typeface? = null
+        if (mFont != 0)
+            mTypeface = ResourcesCompat.getFont(context, mFont)
+
         mInputType =
             typedArray.getInt(R.styleable.NSEdittext_inputType, Constant.TEXT_NOCHECK)
-        mFont = typedArray.getString(R.styleable.NSEdittext_android_fontFamily)
-        mEdtColor = typedArray.getColor(
-            R.styleable.NSEdittext_android_textColor, resources.getColor(
-                R.color.black
-            )
+
+        val mEdtColor = typedArray.getColor(
+            R.styleable.NSEdittext_android_textColor,
+            resources.getColor(R.color.black)
         )
-        mHint = typedArray.getString(R.styleable.NSEdittext_android_hint)
-        mEdtColorHint = typedArray.getResourceId(
-            R.styleable.NSEdittext_android_textColorHint, -1
-        )
-        mImeOptions = typedArray.getInt(
-            R.styleable.NSEdittext_android_imeOptions,
-            EditorInfo.IME_ACTION_DONE
-        )
-        mEdtStyle = typedArray.getInt(R.styleable.NSEdittext_android_textStyle, 0)
-        mEdtAllCaps =
+        val mHint = typedArray.getString(R.styleable.NSEdittext_android_hint)
+        val mEdtColorHint =
+            typedArray.getResourceId(R.styleable.NSEdittext_android_textColorHint, -1)
+        val mImeOptions =
+            typedArray.getInt(R.styleable.NSEdittext_android_imeOptions, EditorInfo.IME_ACTION_DONE)
+        val mEdtStyle = typedArray.getInt(R.styleable.NSEdittext_android_textStyle, 0)
+        val mEdtAllCaps =
             typedArray.getBoolean(R.styleable.NSEdittext_android_textAllCaps, false)
-        isHintTextInputLayout =
-            typedArray.getBoolean(R.styleable.NSEdittext_hintInputLayoutEnabled, false)
-        mGravity = typedArray.getInt(
-            R.styleable.NSEdittext_android_gravity,
-            Gravity.LEFT
-        )
-        mEdtSize =
+        val mGravity = typedArray.getInt(R.styleable.NSEdittext_android_gravity, Gravity.LEFT)
+        val mEdtSize =
             typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_textSize, 36)
 
-//        mValidationType = NSEdittext.ValidationType.values()
+//       val mValidationType = NSEdittext.ValidationType.values()
 //                [typedArray.getInt(R.styleable.NSEdittext_pattern, 0)];
-        mEtBg = typedArray.getResourceId(R.styleable.NSEdittext_android_background, -1)
-        mText = typedArray.getString(R.styleable.NSEdittext_android_text)
+        val mEtBg = typedArray.getResourceId(R.styleable.NSEdittext_android_background, -1)
+        val mDrawableEnd = typedArray.getResourceId(R.styleable.NSEdittext_android_drawableEnd, -1)
+        val mText = typedArray.getString(R.styleable.NSEdittext_android_text)
 
-        mPaddingVertical = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingVertical, 0
-        ).toFloat()
-        mPaddingHorizontal = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingHorizontal, 0
-        ).toFloat()
+        val mPaddingVertical =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingVertical, 0)
+                .toFloat()
+        val mPaddingHorizontal =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingHorizontal, 0)
+                .toFloat()
 
-        mPaddingStart = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingStart, 0
-        ).toFloat()
-        mPaddingEnd = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingEnd, 0
-        ).toFloat()
-        mPaddingTop = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingTop, 0
-        ).toFloat()
-        mPaddingBottom = typedArray.getDimensionPixelSize(
-            R.styleable.NSEdittext_android_paddingBottom, 0
-        ).toFloat()
-        emptyAllowed = typedArray.getBoolean(R.styleable.NSEdittext_emptyAllowed, false)
-        classType = typedArray.getString(R.styleable.NSEdittext_classType)
-        customRegexp = typedArray.getString(R.styleable.NSEdittext_customRegexp)
-        errorString = typedArray.getString(R.styleable.NSEdittext_errorText)
-        //        mTextColorError = typedArray.getColor(R.styleable.NSEdittext_errorColor,
-//                getResources().getColor(R.color.red));
-        customFormat = typedArray.getString(R.styleable.NSEdittext_customFormat)
-        if (mInputType == Constant.TEXT_NUMERIC_RANGE) {
-            minNumber = typedArray.getInt(R.styleable.NSEdittext_minNumber, Int.MIN_VALUE)
-            maxNumber = typedArray.getInt(R.styleable.NSEdittext_maxNumber, Int.MAX_VALUE)
+        var mPaddingStart =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingStart, 0)
+                .toFloat()
+        var mPaddingEnd =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingEnd, 0).toFloat()
+        var mPaddingTop =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingTop, 0).toFloat()
+        var mPaddingBottom =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_paddingBottom, 0)
+                .toFloat()
+        customRegexp = typedArray.getString(R.styleable.NSEdittext_customRegexp).toString()
+
+        typedArray.getString(R.styleable.NSEdittext_unit_number)?.let {
+            mUnitMoney = it
         }
-        if (mInputType == Constant.TEXT_FLOAT_NUMERIC_RANGE) {
-            floatminNumber =
-                typedArray.getFloat(R.styleable.NSEdittext_floatminNumber, Float.MIN_VALUE)
-            floatmaxNumber =
-                typedArray.getFloat(R.styleable.NSEdittext_floatmaxNumber, Float.MAX_VALUE)
+
+        editText?.apply {
+            setTextColor(mEdtColor)
+            hint = mHint
+            setHintTextColor(mEdtColorHint)
+
+            imeOptions = mImeOptions
+            typeface = Typeface.defaultFromStyle(mEdtStyle)
+            gravity = mGravity
+
+
+            if (mEdtColorHint != -1) setHintTextColor(resources.getColor(mEdtColorHint))
+            if (mEdtSize > 0)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, mEdtSize.toFloat())
+            if (mText != null)
+                setText(if (mEdtAllCaps) mText.toUpperCase() else mText.toLowerCase())
+
+            mTypeface?.let {
+                typeface = mTypeface
+            }
+
+            if (mPaddingVertical != 0f) {
+                mPaddingTop = mPaddingVertical
+                mPaddingBottom = mPaddingVertical
+            }
+            if (mPaddingHorizontal != 0f) {
+                mPaddingStart = mPaddingHorizontal
+                mPaddingEnd = mPaddingHorizontal
+            }
+
+            setPadding(
+                mPaddingStart.toInt(),
+                mPaddingTop.toInt(),
+                mPaddingEnd.toInt(),
+                mPaddingBottom.toInt()
+            )
+
+            if (mEtBg != -1) {
+                ContextCompat.getDrawable(context, mEtBg)?.let {
+                    background = it
+                } ?: kotlin.run {
+                    setBackgroundColor(mEtBg)
+                }
+            }
+
+            setOnEditorActionListener { _: TextView?, actionId: Int, event: KeyEvent? ->
+                if (imeOptionsListener == null) return@setOnEditorActionListener false else {
+                    imeOptionsListener!!.onClick(actionId)
+                    return@setOnEditorActionListener true
+                }
+            }
+            setOnTouchListener { view: View?, motionEvent: MotionEvent? ->
+                showError(false)
+                false
+            }
+
+            if (mInputType != Constant.TEXT_PASS) {
+                drawerEndClickNotTypePass()
+            }
+
+            when (mInputType) {
+                Constant.TEXT_MONEY -> setTextTypeMoney(this)
+                Constant.TEXT_PASS -> setTextTypePass()
+                Constant.TEXT_PHONE -> inputType = InputType.TYPE_CLASS_PHONE
+                Constant.TEXT_EMAIL -> inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                Constant.TEXT_DATE -> inputType = InputType.TYPE_CLASS_DATETIME
+                Constant.TEXT_NUMERIC,
+                Constant.TEXT_NUMERIC_RANGE,
+                Constant.TEXT_FLOAT_NUMERIC_RANGE -> inputType = InputType.TYPE_CLASS_NUMBER
+                else -> inputType = InputType.TYPE_CLASS_TEXT
+            }
+
+            layoutParams = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            gravity = Gravity.CENTER_VERTICAL
+        }
+    }
+
+    private fun setTextTypeMoney(editText: EditText) {
+        var current = ""
+        var selectionEdt = 0
+
+        editText.apply {
+
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    if (s.toString().isNotEmpty() &&
+                        s.toString() != current &&
+                        Utility.isNumericValidator(this@apply)
+                    ) {
+                        var formatted = ""
+                        try {
+                            selectionEdt = selectionEnd
+
+                            removeTextChangedListener(this)
+                            formatted = formatTextMoney(s.toString())
+                            current = formatted
+                            setText(formatted)
+                            addTextChangedListener(this)
+                            setSelection(selectionEdt)
+                        } catch (e: Exception) {
+                            setSelection(formatted.length)
+                            e.printStackTrace()
+                        }
+                    }
+
+                    if (s.toString().isNotEmpty())
+                        showError(false)
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                }
+            })
+
+//            Log.e("isNumericValidator", "${Utility.isNumericValidator(this)}")
+
+            if (text.toString().isNotEmpty() && Utility.isNumericValidator(this)) {
+                val formatted = formatTextMoney(text.toString())
+                setText(formatted)
+            }
+            if (!Utility.isNumericValidator(this))
+                Log.e("NSEdittext", "error format number $text")
+            inputType = InputType.TYPE_CLASS_NUMBER
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setEditText() {
-        this.background = null
-        editText!!.setTextColor(mEdtColor)
-        if (!isHintTextInputLayout) editText!!.hint = mHint
-        editText!!.setHintTextColor(mEdtColorHint)
-        editText!!.imeOptions = mImeOptions
-        editText!!.typeface = Typeface.defaultFromStyle(mEdtStyle)
-        editText!!.gravity = mGravity
-
-        if (mGravity == Gravity.CENTER) {
-            mPaddingStart = 137f
-            mPaddingEnd = 137f
-        }
-
-        if (mEtBg != -1) {
-            @SuppressLint("UseCompatLoadingForDrawables") val drawable =
-                resources.getDrawable(mEtBg)
-            if (drawable != null) editText!!.background =
-                drawable else editText!!.setBackgroundColor(mEtBg)
-        }
-
-        if (mEdtColorHint != -1) editText!!.setHintTextColor(resources.getColor(mEdtColorHint))
-        if (mEdtSize > 0)
-            editText!!.setTextSize(TypedValue.COMPLEX_UNIT_PX, mEdtSize.toFloat())
-        if (mText != null)
-            editText!!.setText(if (mEdtAllCaps) mText!!.toUpperCase() else mText!!.toLowerCase())
-
-        if (mInputType != EditorInfo.TYPE_NULL)
-            when (mInputType) {
-                Constant.TEXT_PHONE -> editText!!.inputType = InputType.TYPE_CLASS_PHONE
-                Constant.TEXT_EMAIL -> editText!!.inputType =
-                    InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                Constant.TEXT_DATE -> editText!!.inputType = InputType.TYPE_CLASS_DATETIME
-                Constant.TEXT_PASS -> {
-                    this.isPasswordVisibilityToggleEnabled = true
-                    this.passwordVisibilityToggleContentDescription = "description"
-                    editText!!.inputType =
-                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+    private fun setTextTypePass() {
+        editText?.apply {
+            imvLeft!!.setImageResource(R.drawable.ic_pass_invisible)
+            imvLeft?.setOnClickListener {
+                if (transformationMethod == HideReturnsTransformationMethod.getInstance()) {
+                    transformationMethod = PasswordTransformationMethod.getInstance()
+                    imvLeft!!.setImageResource(R.drawable.ic_pass_invisible)
+                } else {
+                    imvLeft!!.setImageResource(R.drawable.ic_pass_visible)
+                    transformationMethod = HideReturnsTransformationMethod.getInstance()
                 }
-                Constant.TEXT_NUMERIC, Constant.TEXT_NUMERIC_RANGE, Constant.TEXT_FLOAT_NUMERIC_RANGE, Constant.TEXT_MONEY -> editText!!.inputType =
-                    InputType.TYPE_CLASS_NUMBER
-                else -> editText!!.inputType = InputType.TYPE_CLASS_TEXT
+            }
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+    }
+
+    private fun drawerEndClickNotTypePass() {
+        editText?.apply {
+            imvLeft?.setOnClickListener {
+                imvLeft?.visibility = View.GONE
+                setText("")
+                showError(false)
             }
 
-
-        if (mPaddingVertical != 0f) {
-            mPaddingTop = mPaddingVertical
-            mPaddingBottom = mPaddingVertical
+            onTextChangeListener(onTextChanged = { text ->
+                imvLeft?.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+            })
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility", "ResourceAsColor")
+    private fun initTextErrorNotification(
+        typedArray: TypedArray,
+        context: Context
+    ) {
+        val mText = typedArray.getString(R.styleable.NSEdittext_errorText)
+        val mColor = typedArray.getColor(
+            R.styleable.NSEdittext_errorTextColor,
+            resources.getColor(R.color.cfdialog_negative_button_color)
+        )
+        val mSize =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorTextSize, 36)
+        val mStyle = typedArray.getInt(R.styleable.NSEdittext_errorTextStyle, 0)
+
+        var mPaddingStart =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorPaddingStart, 0)
+                .toFloat()
+        var mPaddingEnd =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorPaddingEnd, 0)
+                .toFloat()
+        val mPaddingHorizontal =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorPaddingHorizontal, 0)
+                .toFloat()
+        val mPaddingTop =
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorPaddingTop, 0)
+                .toFloat()
+        val mBackground = typedArray.getResourceId(R.styleable.NSEdittext_errorBackground, -1)
         if (mPaddingHorizontal != 0f) {
             mPaddingStart = mPaddingHorizontal
             mPaddingEnd = mPaddingHorizontal
         }
 
-        editText!!.setPadding(
-            mPaddingStart.toInt(),
-            mPaddingTop.toInt(),
-            mPaddingEnd.toInt(),
-            mPaddingBottom.toInt()
-        )
+        tvError?.apply {
+            if (mText != null) text = mText
 
-        editText!!.setOnEditorActionListener { v: TextView?, actionId: Int, event: KeyEvent? ->
-            if (imeOptionsListener == null) return@setOnEditorActionListener false else {
-                imeOptionsListener!!.onClick(actionId)
-                return@setOnEditorActionListener true
-            }
-        }
-        editText!!.setOnTouchListener { view: View?, motionEvent: MotionEvent? ->
-            showError(false)
-            false
-        }
+            setTextColor(mColor)
 
-        var current = ""
-        var selectionEnd = 0
+            if (mSize > 0) setTextSize(TypedValue.COMPLEX_UNIT_PX, mSize.toFloat())
+            typeface = Typeface.defaultFromStyle(mStyle)
 
-        editText!!.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (mInputType == Constant.TEXT_MONEY) {
-                    if (s.toString().isNotEmpty() && s.toString() != current) {
-                        var formatted = ""
-                        try {
-                            selectionEnd = editText!!.selectionEnd
-
-                            editText!!.removeTextChangedListener(this)
-                            formatted = formatMoney(s.toString())
-                            current = formatted
-                            editText!!.setText(formatted)
-                            editText!!.addTextChangedListener(this)
-                            editText!!.setSelection(selectionEnd)
-                        } catch (e: Exception) {
-                            editText!!.setSelection(formatted.length)
-                            e.printStackTrace()
-                        }
-                    }
+            if (mBackground != -1) {
+                ContextCompat.getDrawable(context, mBackground)?.let {
+                    background = it
+                } ?: kotlin.run {
+                    setBackgroundColor(mBackground)
                 }
+            } else
+                background = null
 
-                if (s.toString().isNotEmpty())
-                    showError(false)
-            }
+            if (mPaddingStart.toInt() != 0 || mPaddingTop.toInt() != 0 || mPaddingEnd.toInt() != 0)
+                setPadding(
+                    mPaddingStart.toInt(),
+                    mPaddingTop.toInt(),
+                    mPaddingEnd.toInt(),
+                    0
+                )
 
-            override fun afterTextChanged(s: Editable) {
-            }
-        })
-
-        if (mInputType == Constant.TEXT_MONEY && editText!!.text.toString().isNotEmpty()) {
-            val formatted = formatMoney(editText!!.text.toString())
-            editText!!.setText(formatted)
+            layoutParams = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
 
-        if (mInputType != Constant.TEXT_PASS)
-            setEndIconOnClickListener {
-                editText!!.setText("")
-                showError(false)
-            }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setTextInputLayout() {
-        if (endIconMode != END_ICON_CUSTOM) endIconMode =
-            if (mInputType == Constant.TEXT_PASS) END_ICON_PASSWORD_TOGGLE else END_ICON_CLEAR_TEXT
-        isHintEnabled = isHintTextInputLayout
-        gravity = mGravity
-        setPadding(0, 0, 0, 0)
+        showError(false)
     }
 
 
-    fun formatMoney(s: String): String {
+    fun formatTextMoney(s: String): String {
         val cleanString = s.replace("[$,.]".toRegex(), "")
         val parsed = cleanString.toDouble()
         return formatNumber(parsed.toLong())
@@ -320,37 +426,41 @@ class NSEdittext @JvmOverloads constructor(
 
     private fun formatNumber(number: Long): String {
         return try {
-//        if (number < 0 && number > -1000 || number in 1..999999999) {
-//            return number.toString()
-//        }
             val formatter: NumberFormat =
                 DecimalFormat("###,###,###,###,###,###,###,###,###,###,###")
             val resp = formatter.format(number)
-//            resp = resp.replace(".", ",")
             resp
         } catch (e: Exception) {
             Log.e("formatNumber", e.message!!)
             "0"
-        }
+        } + " $mUnitMoney"
     }
-
 
     /**
      * set View
      */
     @SuppressLint("SetTextI18n")
     private fun showError(isShow: Boolean) {
-        isErrorEnabled = isShow
-        error = if (isShow) {
-            if (!TextUtils.isEmpty(errorString)) errorString else "Vui lòng nhập " + (if (TextUtils.isEmpty(
-                    text
-                )
-            ) "" else "lại ") + if (TextUtils.isEmpty(mHint)) "thông tin" else mHint!!.toLowerCase()
-        } else null
+        Log.e("showError", " $isShow")
+        if (isShow) {
+            var hintEdt = ""
+            editText?.let {
+                if (it.hint != null)
+                    hintEdt = it.hint.toString()
+            }
+
+            tvError?.apply {
+                text = msgError.ifEmpty {
+                    "Vui lòng nhập " + (if (this@NSEdittext.text!!.isEmpty()) "" else "lại ") + if (hintEdt.isEmpty()) "thông tin" else hintEdt.toLowerCase()
+                }
+                visibility = View.VISIBLE
+            }
+        } else
+            tvError?.visibility = View.GONE
     }
 
     fun reset() {
-//        tvError.setVisibility(GONE);
+        showError(false)
     }//TODO: true có lỗi, false ko lỗi
 
     // https://github.com/nisrulz/validatetor
@@ -386,7 +496,7 @@ class NSEdittext @JvmOverloads constructor(
 
                     if (!TextUtils.isEmpty(pass)) {
                         isValidate = text == pass
-                        if (!isValidate) errorString = "Mật khẩu không khớp !"
+                        if (!isValidate) msgError = "Mật khẩu không khớp !"
                     } else
                         isValidate = text!!.isNotEmpty()
 
@@ -424,7 +534,6 @@ class NSEdittext @JvmOverloads constructor(
     }
 
     fun setmImeOptions(mImeOptions: Int) {
-        this.mImeOptions = mImeOptions
         editText!!.imeOptions = mImeOptions
     }
 
@@ -466,51 +575,41 @@ class NSEdittext @JvmOverloads constructor(
             editText!!.setText(text)
         }
 
-    private fun createEditBox(editText: TextInputEditText) {
-        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        //        editText.setPadding(0,10,0,0);
-        editText.layoutParams = layoutParams
-        addView(editText)
-    }
+//    private fun createEditBox(editText: TextInputEditText) {
+//        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+//        //        editText.setPadding(0,10,0,0);
+//        editText.layoutParams = layoutParams
+//        addView(editText)
+//    }
 
-    override fun setError(error: CharSequence?) {
-        val defaultColorFilter = backgroundDefaultColorFilter
-        super.setError(error)
-        //Reset EditText's background color to default.
-        updateBackgroundColorFilter(defaultColorFilter)
-    }
+//    override fun setError(error: CharSequence?) {
+//        val defaultColorFilter = backgroundDefaultColorFilter
+//        super.setError(error)
+//        //Reset EditText's background color to default.
+//        updateBackgroundColorFilter(defaultColorFilter)
+//    }
 
-    override fun drawableStateChanged() {
-        val defaultColorFilter = backgroundDefaultColorFilter
-        super.drawableStateChanged()
-        //Reset EditText's background color to default.
-        updateBackgroundColorFilter(defaultColorFilter)
-    }
+//    override fun drawableStateChanged() {
+////        val defaultColorFilter = backgroundDefaultColorFilter
+//        super.drawableStateChanged()
+//        //Reset EditText's background color to default.
+////        updateBackgroundColorFilter(defaultColorFilter)
+//    }
 
-    private fun updateBackgroundColorFilter(colorFilter: ColorFilter?) {
-        if (getEditText() != null && getEditText()!!.background != null) getEditText()!!.background.colorFilter =
-            colorFilter
-    }
+//    private fun updateBackgroundColorFilter(colorFilter: ColorFilter?) {
+//        if (getEditText() != null && getEditText()!!.background != null) getEditText()!!.background.colorFilter =
+//            colorFilter
+//    }
 
-    private val backgroundDefaultColorFilter: ColorFilter?
-        private get() {
-            var defaultColorFilter: ColorFilter? = null
-            if (getEditText() != null && getEditText()!!.background != null) defaultColorFilter =
-                DrawableCompat.getColorFilter(
-                    getEditText()!!.background
-                )
-            return defaultColorFilter
-        }
+//    private val backgroundDefaultColorFilter: ColorFilter?
+//        private get() {
+//            var defaultColorFilter: ColorFilter? = null
+//            if (getEditText() != null && getEditText()!!.background != null) defaultColorFilter =
+//                DrawableCompat.getColorFilter(
+//                    getEditText()!!.background
+//                )
+//            return defaultColorFilter
+//        }
 
-    companion object {
-        @SuppressLint("NewApi")
-        fun showKeyboard(context: Context) {
-            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        }
-    }
 
-    init {
-        init(context, attrs, defStyleAttr)
-    }
 }
