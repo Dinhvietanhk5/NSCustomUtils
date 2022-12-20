@@ -155,7 +155,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * countTest == 0 viewEmpty VISIBLE & , recyclerView GONE
      * countTest != 0 viewEmpty GONE & , recyclerView VISIBLE
      */
-    private fun setCountItemTest(countTest: Int) {
+       fun setCountItemTest(countTest: Int) {
         this.countTest = countTest
         if (countTest != 0) {
             viewEmpty?.let { it.visibility = View.GONE }
