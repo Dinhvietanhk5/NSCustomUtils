@@ -42,9 +42,7 @@
     <com.newsoft.nscustom.view.recyclerview.NSRecyclerview
         android:id="@+id/rvList"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        app:clipToPaddingRecyclerview="false"
-        app:paddingBottomRecyclerview="100dp" />
+        android:layout_height="match_parent"  />
 
     <com.newsoft.nscustom.view.edittext.NSEdittext
         android:id="@+id/edt"
@@ -53,6 +51,7 @@
         android:background="@color/grey"
         android:fontFamily="@font/nunito_medium"
         android:paddingHorizontal="10dp"
+        android:visibility="gone"
         android:paddingVertical="12dp"
         app:inputType="textEmpty" />
 
@@ -60,6 +59,7 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:visibility="gone"
         android:background="@color/black" />
 
 

@@ -21,7 +21,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     IViewHolder<T, VH> {
 
     var items: ArrayList<T>
-    protected var itemsCache: ArrayList<T>? = null
+    //    protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
     private var context: Context? = null
@@ -53,37 +53,46 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      */
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: ArrayList<T>?, index: Int) {
-        recyclerViewEventLoad?.let {
-            it.index = index
-        }
-            this.items = ArrayList()
+        try {
+            recyclerViewEventLoad?.let {
+                it.index = index
+            }
 
-        if (items == null || items.size == 0) {
-            if (index <= 10)
-                setEmptyItems()
+            if (items == null || items.size == 0) {
+                if (index <= 10) setEmptyItems()
 //            recyclerViewEventLoad?.let {
 //                it.index = index - 10
 //            }
-            return
-        }
+                return
+            }
+            this.items = ArrayList()
 
-        viewEmpty?.let { it.visibility = View.GONE }
-        recyclerView?.let { it.visibility = View.VISIBLE }
+            viewEmpty?.let { it.visibility = View.GONE }
+            recyclerView?.let { it.visibility = View.VISIBLE }
 
-        if (index <= 11) {
-            this.items = items
+            if (index <= 11) {
+                this.items = items
 //            this.itemsCache = items
-        } else {
+            } else {
 //            this.itemsCache!!.addAll(items)
-            this.items.addAll(items)
+                this.items.addAll(items)
+            }
+            notifyDataSetChanged()
+            recyclerViewEventLoad?.setLoaded()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        notifyDataSetChanged()
-        recyclerViewEventLoad?.setLoaded()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItem(item: T?) {
-        this.items.add(item!!)
+    fun addItem(item: T) {
+        this.items.add(item)
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun addItems(items: ArrayList<T>) {
+        this.items.addAll(items)
         notifyDataSetChanged()
     }
 
@@ -155,7 +164,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
      * countTest == 0 viewEmpty VISIBLE & , recyclerView GONE
      * countTest != 0 viewEmpty GONE & , recyclerView VISIBLE
      */
-       fun setCountItemTest(countTest: Int) {
+    fun setCountItemTest(countTest: Int) {
         this.countTest = countTest
         if (countTest != 0) {
             viewEmpty?.let { it.visibility = View.GONE }
@@ -322,7 +331,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     ) {
         if (!isReload) {
             swRefresh?.apply {
-                isRefreshing=false
+                isRefreshing = false
                 isEnabled = false
             }
         }
@@ -359,7 +368,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     fun destroy() {
         try {
-            itemsCache?.clear()
+//            itemsCache?.clear()
             items?.clear()
             mOnAdapterListener = null
             viewHolder = null

@@ -61,10 +61,13 @@ class MainActivity : BaseActivity() {
 //
 //
 //
-//        val adapter = TestAdapter()
-//        adapter.apply {
-//            setRecyclerView(rvList, countTest = 200)
-//        }
+        val adapter = TestAdapter()
+        adapter.apply {
+            setRecyclerView(rvList, countTest = 200)
+            setLoadData{
+                Log.e("setLoadData"," ")
+            }
+        }
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0
