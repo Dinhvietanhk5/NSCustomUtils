@@ -21,6 +21,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     IViewHolder<T, VH> {
 
     var items: ArrayList<T>
+
     //    protected var itemsCache: ArrayList<T>? = null
     var mOnAdapterListener: OnAdapterListener<T>? = null
     var viewHolder: VH? = null
@@ -44,6 +45,15 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     fun requireContextAdapter(): Context {
         return context ?: throw IllegalStateException("Fragment $this not attached to a context.")
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItems(items: List<T>?, index: Int) {
+        try {
+            setItems(items as ArrayList<T>, index)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
