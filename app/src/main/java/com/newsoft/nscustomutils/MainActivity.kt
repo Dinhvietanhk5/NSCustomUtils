@@ -13,6 +13,7 @@ import android.view.View.OnTouchListener
 import android.widget.EditText
 import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_get_file.*
 import java.io.ByteArrayOutputStream
 
 
@@ -33,17 +34,17 @@ class MainActivity : BaseActivity() {
 //            Log.e("handleFineLocationPermission", " 3 ")
 //        })
 //
-        image.setOnClickListener {
-//            switchFragmentUpDown(
-//                R.id.container,
-//                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
-//                true
-//            )
-//            startActivityExt<IntentActivity>()
-//            finishActivityExt()
-            Log.e("validate","${edt.validate()}")
-
-        }
+//        image.setOnClickListener {
+////            switchFragmentUpDown(
+////                R.id.container,
+////                newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE),
+////                true
+////            )
+////            startActivityExt<IntentActivity>()
+////            finishActivityExt()
+//            Log.e("validate","${edt.validate()}")
+//
+//        }
 
 //        val imageStream = this.resources.openRawResource(R.raw.joda_atlantic_faroe)
 ////        val b = BitmapFactory.decodeStream(imageStream)
@@ -61,13 +62,13 @@ class MainActivity : BaseActivity() {
 //
 //
 //
-        val adapter = TestAdapter()
-        adapter.apply {
-            setRecyclerView(rvList, countTest = 200)
-            setLoadData{
-                Log.e("setLoadData"," ")
-            }
-        }
+//        val adapter = TestAdapter()
+//        adapter.apply {
+//            setRecyclerView(rvList, countTest = 200)
+//            setLoadData{
+//                Log.e("setLoadData"," ")
+//            }
+//        }
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0

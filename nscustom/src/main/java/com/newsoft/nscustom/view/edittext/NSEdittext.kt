@@ -63,7 +63,7 @@ class NSEdittext : LinearLayout {
 //    protected var classType: String? = null
     protected var customRegexp = ""
     protected var msgError = ""
-    private var mUnitMoney = "đ"
+    private var mUnitMoney = ""
 //    protected var customFormat: String? = null
 //    protected var errorString: String? = null
 //    protected var minNumber = 0
@@ -254,13 +254,14 @@ class NSEdittext : LinearLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            gravity = Gravity.CENTER_VERTICAL
         }
     }
 
     private fun setTextTypeMoney(editText: EditText) {
+        Log.e("setTextTypeMoney", " ")
         var current = ""
         var selectionEdt = 0
+        var formatted = ""
 
         editText.apply {
 
@@ -280,11 +281,7 @@ class NSEdittext : LinearLayout {
                     before: Int,
                     count: Int
                 ) {
-                    if (s.toString().isNotEmpty() &&
-                        s.toString() != current &&
-                        Utility.isNumericValidator(this@apply)
-                    ) {
-                        var formatted = ""
+                    if (s.toString().isNotEmpty() && s.toString() != current) {
                         try {
                             selectionEdt = selectionEnd
 
