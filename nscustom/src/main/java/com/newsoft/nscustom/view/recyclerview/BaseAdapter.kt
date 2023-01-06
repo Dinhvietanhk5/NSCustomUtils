@@ -75,7 +75,8 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 //            }
                 return
             }
-            this.items = ArrayList()
+            if (this.items == null)
+                this.items = ArrayList()
 
             viewEmpty?.let { it.visibility = View.GONE }
             recyclerView?.let { it.visibility = View.VISIBLE }
@@ -96,14 +97,22 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(item: T) {
-        this.items.add(item)
-        notifyDataSetChanged()
+        try {
+            this.items.add(item)
+            notifyDataSetChanged()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItems(items: ArrayList<T>) {
-        this.items.addAll(items)
-        notifyDataSetChanged()
+        try {
+            this.items.addAll(items)
+            notifyDataSetChanged()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
