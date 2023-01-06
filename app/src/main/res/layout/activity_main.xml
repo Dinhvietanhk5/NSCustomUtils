@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".TestActivity">
 
     <TextView
         android:id="@+id/btnNext"
@@ -39,27 +39,27 @@
     <!--    &lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->
     <!--    &lt;!&ndash;        android:layout_height="wrap_content" />&ndash;&gt;-->
 
-<!--    <com.newsoft.nscustom.view.recyclerview.NSRecyclerview-->
-<!--        android:id="@+id/rvList"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"  />-->
+    <!--    <com.newsoft.nscustom.view.recyclerview.NSRecyclerview-->
+    <!--        android:id="@+id/rvList"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"  />-->
 
-    <com.newsoft.nscustom.view.edittext.NSEdittext
-        android:id="@+id/edt"
+    <com.newsoft.nscustom.view.datepicker.NsDateView
+        android:id="@+id/btnDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/grey"
-        android:fontFamily="@font/nunito_medium"
         android:paddingHorizontal="10dp"
         android:paddingVertical="12dp"
-        app:inputType="money" />
+        app:typeForMat="monthOfYear"
+        app:dateForMat="MM/yyyy"/>
 
-<!--    <ImageView-->
-<!--        android:id="@+id/image"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:visibility="gone"-->
-<!--        android:background="@color/black" />-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/image"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="100dp"-->
+    <!--        android:visibility="gone"-->
+    <!--        android:background="@color/black" />-->
 
 
     <!--    <include-->

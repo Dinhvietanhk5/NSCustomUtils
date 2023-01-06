@@ -6,11 +6,14 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.DatePicker
+import android.widget.NumberPicker
 import android.widget.TextView
 import com.newsoft.nscustom.R
 import java.lang.reflect.Field
@@ -78,27 +81,66 @@ class NsDateView : TextView {
             when (type) {
                 0 -> pickDate()
                 1 -> pickTime()
-                2 -> datePickerDialog().show()
+                2 -> pickMonthOfYear(2)
+                3 -> pickMonthOfYear(3)
+                4 -> pickMonthOfYear(4)
             }
         }
     }
-
 
     fun setNsDateViewListener(listener: NsDateViewListener) {
         this.listener = listener
     }
 
-    private fun pickMonth() {
-        val dateDialog = DatePickerDialog(
-            context,
-            android.R.style.Theme_Holo_Light_Dialog,
-            datePickerListener,
-            calendar!![Calendar.YEAR],
-            calendar!![Calendar.MONTH],
-            calendar!![Calendar.DAY_OF_MONTH]
-        )
-        dateDialog.datePicker.minDate = Calendar.getInstance().timeInMillis
-        dateDialog.show()
+    // 2 month year, 3 month, 4 year
+    private fun pickMonthOfYear(type: Int) {
+        val dialog = LayoutInflater.from(context).inflate(R.layout.date_picker_dialog, null, false)
+        val monthPicker = dialog.findViewById<View>(R.id.picker_month) as NumberPicker
+        val yearPicker = dialog.findViewById<View>(R.id.picker_year) as NumberPicker
+
+        monthPicker.minValue = 1
+        monthPicker.maxValue = 12
+        monthPicker.value = calendar!!.get(Calendar.MONTH) + 1
+
+        if (type == 1) monthPicker.visibility = GONE
+
+        val year: Int = calendar!!.get(Calendar.YEAR)
+        yearPicker.minValue = year
+        yearPicker.maxValue = 2999
+        yearPicker.value = year
+
+        if (type == 3)
+            yearPicker.visibility = View.GONE
+        if (type == 4)
+            monthPicker.visibility = View.GONE
+
+        val builder = AlertDialog.Builder(context)
+        builder.setView(dialog)
+            .setPositiveButton("Ok") { dialog1: DialogInterface?, id: Int ->
+                when (type) {
+                    2 -> {
+                        calendar!![Calendar.YEAR] = yearPicker.value
+                        calendar!![Calendar.MONTH] = monthPicker.value - 1
+                        @SuppressLint("SimpleDateFormat")
+                        val sdf = SimpleDateFormat(dateFormat.replace("dd-", ""))
+                        val timezoneID = TimeZone.getDefault().id
+                        sdf.timeZone = TimeZone.getTimeZone(timezoneID)
+                        text = sdf.format(calendar!!.time).replace(" ", "")
+                    }
+                    3 -> {
+                        text = monthPicker.value.toString()
+                    }
+                    4 -> {
+                        text = yearPicker.value.toString()
+                    }
+                }
+                listener?.onListener()
+            }
+            .setNegativeButton("Cancel") { dialog, id ->
+                dialog.dismiss()
+            }
+        builder.create()
+        builder.show()
     }
 
     private fun pickDate() {
@@ -110,57 +152,6 @@ class NsDateView : TextView {
         )
         datePickerDialog.datePicker.minDate = Calendar.getInstance().timeInMillis
         datePickerDialog.show()
-    }
-
-    @SuppressLint("SetTextI18n")
-    fun datePickerDialog(): DatePickerDialog {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
-
-        // Date Picker Dialog
-        val datePickerDialog = DatePickerDialog(
-            context,
-            { view, year, monthOfYear, dayOfMonth ->
-//                date.text = "$dayOfMonth $monthOfYear, $year"
-            }, year, month, day
-        )
-
-        return datePickerDialog
-
-
-    }
-
-    private fun customDatePicker(): DatePickerDialog? {
-        Log.e("customDatePicker", " ")
-        val dpd = DatePickerDialog(
-            context, datePickerListener, calendar!![Calendar.YEAR],
-            calendar!![Calendar.MONTH],
-            calendar!![Calendar.DAY_OF_MONTH]
-        )
-        try {
-            val datePickerDialogFields: Array<Field> = dpd.javaClass.declaredFields
-            for (datePickerDialogField in datePickerDialogFields) {
-                if (datePickerDialogField.name.equals("mDatePicker")) {
-                    datePickerDialogField.isAccessible = true
-                    val datePicker = datePickerDialogField
-                        .get(dpd) as DatePicker
-                    val datePickerFields: Array<Field> = datePickerDialogField.type
-                        .declaredFields
-                    for (datePickerField in datePickerFields) {
-                        if ("mDayPicker" == datePickerField.name || "mDaySpinner" == datePickerField.name) {
-                            datePickerField.isAccessible = true
-                            var dayPicker = Any()
-                            dayPicker = datePickerField.get(datePicker)
-                            (dayPicker as View).visibility = View.GONE
-                        }
-                    }
-                }
-            }
-        } catch (ex: Exception) {
-        }
-        return dpd
     }
 
     private val datePickerListener =
@@ -182,7 +173,8 @@ class NsDateView : TextView {
 //        val mcurrentTime = Calendar.getInstance()
         val hour = calendar!![Calendar.HOUR_OF_DAY]
         val minute = calendar!![Calendar.MINUTE]
-        val theme = if (context.isDarkThemeOn()) AlertDialog.THEME_HOLO_DARK else AlertDialog.THEME_HOLO_LIGHT
+        val theme =
+            if (context.isDarkThemeOn()) AlertDialog.THEME_HOLO_DARK else AlertDialog.THEME_HOLO_LIGHT
         val mTimePicker =
             TimePickerDialog(
                 context,
