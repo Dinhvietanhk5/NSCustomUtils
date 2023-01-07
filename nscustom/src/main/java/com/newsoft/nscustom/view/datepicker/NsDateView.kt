@@ -30,6 +30,8 @@ class NsDateView : TextView {
     var type = 0 //TODO: 0 date, 1 hour
     var countStartDate = 0
     var defaultDate = false
+    var isPast = false
+    var minDate = 0L
     var isStart7Day = false
     var listener: NsDateViewListener? = null
 
@@ -51,6 +53,9 @@ class NsDateView : TextView {
         }
         typedArray.getBoolean(R.styleable.NsDateView_defaultDate, false).let {
             defaultDate = it
+        }
+        typedArray.getBoolean(R.styleable.NsDateView_isPast, false).let {
+            isPast = it
         }
 //        typedArray.getBoolean(R.styleable.NsDateView_start7Day, false).let {
 //            isStart7Day = it
@@ -90,6 +95,11 @@ class NsDateView : TextView {
 
     fun setNsDateViewListener(listener: NsDateViewListener) {
         this.listener = listener
+    }
+
+    fun setMinDatePickDialog(minDate: Long) {
+        isPast = true
+        this.minDate = minDate
     }
 
     // 2 month year, 3 month, 4 year
@@ -150,7 +160,10 @@ class NsDateView : TextView {
             calendar!![Calendar.MONTH],
             calendar!![Calendar.DAY_OF_MONTH]
         )
-        datePickerDialog.datePicker.minDate = Calendar.getInstance().timeInMillis
+        if (isPast) {
+            datePickerDialog.datePicker.minDate =
+                if (minDate != 0L) Calendar.getInstance().timeInMillis else minDate
+        }
         datePickerDialog.show()
     }
 
@@ -180,6 +193,7 @@ class NsDateView : TextView {
                 context,
                 theme, timePickerListener, hour, minute, true
             ) //Yes 24 hour time
+
         mTimePicker.show()
     }
 

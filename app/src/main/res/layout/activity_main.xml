@@ -51,7 +51,7 @@
         android:background="@color/grey"
         android:paddingHorizontal="10dp"
         android:paddingVertical="12dp"
-        app:typeForMat="monthOfYear"
+        app:typeForMat="date"
         app:dateForMat="MM/yyyy"/>
 
     <!--    <ImageView-->
