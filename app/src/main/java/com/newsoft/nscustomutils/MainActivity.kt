@@ -2,10 +2,6 @@ package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap.CompressFormat
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -14,7 +10,6 @@ import android.widget.EditText
 import com.newsoft.nscustom.ext.context.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_get_file.*
-import java.io.ByteArrayOutputStream
 
 
 class MainActivity : BaseActivity() {
@@ -69,6 +64,7 @@ class MainActivity : BaseActivity() {
 //                Log.e("setLoadData"," ")
 //            }
 //        }
+        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0
@@ -122,7 +118,6 @@ class MainActivity : BaseActivity() {
 //            false
 //        })
 
-        Log.e("MainActivity", " ")
     }
 
 

@@ -20,10 +20,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.newsoft.nscustom.R
-import com.newsoft.nscustom.ext.view.onClickDrawerEnd
 import com.newsoft.nscustom.ext.view.onTextChangeListener
 import com.newsoft.nscustom.view.validatetor.ValidateTor
 import java.text.DecimalFormat
@@ -79,6 +79,8 @@ class NSEdittext : LinearLayout {
     private var strContains: String? = null
     var pass: String? = null
     private var imeOptionsListener: EdittextImeOptionsListener? = null
+    private var maxMoney = 0L
+    private var msgMaxMoney = ""
 
 
     constructor(context: Context?) : super(context)
@@ -281,8 +283,21 @@ class NSEdittext : LinearLayout {
                     before: Int,
                     count: Int
                 ) {
+
+
                     if (s.toString().isNotEmpty() && s.toString() != current) {
                         try {
+                            val money = this@NSEdittext.text.toString().toLong()
+                            //TODO giới hạn tiền
+                            if (maxMoney != 0L && money > maxMoney) {
+                                if (msgMaxMoney.isNotEmpty())
+                                    Toast.makeText(context, msgMaxMoney, Toast.LENGTH_LONG).show()
+                                formatted = formatNumber(maxMoney)
+                                current = formatted
+                                setText(formatted)
+                                return
+                            }
+
                             selectionEdt = selectionEnd
 
                             removeTextChangedListener(this)
@@ -520,6 +535,11 @@ class NSEdittext : LinearLayout {
 
     fun validate(): Boolean {
         return isCheckValidate
+    }
+
+    fun setMaxMoney(maxMoney: Long, msgMaxMoney: String = "") {
+        this.maxMoney = maxMoney
+        this.msgMaxMoney = msgMaxMoney
     }
 
     fun setImeOptionsListener(imeOptionsListener: EdittextImeOptionsListener?) {
