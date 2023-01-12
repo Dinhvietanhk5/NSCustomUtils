@@ -9,6 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Base64
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
@@ -210,20 +211,15 @@ fun String.IsoDateToObject(): Date {
     }
 }
 
-fun formatString(number1: String): String? {
+fun formatStringNumBer(number: Long, share: String = ","): String? {
     return try {
-        if (number1.length >= 4) {
-            val number = number1.toDouble()
-            if (number < 0 && number > -1000 || number > 0 && number < 1000) {
-                return number.toString()
-            }
-            val formatter: NumberFormat = DecimalFormat("###,###")
-            var resp = formatter.format(number)
-            resp = resp.replace(",".toRegex(), ".")
-            resp
-        } else number1
-    } catch (e: java.lang.Exception) {
-        ""
+        val formatter =
+            DecimalFormat("###$share###$share###$share###$share###$share###$share###$share###$share###$share###$share###")
+        val resp = formatter.format(number)
+        resp
+    } catch (e: Exception) {
+        Log.e("formatNumber", e.message!!)
+        "0"
     }
 }
 

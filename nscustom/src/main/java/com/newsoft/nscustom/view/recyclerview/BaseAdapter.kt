@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.newsoft.nscustom.ext.view.setOnClickBounceEffect
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.IViewHolder
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.OnAdapterListener
 import com.newsoft.nscustom.view.recyclerview.interface_adapter.RecyclerViewLoadMoreListener
@@ -33,8 +34,9 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     private var swRefresh: SwipeRefreshLayout? = null
     private var countTest = 0
     private var parent: ViewGroup? = null
-    var isItemView = false //TODO: false itemview click, true không phải itemview click
+    private var isItemView = false //TODO: false itemview click, true không phải itemview click
     private var isReload = true  //TODO: false khong reload, true reload
+    private var isBounceEffect = false
 
     /**
      * init Adapter
@@ -96,9 +98,12 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItem(item: T) {
+    fun addItem(item: T, index: Int = -1) {
         try {
-            this.items.add(item)
+            if (index == -1)
+                this.items.add(item)
+            else
+                this.items.add(index, item)
             notifyDataSetChanged()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -106,9 +111,12 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItems(items: ArrayList<T>) {
+    fun addItems(items: ArrayList<T>, index: Int = -1) {
         try {
-            this.items.addAll(items)
+            if (index == -1)
+                this.items.addAll(items)
+            else
+                this.items.addAll(index, items)
             notifyDataSetChanged()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -140,6 +148,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
         items.let { it.clear() }
     }
 
+
     override fun onBindViewHolder(holder: VH, position: Int) {
         try {
             viewHolder = holder
@@ -147,13 +156,17 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
             else if (countTest != 0)
                 onBindView(holder, null, position, realCount())
 
+            val checkNullItem = if (items.size > 0) items[position] else null
+
             if (mOnAdapterListener != null && !isItemView) {
-                holder.itemView.setOnClickListener {
-                    mOnAdapterListener!!.onItemClick(
-                        0,
-                        if (items.size > 0) items[position] else null, position
-                    )
-                }
+                if (isBounceEffect)
+                    holder.itemView.setOnClickBounceEffect {
+                        mOnAdapterListener!!.onItemClick(0, checkNullItem, position)
+                    }
+                else
+                    holder.itemView.setOnClickListener {
+                        mOnAdapterListener!!.onItemClick(0, checkNullItem, position)
+                    }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -365,6 +378,14 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
 
     fun disableReload() {
         isReload = false
+    }
+
+    fun setItemView(isItemView: Boolean) {
+        this.isItemView = isItemView
+    }
+
+    fun setBounceEffect(isBounceEffect: Boolean) {
+        this.isBounceEffect = isBounceEffect
     }
 
     /**

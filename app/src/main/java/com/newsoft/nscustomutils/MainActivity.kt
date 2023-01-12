@@ -60,11 +60,14 @@ class MainActivity : BaseActivity() {
 //        val adapter = TestAdapter()
 //        adapter.apply {
 //            setRecyclerView(rvList, countTest = 200)
-//            setLoadData{
-//                Log.e("setLoadData"," ")
+//            setOnAdapterListener { id, item, pos ->
+//                Log.e("setOnAdapterListener", " ")
+//            }
+//            setLoadData {
+//                Log.e("setLoadData", " ")
 //            }
 //        }
-        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
+//        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0
