@@ -72,6 +72,7 @@ class NSEdittext : LinearLayout {
 //    protected var floatmaxNumber = 0f
 
     //TODO: value validation
+    private var moneyFormatCharacter = 0
     private var min = 0
     private var max = 0
     private var floatmin = 0f
@@ -376,6 +377,7 @@ class NSEdittext : LinearLayout {
         val mSize =
             typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorTextSize, 36)
         val mStyle = typedArray.getInt(R.styleable.NSEdittext_errorTextStyle, 0)
+        moneyFormatCharacter = typedArray.getInt(R.styleable.NSEdittext_moneyFormatCharacter, 0)
 
         var mPaddingStart =
             typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorPaddingStart, 0)
@@ -440,7 +442,9 @@ class NSEdittext : LinearLayout {
         return try {
             val formatter: NumberFormat =
                 DecimalFormat("###,###,###,###,###,###,###,###,###,###,###")
-            val resp = formatter.format(number)
+            var resp = formatter.format(number)
+            if (moneyFormatCharacter == 1)
+                resp = resp.replace(".", ",")
             resp
         } catch (e: Exception) {
             Log.e("formatNumber", e.message!!)

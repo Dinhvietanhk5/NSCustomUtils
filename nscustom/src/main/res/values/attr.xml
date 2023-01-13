@@ -72,6 +72,10 @@
             <flag name="bold" value="1" />
             <flag name="italic" value="2" />
         </attr>
+        <attr name="moneyFormatCharacter">
+            <flag name="dots" value="0" />
+            <flag name="comma" value="1" />
+        </attr>
 
     </declare-styleable>
 

@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
 import com.newsoft.nscustom.ext.context.*
+import com.newsoft.nscustom.ext.value.formatStringNumBer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_get_file.*
 
@@ -55,6 +56,7 @@ class MainActivity : BaseActivity() {
 //
 //        image.setImageDrawable(d)
 //
+        Log.e("formatStringNumBer","${formatStringNumBer(10000L ,".")}")
 //
 //
 //        val adapter = TestAdapter()

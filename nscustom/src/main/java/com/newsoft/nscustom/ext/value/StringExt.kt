@@ -214,8 +214,10 @@ fun String.IsoDateToObject(): Date {
 fun formatStringNumBer(number: Long, share: String = ","): String? {
     return try {
         val formatter =
-            DecimalFormat("###$share###$share###$share###$share###$share###$share###$share###$share###$share###$share###")
-        val resp = formatter.format(number)
+            DecimalFormat("###,###,###,###,###,###,###,###,###,###,###")
+        var resp = formatter.format(number)
+        if (share == ",")
+            resp = resp.replace(".", ",")
         resp
     } catch (e: Exception) {
         Log.e("formatNumber", e.message!!)
