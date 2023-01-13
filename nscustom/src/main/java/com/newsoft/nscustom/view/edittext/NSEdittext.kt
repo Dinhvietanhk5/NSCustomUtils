@@ -97,6 +97,21 @@ class NSEdittext : LinearLayout {
         init(context!!, attrs)
     }
 
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int,
+        defStyleRes: Int
+    ) : super(
+        context,
+        attrs,
+        defStyle,
+        defStyleRes
+    ) {
+        init(context, attrs)
+    }
+
+
     /**
      * init View
      *
@@ -264,7 +279,9 @@ class NSEdittext : LinearLayout {
         Log.e("setTextTypeMoney", " ")
         var current = ""
         var selectionEdt = 0
+        var money = 0L
         var formatted = ""
+        var isLimitMoney = false
 
         editText.apply {
 
@@ -284,37 +301,48 @@ class NSEdittext : LinearLayout {
                     before: Int,
                     count: Int
                 ) {
+                    try {
+                        if (s.toString().isNotEmpty() && s.toString() != current) {
+                            try {
+                                money = this@NSEdittext.text.toString().toLong()
+                                //TODO giới hạn tiền
+                                if (maxMoney != 0L && money > maxMoney) {
 
+                                    if (msgMaxMoney.isNotEmpty()) {
+                                        msgError = msgMaxMoney
+                                        showError(true)
+                                        isLimitMoney = true
+                                    }
+                                    formatted = formatNumber(maxMoney)
+                                    current = formatted
+                                    setText(formatted)
+                                    return
+                                }
 
-                    if (s.toString().isNotEmpty() && s.toString() != current) {
-                        try {
-                            val money = this@NSEdittext.text.toString().toLong()
-                            //TODO giới hạn tiền
-                            if (maxMoney != 0L && money > maxMoney) {
-                                if (msgMaxMoney.isNotEmpty())
-                                    Toast.makeText(context, msgMaxMoney, Toast.LENGTH_LONG).show()
-                                formatted = formatNumber(maxMoney)
+                                selectionEdt = selectionEnd
+
+                                removeTextChangedListener(this)
+                                formatted = formatTextMoney(s.toString())
                                 current = formatted
                                 setText(formatted)
-                                return
+                                addTextChangedListener(this)
+                                setSelection(selectionEdt)
+                            } catch (e: Exception) {
+                                setSelection(formatted.length)
+                                e.printStackTrace()
                             }
-
-                            selectionEdt = selectionEnd
-
-                            removeTextChangedListener(this)
-                            formatted = formatTextMoney(s.toString())
-                            current = formatted
-                            setText(formatted)
-                            addTextChangedListener(this)
-                            setSelection(selectionEdt)
-                        } catch (e: Exception) {
-                            setSelection(formatted.length)
-                            e.printStackTrace()
                         }
-                    }
 
-                    if (s.toString().isNotEmpty())
-                        showError(false)
+                        if (s.toString().isEmpty() || money < maxMoney) {
+                            msgError = ""
+                            isLimitMoney = false
+                        }
+
+                        val errorMoney = s.toString().isNotEmpty() && !isLimitMoney
+                        showError(!errorMoney)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
                 override fun afterTextChanged(s: Editable) {

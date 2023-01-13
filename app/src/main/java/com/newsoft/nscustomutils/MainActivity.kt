@@ -56,7 +56,7 @@ class MainActivity : BaseActivity() {
 //
 //        image.setImageDrawable(d)
 //
-        Log.e("formatStringNumBer","${formatStringNumBer(10000L ,".")}")
+//        Log.e("formatStringNumBer","${formatStringNumBer(10000L ,".")}")
 //
 //
 //        val adapter = TestAdapter()
@@ -69,7 +69,11 @@ class MainActivity : BaseActivity() {
 //                Log.e("setLoadData", " ")
 //            }
 //        }
-//        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
+        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
+
+        btnNext.setOnClickListener {
+            edtMoney.validate()
+        }
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0
