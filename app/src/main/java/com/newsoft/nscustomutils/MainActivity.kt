@@ -2,13 +2,17 @@ package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color.red
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import com.newsoft.nscustom.ext.context.*
 import com.newsoft.nscustom.ext.value.formatStringNumBer
+import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_get_file.*
 
@@ -69,11 +73,36 @@ class MainActivity : BaseActivity() {
 //                Log.e("setLoadData", " ")
 //            }
 //        }
-        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
+//        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
+//
+//        btnNext.setOnClickListener {
+//            edtMoney.validate()
+//        }
 
-        btnNext.setOnClickListener {
-            edtMoney.validate()
-        }
+
+        val builder = CFAlertDialog.Builder(this)
+            .setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET)
+            .addButton(
+                "Resend request",
+                ContextCompat.getColor(this, R.color.purple_500),
+                ContextCompat.getColor(this, R.color.teal_700),
+                R.style.Dialog,
+                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+            ) { dialog, which ->
+                dialog.dismiss()
+            }.addButton(
+                "Resend request",
+                ContextCompat.getColor(this, R.color.purple_500),
+                ContextCompat.getColor(this, R.color.teal_700),
+                R.style.Dialog2,
+                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+            ) { dialog, which ->
+                dialog.dismiss()
+            }
+
+        builder.show()
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0

@@ -206,6 +206,10 @@ public class CFAlertDialog extends AppCompatDialog {
             setMessageColor(params.textColor);
         }
 
+        // Text Style
+        dialogTitleTextView.setTextAppearance(params.textStyleTitle);
+        dialogMessageTextView.setTextAppearance(params.textStyleMsg);
+
         // Cancel
         setCancelable(params.cancelable);
 
@@ -626,6 +630,8 @@ public class CFAlertDialog extends AppCompatDialog {
 
         // Button text colors
         button.setTextColor(actionButton.textColor);
+        if (actionButton.styleButton != -1)
+            button.setTextAppearance(actionButton.styleButton);
     }
 
     public void setItems(String[] items, final OnClickListener onClickListener) {
@@ -999,8 +1005,8 @@ public class CFAlertDialog extends AppCompatDialog {
             return this;
         }
 
-        public Builder addButton(String buttonText, @ColorInt int textColor, @ColorInt int backgroundColor, CFAlertActionStyle style, CFAlertActionAlignment alignment, OnClickListener onClickListener) {
-            CFAlertActionButton button = new CFAlertActionButton(this.params.context, buttonText, textColor, backgroundColor, style, alignment, onClickListener);
+        public Builder addButton(String buttonText, @ColorInt int textColor, @ColorInt int backgroundColor, @ColorInt int styleButton, CFAlertActionStyle style, CFAlertActionAlignment alignment, OnClickListener onClickListener) {
+            CFAlertActionButton button = new CFAlertActionButton(this.params.context, buttonText, textColor, backgroundColor, styleButton, style, alignment, onClickListener);
             this.params.buttons.add(button);
             return this;
         }
@@ -1096,6 +1102,9 @@ public class CFAlertDialog extends AppCompatDialog {
         private CharSequence message, title;
         private @ColorInt
         int textColor = -1;
+        int textStyleButton = R.style.CFDialog_Button;
+        int textStyleTitle = R.style.CFDialog_Title;
+        int textStyleMsg = R.style.CFDialog_Message;
         private int theme = R.style.CFDialog,
                 textGravity = Gravity.LEFT,
                 iconDrawableId = -1,
@@ -1136,17 +1145,19 @@ public class CFAlertDialog extends AppCompatDialog {
         private String buttonText;
         private OnClickListener onClickListener;
         private int textColor = -1;
+        private int styleButton = -1;
         private CFAlertActionStyle style;
         private CFAlertActionAlignment alignment = CFAlertActionAlignment.JUSTIFIED;
         private int backgroundColor = -1;
         private int backgroundDrawableId = -1;
 
-        public CFAlertActionButton(Context context, String buttonText, @ColorInt int textColor, @ColorInt int backgroundColor, CFAlertActionStyle style, CFAlertActionAlignment alignment, OnClickListener onClickListener) {
+        public CFAlertActionButton(Context context, String buttonText, @ColorInt int textColor, @ColorInt int backgroundColor, @ColorInt int styleButton, CFAlertActionStyle style, CFAlertActionAlignment alignment, OnClickListener onClickListener) {
             this.context = context;
             this.buttonText = buttonText;
             this.textColor = textColor;
             this.backgroundColor = backgroundColor;
             this.style = style;
+            this.styleButton = styleButton;
             this.backgroundDrawableId = getBackgroundDrawable(style);
             this.alignment = alignment;
             this.onClickListener = onClickListener;

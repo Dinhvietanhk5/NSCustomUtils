@@ -52,6 +52,7 @@ class NSEdittext : LinearLayout {
 //    private var mText: String? = ""
 //    private var mHint: String? = ""
     private var mInputType = 0
+    private var mEdtSize = 0
 
     //    private var mImeOptions = 0
 //    private var mEdtStyle = 0
@@ -165,7 +166,7 @@ class NSEdittext : LinearLayout {
         val mEdtAllCaps =
             typedArray.getBoolean(R.styleable.NSEdittext_android_textAllCaps, false)
         val mGravity = typedArray.getInt(R.styleable.NSEdittext_android_gravity, Gravity.LEFT)
-        val mEdtSize =
+        mEdtSize =
             typedArray.getDimensionPixelSize(R.styleable.NSEdittext_android_textSize, 36)
 
 //       val mValidationType = NSEdittext.ValidationType.values()
@@ -403,7 +404,7 @@ class NSEdittext : LinearLayout {
             resources.getColor(R.color.cfdialog_negative_button_color)
         )
         val mSize =
-            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorTextSize, 36)
+            typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorTextSize, mEdtSize)
         val mStyle = typedArray.getInt(R.styleable.NSEdittext_errorTextStyle, 0)
         moneyFormatCharacter = typedArray.getInt(R.styleable.NSEdittext_moneyFormatCharacter, 0)
 
@@ -623,6 +624,10 @@ class NSEdittext : LinearLayout {
         set(text) {
             editText!!.setText(text)
         }
+
+    public fun setTextEdt(text: String) {
+        editText?.setText(text)
+    }
 
 //    private fun createEditBox(editText: TextInputEditText) {
 //        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)

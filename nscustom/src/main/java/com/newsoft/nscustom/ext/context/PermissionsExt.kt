@@ -294,7 +294,7 @@ private fun Context.onOpenDialogSetting(
                 this,
                 R.color.cfdialog_positive_button_color
             ),
-            ContextCompat.getColor(this, R.color.bg_btn_asset),
+            ContextCompat.getColor(this, R.color.bg_btn_asset),0,
             CFAlertDialog.CFAlertActionStyle.NEGATIVE,
             CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
         ) { dialog, which ->
@@ -310,7 +310,7 @@ private fun Context.onOpenDialogSetting(
         .addButton(
             "Hủy",
             ContextCompat.getColor(this, R.color.black),
-            ContextCompat.getColor(this, R.color.bg_btn_asset),
+            ContextCompat.getColor(this, R.color.bg_btn_asset),0,
             CFAlertDialog.CFAlertActionStyle.NEGATIVE,
             CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
         ) { dialog, which ->
