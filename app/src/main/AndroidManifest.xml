@@ -32,9 +32,9 @@
         android:theme="@style/Theme.NSCustomUtils">
 
 
-        <!--        <activity-->
-        <!--            android:name=".MainActivity"-->
-        <!--            android:exported="false" />-->
+        <activity
+            android:name=".IntentActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

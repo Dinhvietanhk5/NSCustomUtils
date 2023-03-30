@@ -34,7 +34,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     private var swRefresh: SwipeRefreshLayout? = null
     private var countTest = 0
     private var parent: ViewGroup? = null
-    private var isItemView = false //TODO: false itemview click, true không phải itemview click
+      private var isItemView = false //TODO: false itemview click, true không phải itemview click
     private var isReload = true  //TODO: false khong reload, true reload
     private var isBounceEffect = false
 
@@ -387,6 +387,7 @@ abstract class BaseAdapter<T, VH : RecyclerView.ViewHolder>() :
     fun setBounceEffect(isBounceEffect: Boolean) {
         this.isBounceEffect = isBounceEffect
     }
+
 
     /**
      * resetLoadMore

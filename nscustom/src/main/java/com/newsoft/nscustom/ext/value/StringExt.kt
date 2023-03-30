@@ -8,6 +8,7 @@ import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.transition.TransitionManager
 import android.util.Base64
 import android.util.Log
 import android.util.Patterns
@@ -15,7 +16,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.transition.TransitionManager
 import com.newsoft.nscustom.R
 import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat

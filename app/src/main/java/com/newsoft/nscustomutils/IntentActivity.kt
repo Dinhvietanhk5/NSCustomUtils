@@ -3,7 +3,6 @@ package com.newsoft.nscustomutils
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.newsoft.nscustom.ext.context.finishActivityForResultExt
-import com.newsoft.nscustom.ext.context.getDataExtras
 import kotlinx.android.synthetic.main.activity_intent.*
 
 class IntentActivity : AppCompatActivity() {

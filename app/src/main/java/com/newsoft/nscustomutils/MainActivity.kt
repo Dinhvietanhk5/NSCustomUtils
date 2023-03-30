@@ -2,16 +2,16 @@ package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color.red
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.ContextCompat
 import com.newsoft.nscustom.ext.context.*
-import com.newsoft.nscustom.ext.value.formatStringNumBer
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
 import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_get_file.*
@@ -19,10 +19,18 @@ import kotlinx.android.synthetic.main.fragment_get_file.*
 
 class MainActivity : BaseActivity() {
 
+//    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
+//        BetterActivityResult.r
+
+    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
+        BetterActivityResult.registerActivityForResult(this)
+
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))
 
@@ -75,34 +83,52 @@ class MainActivity : BaseActivity() {
 //        }
 //        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
 //
-//        btnNext.setOnClickListener {
-//            edtMoney.validate()
-//        }
 
+        val mStartForResult =
+            registerForActivityResult(StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val intent = result.data
+                    // Handle the Intent
+                }
+            }
+        btnNext.setOnClickListener {
+//            val intent = Intent(this,IntentActivity::class.java)
+//            mStartForResult.launch(intent)
 
-        val builder = CFAlertDialog.Builder(this)
-            .setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET)
-            .addButton(
-                "Resend request",
-                ContextCompat.getColor(this, R.color.purple_500),
-                ContextCompat.getColor(this, R.color.teal_700),
-                R.style.Dialog,
-                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
-                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
-            ) { dialog, which ->
-                dialog.dismiss()
-            }.addButton(
-                "Resend request",
-                ContextCompat.getColor(this, R.color.purple_500),
-                ContextCompat.getColor(this, R.color.teal_700),
-                R.style.Dialog2,
-                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
-                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
-            ) { dialog, which ->
-                dialog.dismiss()
+            startActivityExt<IntentActivity>(activityLauncher) { result ->
+                Log.e("result", "${result.resultCode}")
             }
 
-        builder.show()
+//            startActivityExt<IntentActivity> { result ->
+//                Log.e("result", "${result.resultCode}")
+//            }
+        }
+
+
+//        val builder = CFAlertDialog.Builder(this)
+//            .setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET)
+//            .addButton(
+//                "Resend request",
+//                ContextCompat.getColor(this, R.color.purple_500),
+//                ContextCompat.getColor(this, R.color.teal_700),
+//                R.style.Dialog,
+//                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+//                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+//            ) { dialog, which ->
+//                dialog.dismiss()
+//            }.addButton(
+//                "Resend request",
+//                ContextCompat.getColor(this, R.color.purple_500),
+//                ContextCompat.getColor(this, R.color.teal_700),
+//                R.style.Dialog2,
+//                CFAlertDialog.CFAlertActionStyle.NEGATIVE,
+//                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+//            ) { dialog, which ->
+//                dialog.dismiss()
+//            }
+//
+//        builder.show()
+
 
 //        edt.setOnTouchListener(OnTouchListener { v, event ->
 //            val DRAWABLE_LEFT = 0

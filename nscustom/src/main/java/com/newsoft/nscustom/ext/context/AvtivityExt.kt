@@ -1,6 +1,7 @@
 package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -8,12 +9,14 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
 import com.newsoft.nscustom.R
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
 import com.newsoft.nscustom.ext.value.fromJsonArray
 import java.io.Serializable
 
@@ -26,9 +29,9 @@ const val RESULT_START_ACTIVITY = 111
  */
 
 inline fun <reified T : Activity> Activity.startActivityExtFinish(
+    vararg params: Pair<String, Any>,
     requestCode: Int = RESULT_START_ACTIVITY,
     options: Bundle? = null,
-    vararg params: Pair<String, Any>
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
@@ -37,8 +40,8 @@ inline fun <reified T : Activity> Activity.startActivityExtFinish(
 }
 
 inline fun <reified T : Activity> Activity.startActivityExtFinish(
+    vararg params: Pair<String, Any>,
     requestCode: Int = RESULT_START_ACTIVITY,
-    vararg params: Pair<String, Any>
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
@@ -47,18 +50,30 @@ inline fun <reified T : Activity> Activity.startActivityExtFinish(
 }
 
 inline fun <reified T : Activity> Activity.startActivityExt(
-    requestCode: Int = RESULT_START_ACTIVITY,
     vararg params: Pair<String, Any>,
+    requestCode: Int = RESULT_START_ACTIVITY,
 ) {
     val intent = Intent(this, T::class.java)
     intent.putDataExtras(*params)
     startActivityForResult(intent, requestCode)
 }
 
+inline fun <reified T : Activity> Activity.startActivityExt(
+    activityLauncher: BetterActivityResult<Intent, ActivityResult>,
+    vararg params: Pair<String, Any>,
+    crossinline onActivityResult: (ActivityResult) -> Unit
+) {
+    val intent = Intent(this, T::class.java)
+    intent.putDataExtras(*params)
+    activityLauncher.launch(intent) {
+        onActivityResult.invoke(it)
+    }
+}
+
 inline fun <reified T : Activity> View.startActivityExt(
+    vararg params: Pair<String, Any>,
     requestCode: Int = RESULT_START_ACTIVITY,
     options: Bundle? = null,
-    vararg params: Pair<String, Any>
 ) {
     val intent = Intent(context, T::class.java)
     intent.putDataExtras(*params)
@@ -191,21 +206,12 @@ fun AppCompatActivity.switchFragment(container: ViewGroup, fragment: Fragment) {
  */
 
 fun Activity.finishActivityForResultExt(
-    requestCode: Int = RESULT_FINISH_ACTIVITY,
-    vararg params: Pair<String, Any>
+    vararg params: Pair<String, Any>,
+    requestCode: Int = RESULT_OK
 ) {
     val intent = Intent()
     intent.putDataExtras(*params)
     setResult(requestCode, intent)
-    finishActivityExt()
-}
-
-fun Activity.finishActivityForResultExt(
-    vararg params: Pair<String, Any>
-) {
-    val intent = Intent()
-    intent.putDataExtras(*params)
-    setResult(RESULT_FINISH_ACTIVITY, intent)
     finishActivityExt()
 }
 

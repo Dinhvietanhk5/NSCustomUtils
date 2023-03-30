@@ -1,15 +1,19 @@
 package com.newsoft.nscustom.ext.context
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
 import com.newsoft.nscustom.ext.value.fromJson
 import com.newsoft.nscustom.ext.value.fromJsonArray
 import java.io.Serializable
@@ -134,6 +138,24 @@ inline fun <reified T : Activity> Fragment.startActivityExt(
     activity.startActivityForResult(intent, Activity.RESULT_CANCELED)
 }
 
+inline fun <reified T : Activity> Fragment.startActivityExt(
+    activityLauncher: BetterActivityResult<Intent, ActivityResult>,
+    vararg paramsFragment: Pair<String, Any>,
+    crossinline onActivityResult: (ActivityResult) -> Unit
+) {
+    val activity = (requireActivity() as AppCompatActivity)
+    activity.startActivityExt<T>(activityLauncher, params = paramsFragment, onActivityResult)
+}
+
+inline fun <reified T : Activity> Fragment.startActivityExtFinish(
+    activityLauncher: BetterActivityResult<Intent, ActivityResult>,
+    vararg paramsFragment: Pair<String, Any>,
+    crossinline onActivityResult: (ActivityResult) -> Unit
+) {
+    val activity = (requireActivity() as AppCompatActivity)
+    activity.startActivityExt<T>(activityLauncher, params = paramsFragment, onActivityResult)
+    activity.finish()
+}
 
 /**
  * Get Intent Activity
