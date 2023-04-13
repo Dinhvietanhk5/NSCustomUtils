@@ -1,17 +1,21 @@
 package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.core.content.ContextCompat
 import com.newsoft.nscustom.ext.context.*
+import com.newsoft.location_manager.gps.checkLocation
 import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
+import com.newsoft.nscustom.ext.handleFineLocationPermission
 import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_get_file.*
@@ -91,13 +95,36 @@ class MainActivity : BaseActivity() {
                     // Handle the Intent
                 }
             }
+//        handleFineLocationPermission(onAccepted = {
+//            Log.e("handleFineLocationPermission", " ")
+//            checkLocation { location ->
+//                Log.e("location", "${location.latitude} ${location.longitude}")
+//            }
+//
+//        }, null, null)
         btnNext.setOnClickListener {
+            handleFineLocationPermission(onAccepted = {
+                Log.e("handleFineLocationPermission", " ")
+                checkLocation { location ->
+                    Log.e("location", "${location.latitude} ${location.longitude}")
+                }
+
+            }, null, { scope, deniedList, beforeRequest ->
+                onPermissionExplanation({
+                    scope.getChainTask().requestAgain(deniedList)
+                }, {
+
+                })
+
+            })
+
 //            val intent = Intent(this,IntentActivity::class.java)
 //            mStartForResult.launch(intent)
 
-            startActivityExt<IntentActivity>(activityLauncher) { result ->
-                Log.e("result", "${result.resultCode}")
-            }
+//            startActivityExt<IntentActivity>(activityLauncher) { result ->
+//                Log.e("result", "${result.resultCode}")
+//            }
+
 
 //            startActivityExt<IntentActivity> { result ->
 //                Log.e("result", "${result.resultCode}")
@@ -184,6 +211,36 @@ class MainActivity : BaseActivity() {
 
     }
 
+
+    fun Context.onPermissionExplanation(
+        onChangeToWays: (() -> Unit),
+        onSkip: (() -> Unit)
+    ) {
+        try {
+            val view =
+                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
+
+            val dialogRating = CFAlertDialog.Builder(this)
+                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+                .setHeaderView(view)
+                .create()
+
+            val btnChangeToWays = view.findViewById<TextView>(R.id.btnChangeToWays)
+            val btnSkip = view.findViewById<TextView>(R.id.btnSkip)
+
+            btnChangeToWays!!.setOnClickListener {
+                dialogRating.dismiss()
+                onChangeToWays.invoke()
+            }
+            btnSkip!!.setOnClickListener {
+                dialogRating.dismiss()
+                onSkip.invoke()
+            }
+            dialogRating.show()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     fun EditText.setDrawableRightTouch(setClickListener: () -> Unit) {

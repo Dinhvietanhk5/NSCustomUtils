@@ -23,3 +23,5 @@ dependencyResolutionManagement {
 rootProject.name = "NSCustomUtils"
 include ':app'
 include ':nscustom'
+include ':location_manager'
+include ':permission'

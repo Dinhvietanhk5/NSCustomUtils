@@ -20,9 +20,9 @@ class MainFragment : BaseFragment(R.layout.fragment) {
         Log.e("type", type.toString())
 
         btnIntentActivity.setOnClickListener {
-            requireActivity().handleWriteStoragePermission {
-                Log.e("handleCameraPermission", " ")
-            }
+//            requireActivity().handleWriteStoragePermission {
+//                Log.e("handleCameraPermission", " ")
+//            }
 //            requireActivity().startActivityExt<IntentActivity>("title" to "Intent Activity")
         }
         btnIntentFragment.setOnClickListener {

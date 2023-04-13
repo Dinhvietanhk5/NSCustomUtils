@@ -1,4 +1,4 @@
-package com.newsoft.nscustom.ext.context.gps
+package com.newsoft.location_manager.gps
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -8,16 +8,11 @@ import android.content.IntentSender
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
-import android.provider.Settings
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
 
 
 fun Context.isGpsOn(): Boolean {
@@ -26,9 +21,6 @@ fun Context.isGpsOn(): Boolean {
 }
 
 fun Context.turnGPSOn() {
-    val provider =
-        Settings.Secure.getString(contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
-//    if (!provider.contains("gps")) { //if gps is disabled
     val poke = Intent()
     poke.setClassName(
         "com.android.settings",
@@ -37,12 +29,12 @@ fun Context.turnGPSOn() {
     poke.addCategory(Intent.CATEGORY_ALTERNATIVE)
     poke.data = Uri.parse("3")
     sendBroadcast(poke)
-//    }
 }
 
 @SuppressLint("MissingPermission")
 fun Activity.checkLocation(locationResult: ((Location) -> Unit)) {
     try {
+
         if (!isGpsOn()) {
             requestDeviceLocationSettings(locationResult)
             return
@@ -50,63 +42,6 @@ fun Activity.checkLocation(locationResult: ((Location) -> Unit)) {
         getLocationAsset(locationResult)
     } catch (e: Exception) {
         e.printStackTrace()
-    }
-}
-
-//@SuppressLint("MissingPermission")
-//fun Activity.getLocationAsset(
-//    locationResult: ((Location) -> Unit)
-//) {
-////    val mLocationManager = getSystemService(RxAppCompatActivity.LOCATION_SERVICE) as LocationManager
-////    mLocationManager.requestLocationUpdates(
-////        LocationManager.GPS_PROVIDER,
-////        0L,
-////        0f
-////    ) {
-////        Log.e("getLocationAsset", " 1")
-////        locationResult.invoke(it)
-////    }
-//
-//    Log.e("getLocationAsset"," ")
-//
-//    var location: Location? = null
-//
-//    val locationManager =
-//        getSystemService(RxAppCompatActivity.LOCATION_SERVICE) as LocationManager
-//    val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-//    lastKnownLocation?.let {
-//        Log.e("getLocationAsset 1"," ${it.latitude}")
-//        location = it
-//        locationResult.invoke(it)
-//    }
-//
-////    if (location == null) {
-//        val fusedLocationClient =
-//            LocationServices.getFusedLocationProviderClient(this)
-//        fusedLocationClient.lastLocation
-//            .addOnSuccessListener { location: Location? ->
-//                location?.let {
-//                    Log.e("getLocationAsset 2"," ${it.latitude}")
-//                    locationResult.invoke(location)
-//                }
-//            }
-////    }
-//}
-
-
-var enableLocationRetryCount = 1
-inline fun Fragment.enableGPS(
-    crossinline onDenied: () -> Unit = {},
-    crossinline onLocationGranted: () -> Unit = {}
-): ActivityResultLauncher<Nothing> = registerForActivityResult(
-    LocationSettingsContract()
-) {
-    if (enableLocationRetryCount <= 2) {
-        onLocationGranted.invoke()
-        enableLocationRetryCount++
-    } else {
-        onDenied.invoke()
-        enableLocationRetryCount = 1
     }
 }
 
@@ -132,35 +67,25 @@ fun Context.getLocationAsset(
     }
 }
 
-inline fun FragmentActivity.enableGPS(
-    crossinline onDenied: () -> Unit = {},
-    crossinline onLocationGranted: () -> Unit = {}
-): ActivityResultLauncher<Nothing> = registerForActivityResult(
-    LocationSettingsContract()
-) {
-    if (enableLocationRetryCount <= 2) {
-        onLocationGranted.invoke()
-        enableLocationRetryCount++
-    } else {
-        onDenied.invoke()
-        enableLocationRetryCount = 1
-    }
-}
 
 var REQUEST_CHECK_SETTINGS = 1103
 var REQUEST_GPS_NOT_OPEN = 1023
 
+/**
+ * offGPS -> Hiển thị hộp thoại báo cho user bật định vị
+ */
+
 fun Activity.requestDeviceLocationSettings(
     onGPS: (Location) -> Unit,
-    offGPS: (() -> Unit)? = null
+    offGPS: (() -> Unit)? = null,
 ) {
     try {
 
-        val locationRequest = LocationRequest.create().apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).apply {
+            setMinUpdateDistanceMeters(5000f)
+            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+            setWaitForAccurateLocation(true)
+        }.build()
 
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
@@ -201,7 +126,6 @@ fun Activity.requestDeviceLocationSettings(
                         Log.d("addOnSuccessListener", " 3")
                     }
                 }
-                dialogNotificationLocation()
                 offGPS?.invoke()
             }
         }
@@ -219,26 +143,13 @@ fun Activity.requestDeviceLocationSettings(
                     getLocationAsset(onGPS)
 
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    dialogNotificationLocation()
                     offGPS?.invoke()
                 }
             }
         }
 
-
     } catch (e: Exception) {
         offGPS?.invoke()
         e.printStackTrace()
     }
-}
-
-/**
- * Hiển thị hộp thoại báo cho user bật định vị
- */
-fun Context.dialogNotificationLocation() {
-    val builder = CFAlertDialog.Builder(this)
-        .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
-        .setTitle("Thông báo")
-        .setMessage("Vui lòng bật định vị trên thiết bị để sử dụng dịch vụ !")
-    builder.show()
 }
