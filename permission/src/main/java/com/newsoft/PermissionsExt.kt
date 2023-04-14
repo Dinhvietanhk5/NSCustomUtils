@@ -150,7 +150,6 @@ fun AppCompatActivity.handlePermissionExplainBeforeRequest(
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
-//                requestPermissions(deniedList.toTypedArray(), 1)
                 onDenied?.invoke()
             }
         }
@@ -195,12 +194,16 @@ fun AppCompatActivity.handlePermissionExplainAfterRequest(
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
-                requestPermissions(deniedList.toTypedArray(), 1)
                 onDenied?.invoke()
             }
         }
 
 }
+
+
+/**
+ *  Request Not Explain
+ */
 
 @SuppressLint("NewApi")
 fun AppCompatActivity.handlePermission(
@@ -214,7 +217,6 @@ fun AppCompatActivity.handlePermission(
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
-                requestPermissions(deniedList.toTypedArray(), 1)
                 onDenied?.invoke()
             }
         }
