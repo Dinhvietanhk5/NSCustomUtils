@@ -82,19 +82,17 @@ fun EditText.doAfterTextChangedDelayed(delayMillis: Long = 500, input: (String) 
 
 @SuppressLint("ClickableViewAccessibility")
 fun EditText.onClickDrawerEnd(listener: () -> Unit) {
-    setOnTouchListener(View.OnTouchListener { v, event ->
-        val DRAWABLE_LEFT = 0
-        val DRAWABLE_TOP = 1
+    setOnTouchListener(View.OnTouchListener { _, event ->
+//        val DRAWABLE_LEFT = 0
+//        val DRAWABLE_TOP = 1
         val DRAWABLE_RIGHT = 2
-        val DRAWABLE_BOTTOM = 3
+//        val DRAWABLE_BOTTOM = 3
         try {
-            if (this.compoundDrawables != null) {
-                if (event.action == MotionEvent.ACTION_UP) {
-                    if (event.rawX >= right - compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
-                        // your action here
-                        listener.invoke()
-                        return@OnTouchListener true
-                    }
+            if (event.action == MotionEvent.ACTION_UP) {
+                if (event.rawX >= right - compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
+                    // your action here
+                    listener.invoke()
+                    return@OnTouchListener true
                 }
             }
         } catch (e: Exception) {

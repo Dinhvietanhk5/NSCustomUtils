@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import gun0912.tedimagepicker.builder.TedImagePicker
-import kotlinx.android.synthetic.main.fragment_get_file.*
 
 class GetFileFragment : Fragment() {
 
@@ -27,8 +26,6 @@ class GetFileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnGetFile.setOnClickListener {
 
-        }
     }
 }

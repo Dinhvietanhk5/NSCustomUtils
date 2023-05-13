@@ -10,10 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.view.marginTop
-import com.jakewharton.rxbinding.view.RxView
-import com.newsoft.nscustom.view.cfalertdialog.utils.ViewUtil
-import java.util.concurrent.TimeUnit
+import com.newsoft.nsdialog.utils.ViewUtil
 
 
 /**
@@ -160,10 +157,10 @@ fun View.setOnClickBounceEffect(view: ((View) -> Unit)) {
     }
 }
 
-fun View.setOnClickRxViewListener(duration: Long = 1, onListener: () -> Unit) {
-    RxView.clicks(this)
-        .throttleFirst(duration, TimeUnit.SECONDS) // chỉ cho phép click sau mỗi 1 giây
-        .subscribe {
-            onListener.invoke()
-        }
-}
+//fun View.setOnClickRxViewListener(duration: Long = 1, onListener: () -> Unit) {
+//    RxView.clicks(this)
+//        .throttleFirst(duration, TimeUnit.SECONDS) // chỉ cho phép click sau mỗi 1 giây
+//        .subscribe {
+//            onListener.invoke()
+//        }
+//}

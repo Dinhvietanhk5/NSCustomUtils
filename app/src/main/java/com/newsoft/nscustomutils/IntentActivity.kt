@@ -3,7 +3,6 @@ package com.newsoft.nscustomutils
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.newsoft.nscustom.ext.context.finishActivityForResultExt
-import kotlinx.android.synthetic.main.activity_intent.*
 
 class IntentActivity : AppCompatActivity() {
 
@@ -14,8 +13,8 @@ class IntentActivity : AppCompatActivity() {
 //        val title = getDataExtras<String>("title","")
 //        tvTitle.text = title
 
-        tvTitle.setOnClickListener {
-            finishActivityForResultExt("intemnt" to 1)
-        }
+//        tvTitle.setOnClickListener {
+//            finishActivityForResultExt("intemnt" to 1)
+//        }
     }
 }

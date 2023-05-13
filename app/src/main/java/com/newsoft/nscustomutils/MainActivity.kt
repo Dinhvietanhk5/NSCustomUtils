@@ -13,12 +13,8 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import com.newsoft.nscustom.ext.context.*
-import com.newsoft.location_manager.gps.checkLocation
 import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
-import com.newsoft.nscustom.ext.handleFineLocationPermission
-import com.newsoft.nscustom.view.cfalertdialog.CFAlertDialog
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_get_file.*
+import com.newsoft.nsdialog.CFAlertDialog
 
 
 class MainActivity : BaseActivity() {
@@ -102,34 +98,34 @@ class MainActivity : BaseActivity() {
 //            }
 //
 //        }, null, null)
-        btnNext.setOnClickListener {
-            handleFineLocationPermission(onAccepted = {
-                Log.e("handleFineLocationPermission", " ")
-                checkLocation { location ->
-                    Log.e("location", "${location.latitude} ${location.longitude}")
-                }
-
-            }, null, { scope, deniedList, beforeRequest ->
-                onPermissionExplanation({
-                    scope.getChainTask().requestAgain(deniedList)
-                }, {
-
-                })
-
-            })
-
-//            val intent = Intent(this,IntentActivity::class.java)
-//            mStartForResult.launch(intent)
-
-//            startActivityExt<IntentActivity>(activityLauncher) { result ->
-//                Log.e("result", "${result.resultCode}")
-//            }
-
-
-//            startActivityExt<IntentActivity> { result ->
-//                Log.e("result", "${result.resultCode}")
-//            }
-        }
+//        btnNext.setOnClickListener {
+//            handleFineLocationPermission(onAccepted = {
+//                Log.e("handleFineLocationPermission", " ")
+//                checkLocation { location ->
+//                    Log.e("location", "${location.latitude} ${location.longitude}")
+//                }
+//
+//            }, null, { scope, deniedList, beforeRequest ->
+//                onPermissionExplanation({
+//                    scope.getChainTask().requestAgain(deniedList)
+//                }, {
+//
+//                })
+//
+//            })
+//
+////            val intent = Intent(this,IntentActivity::class.java)
+////            mStartForResult.launch(intent)
+//
+////            startActivityExt<IntentActivity>(activityLauncher) { result ->
+////                Log.e("result", "${result.resultCode}")
+////            }
+//
+//
+////            startActivityExt<IntentActivity> { result ->
+////                Log.e("result", "${result.resultCode}")
+////            }
+//        }
 
 
 //        val builder = CFAlertDialog.Builder(this)
@@ -246,9 +242,9 @@ class MainActivity : BaseActivity() {
     fun EditText.setDrawableRightTouch(setClickListener: () -> Unit) {
         this.setOnTouchListener(OnTouchListener { v, event ->
             val DRAWABLE_LEFT = 0
-            val DRAWABLE_TOP = 1
+//            val DRAWABLE_TOP = 1
             val DRAWABLE_RIGHT = 2
-            val DRAWABLE_BOTTOM = 3
+//            val DRAWABLE_BOTTOM = 3
             if (event.action == MotionEvent.ACTION_UP) {
                 if (event.rawX <= this.compoundDrawables[DRAWABLE_LEFT].bounds.width()) {
                     setClickListener.invoke()

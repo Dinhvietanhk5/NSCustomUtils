@@ -16,9 +16,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import com.newsoft.nscustom.R
-import org.joda.time.DateTimeZone
-import org.joda.time.format.ISODateTimeFormat
 import java.net.URLEncoder
 import java.nio.charset.Charset
 import java.text.DecimalFormat
@@ -155,62 +154,6 @@ fun String.urlEncode(): String = URLEncoder.encode(this, "utf-8")
  */
 fun String.toEditable() = SpannableStringBuilder(this)
 
-
-/**
- * Convert date string [fromFormat] to [toFormat] date string
- */
-@SuppressLint("SimpleDateFormat")
-fun String.dateStringToFormattedDate(
-    fromFormat: String = "yyyy-MM-dd",
-    toFormat: String = "MMMM dd, yyyy"
-): String {
-    return try {
-        val dateFormat = SimpleDateFormat(fromFormat)
-        val date = dateFormat.parse(this)
-
-        SimpleDateFormat(toFormat).format(date)
-    } catch (e: Exception) {
-        this
-    }
-}
-
-/**
- * Convert date string to millis
- */
-@SuppressLint("SimpleDateFormat", "NewApi")
-fun String.dateToMillis(format: String = "yyyy-MM-dd'T'hh:mm:ssXXX"): Long {
-    return try {
-        val dateFormat = SimpleDateFormat(format)
-        dateFormat.parse(this)?.time ?: Date().time
-    } catch (e: Exception) {
-        0.toLong()
-    }
-}
-
-
-/**
- * Convert date string to date object
- */
-@SuppressLint("SimpleDateFormat", "NewApi")
-fun String.dateToObject(format: String = "yyyy-MM-dd'T'HH:mm:ssXXX"): Date {
-    return try {
-        SimpleDateFormat(format).parse(this) ?: Date()
-    } catch (e: Exception) {
-        Date()
-    }
-}
-
-
-@SuppressLint("SimpleDateFormat")
-fun String.IsoDateToObject(): Date {
-    return try {
-        val dateFormat = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC)
-        dateFormat.parseDateTime(this).toDate()
-    } catch (e: Exception) {
-        Date()
-    }
-}
-
 fun formatStringNumBer(number: Long, share: String = ","): String? {
     return try {
         val formatter =
@@ -297,7 +240,7 @@ fun Context.setTextShowHide(view: ViewGroup, tvConten: TextView, lines: Int, ite
 
         tvConten.setOnClickListener { v: View? ->
             if (checkText) {
-                tvConten.text = Html.fromHtml(item)
+                tvConten.text = Html.fromHtml(item, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 tvConten.post {
                     tvConten.setLines(tvConten.lineCount)
                     TransitionManager.beginDelayedTransition(view)

@@ -3,15 +3,14 @@ package com.newsoft.nscustomutils
 import android.annotation.SuppressLint
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
-import com.newsoft.nscustom.view.recyclerview.BaseAdapter
-import kotlinx.android.synthetic.main.item_string.view.*
+import com.newsoft.nsbaseadapter.adapter.BaseAdapter
 
 class TestAdapter :
     BaseAdapter<String?, TestAdapter.ViewHolder>() {
 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tvTitle = view.tvTitle
+//        var tvTitle = view.tvTitle
     }
 
     override fun onCreateHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,7 +29,7 @@ class TestAdapter :
 //            mOnAdapterListener?.onItemClick(0, item, position)
 //            notifyDataSetChanged()
 //        }
-        holder!!.tvTitle.text = "test $position"
+//        holder!!.tvTitle.text = "test $position"
 //        holder.btnChooseVideo.setBackgroundColor(
 //            ContextCompat.getColor(
 //                requireContextAdapter(),

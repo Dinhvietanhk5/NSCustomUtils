@@ -23,7 +23,7 @@
     <!--    &lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
     <!--    &lt;!&ndash;        android:layout_height="wrap_content" />&ndash;&gt;-->
 
-    <!--    <com.newsoft.nscustom.view.edittext.NSEdittext-->
+    <!--    <com.newsoft.nsedittext.NSEdittext-->
     <!--        android:id="@+id/edt"-->
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="wrap_content"-->
@@ -35,16 +35,16 @@
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent"  />-->
 
-    <!--    &lt;!&ndash;    <com.newsoft.nscustom.view.datepicker.NsDateView&ndash;&gt;-->
+    <!--    &lt;!&ndash;    <com.newsoft.nsdatepicker.NsDateView&ndash;&gt;-->
     <!--    &lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->
     <!--    &lt;!&ndash;        android:layout_height="wrap_content" />&ndash;&gt;-->
 
-<!--        <com.newsoft.nscustom.view.recyclerview.NSRecyclerview-->
+<!--        <com.newsoft.nsbaseadapter.view.NSRecyclerview-->
 <!--            android:id="@+id/rvList"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent"  />-->
 
-    <com.newsoft.nscustom.view.edittext.NSEdittext
+    <com.newsoft.nsedittext.NSEdittext
         android:id="@+id/edtMoney"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
