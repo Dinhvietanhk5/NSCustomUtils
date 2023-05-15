@@ -1,6 +1,7 @@
 package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,12 +13,15 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.databinding.DataBindingUtil.setContentView
 import com.newsoft.nscustom.ext.context.*
 import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult.Companion.registerForActivityResult
+import com.newsoft.nscustomutils.databinding.ActivityMainBinding
 import com.newsoft.nsdialog.CFAlertDialog
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
 //    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
 //        BetterActivityResult.r
@@ -26,10 +30,7 @@ class MainActivity : BaseActivity() {
         BetterActivityResult.registerActivityForResult(this)
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+    override fun onCreate() {
 
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))
@@ -84,13 +85,13 @@ class MainActivity : BaseActivity() {
 //        edtMoney.setMaxMoney(100000000000,"Tiền bị giới hạn")
 //
 
-        val mStartForResult =
-            registerForActivityResult(StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    val intent = result.data
-                    // Handle the Intent
-                }
-            }
+//        val mStartForResult =
+//            registerForActivityResult(StartActivityForResult()) { result ->
+//                if (result.resultCode == RESULT_OK) {
+//                    val intent = result.data
+//                    // Handle the Intent
+//                }
+//            }
 //        handleFineLocationPermission(onAccepted = {
 //            Log.e("handleFineLocationPermission", " ")
 //            checkLocation { location ->
@@ -259,11 +260,11 @@ class MainActivity : BaseActivity() {
         })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_FINISH_ACTIVITY) {
-            val intet = data?.getIntExtra("intemnt", 0)
-            Log.e("onActivityResultMain", " $resultCode $intet")
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == RESULT_FINISH_ACTIVITY) {
+//            val intet = data?.getIntExtra("intemnt", 0)
+//            Log.e("onActivityResultMain", " $resultCode $intet")
+//        }
+//    }
 }
