@@ -126,7 +126,7 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.3.1'
 
     //TODO Util custom
-//    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:6.0.0'
+//    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:6.0.1'
     implementation project(path: ':nscustom')
 
     implementation 'com.github.ihsg:PatternLocker:2.5.7'

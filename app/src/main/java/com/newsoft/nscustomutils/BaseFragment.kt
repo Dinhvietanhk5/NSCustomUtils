@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import com.newsoft.nscustom.ext.context.checkHideKeyboardOnTouchScreen
-import com.newsoft.nscustom.ext.context.hideSoftKeyboard
+import com.newsoft.nsextension.ext.context.checkHideKeyboardOnTouchScreen
+import com.newsoft.nsextension.ext.context.hideSoftKeyboard
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle4.components.support.RxFragment
 import java.lang.reflect.ParameterizedType

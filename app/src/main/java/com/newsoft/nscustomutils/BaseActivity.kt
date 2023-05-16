@@ -9,8 +9,8 @@ import android.view.MotionEvent
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.viewbinding.ViewBinding
-import com.newsoft.nscustom.ext.context.hideSoftKeyboard
-import com.newsoft.nscustom.ext.context.setTransparentActivity
+import com.newsoft.nsextension.ext.context.hideSoftKeyboard
+import com.newsoft.nsextension.ext.context.setTransparentActivity
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 
 

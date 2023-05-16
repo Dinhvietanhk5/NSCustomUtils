@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/nsdatepicker" />
             <option value="$PROJECT_DIR$/nsdialog" />
             <option value="$PROJECT_DIR$/nsedittext" />
+            <option value="$PROJECT_DIR$/nsextension" />
             <option value="$PROJECT_DIR$/permission" />
           </set>
         </option>

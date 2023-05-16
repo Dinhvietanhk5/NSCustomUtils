@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.newsoft.nscustom.ext.context.getDataExtras
+import com.newsoft.nsextension.ext.context.getDataExtras
 
 
 class IntentFragment : Fragment() {

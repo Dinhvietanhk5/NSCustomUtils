@@ -14,11 +14,10 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.databinding.DataBindingUtil.setContentView
-import com.newsoft.nscustom.ext.context.*
-import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
-import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult.Companion.registerForActivityResult
 import com.newsoft.nscustomutils.databinding.ActivityMainBinding
 import com.newsoft.nsdialog.CFAlertDialog
+import com.newsoft.nsextension.ext.context.launcher_result.BetterActivityResult
+import com.newsoft.nsextension.ext.context.startActivityExt
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
@@ -26,11 +25,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 //    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
 //        BetterActivityResult.r
 
-    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
-        BetterActivityResult.registerActivityForResult(this)
+//    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
+//        BetterActivityResult.registerActivityForResult(this)
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
+
+//        startActivityExt<>()
 
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))
