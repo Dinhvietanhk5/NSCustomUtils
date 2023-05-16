@@ -130,7 +130,7 @@ fun String.removeDigits(): String = replace("\\d".toRegex(), "")
 /**
  * Replace spaces to underscore and to lowercase
  */
-fun String.toUniqueName(): String = this.toLowerCase().replace(" ", "_")
+fun String.toUniqueName(): String = this.lowercase().replace(" ", "_")
 
 /**
  * Add commas to currency figure
@@ -201,7 +201,7 @@ fun Context.setTextShowHide(view: ViewGroup, tvConten: TextView, lines: Int, ite
                     item.substring(
                         0,
                         lastCharShown - suffix.length - 20
-                    ) + "..." + suffix
+                    ) + "..." + suffix, HtmlCompat.FROM_HTML_MODE_LEGACY
                 ).toString()
 
             val truncatedSpannableString = SpannableString(actionDisplayText)
@@ -238,7 +238,7 @@ fun Context.setTextShowHide(view: ViewGroup, tvConten: TextView, lines: Int, ite
 //            textView6.setLines(3)
 //        } else textView6.setLines(tvConten.getLineCount())
 
-        tvConten.setOnClickListener { v: View? ->
+        tvConten.setOnClickListener {
             if (checkText) {
                 tvConten.text = Html.fromHtml(item, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 tvConten.post {

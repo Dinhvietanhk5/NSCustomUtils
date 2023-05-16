@@ -59,13 +59,13 @@ fun getLongDateNow(): Long {
 }
 
 @SuppressLint("SimpleDateFormat")
-fun convertDateStringToDateLong(st_time: String?, formatDate: String): Long {
+fun convertDateStringToDateLong(st_time: String, formatDate: String): Long {
     // lấy thời gian theo string dạng long
     val df = SimpleDateFormat(formatDate)
     df.timeZone = TimeZone.getTimeZone("UTC")
     df.toLocalizedPattern() // lấy giờ theo vị trí
     return try {
-        val time = df.parse(st_time)
+        val time = df.parse(st_time)!!
         time.time / 1000
     } catch (e: ParseException) {
         0
@@ -103,8 +103,7 @@ fun setDateFaceBook(
     formatDateOut: String = DefaultsUtils.DATE_FORMAT3,
 ) {
     try {
-        var time_total: Long = 0
-        time_total = getLongDateNow() - convertDateStringToDateLong(time, formatDateIn)
+        val time_total = getLongDateNow() - convertDateStringToDateLong(time, formatDateIn)
         //        Log.e("getTimeToString",""+getTimeToString(time));
         var set_times = ""
         if (time_total < 3600) {

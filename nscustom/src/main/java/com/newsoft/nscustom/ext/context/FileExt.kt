@@ -9,10 +9,10 @@ import java.io.File
 
 fun Context.clearAppData() {
     val cache = cacheDir
-    val appDir = File(cache.parent)
-    if (appDir.exists()) {
+    val appDir = cache.parent?.let { File(it) }
+    if (appDir!!.exists()) {
         val children = appDir.list()
-        for (d in children) {
+        for (d in children!!) {
             if (d != "lib") {
                 deleteDirectory(File(appDir, d))
 //                e("File /data/data/APP_PACKAGE/$d DELETED")
@@ -23,9 +23,9 @@ fun Context.clearAppData() {
 
 fun Context.deleteDirectory(dir: File): Boolean {
     if (dir.isDirectory) {
-        for (i in dir.list().indices) {
+        for (i in dir.list()!!.indices) {
             val success = try {
-                deleteDirectory(File(dir, dir.list()[i]))
+                deleteDirectory(File(dir, dir.list()!![i]))
             } catch (e: ArrayIndexOutOfBoundsException) {
                 false
             }

@@ -1,12 +1,9 @@
-package com.newsoft.nscustom.ext
+package com.newsoft
 
 import android.Manifest
 import android.annotation.SuppressLint
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.requestPermissions
 import com.newsoft.permission.PermissionX
-import com.newsoft.permission.callback.ExplainReasonCallback
 import com.newsoft.permission.request.ExplainScope
 import com.newsoft.permission.request.ForwardScope
 
@@ -146,7 +143,7 @@ fun AppCompatActivity.handlePermissionExplainBeforeRequest(
                     ok,
                     cancel
                 )
-        }.request { allGranted, grantedList, deniedList ->
+        }.request { allGranted, _, _ ->
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
@@ -190,7 +187,7 @@ fun AppCompatActivity.handlePermissionExplainAfterRequest(
                     ok,
                     cancel
                 )
-        }.request { allGranted, grantedList, deniedList ->
+        }.request { allGranted, _, _ ->
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
@@ -213,7 +210,7 @@ fun AppCompatActivity.handlePermission(
 ) {
     PermissionX.init(this)
         .permissions(*permissions)
-        .request { allGranted, grantedList, deniedList ->
+        .request { allGranted, _, _ ->
             if (allGranted) {
                 onAccepted?.invoke()
             } else {
