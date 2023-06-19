@@ -3,21 +3,10 @@ package com.newsoft.nscustomutils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.databinding.DataBindingUtil.setContentView
 import com.newsoft.nscustomutils.databinding.ActivityMainBinding
-import com.newsoft.nsdialog.CFAlertDialog
-import com.newsoft.nsextension.ext.context.launcher_result.BetterActivityResult
-import com.newsoft.nsextension.ext.context.startActivityExt
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
@@ -30,6 +19,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
+
+
+
 
 //        startActivityExt<>()
 
@@ -214,30 +206,30 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         onChangeToWays: (() -> Unit),
         onSkip: (() -> Unit)
     ) {
-        try {
-            val view =
-                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
-
-            val dialogRating = CFAlertDialog.Builder(this)
-                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
-                .setHeaderView(view)
-                .create()
-
-            val btnChangeToWays = view.findViewById<TextView>(R.id.btnChangeToWays)
-            val btnSkip = view.findViewById<TextView>(R.id.btnSkip)
-
-            btnChangeToWays!!.setOnClickListener {
-                dialogRating.dismiss()
-                onChangeToWays.invoke()
-            }
-            btnSkip!!.setOnClickListener {
-                dialogRating.dismiss()
-                onSkip.invoke()
-            }
-            dialogRating.show()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
+//        try {
+//            val view =
+//                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
+//
+//            val dialogRating = CFAlertDialog.Builder(this)
+//                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+//                .setHeaderView(view)
+//                .create()
+//
+//            val btnChangeToWays = view.findViewById<TextView>(R.id.btnChangeToWays)
+//            val btnSkip = view.findViewById<TextView>(R.id.btnSkip)
+//
+//            btnChangeToWays!!.setOnClickListener {
+//                dialogRating.dismiss()
+//                onChangeToWays.invoke()
+//            }
+//            btnSkip!!.setOnClickListener {
+//                dialogRating.dismiss()
+//                onSkip.invoke()
+//            }
+//            dialogRating.show()
+//        } catch (e: java.lang.Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
