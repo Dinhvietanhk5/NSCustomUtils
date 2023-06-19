@@ -127,8 +127,16 @@ dependencies {
 
     //TODO Util custom
 //    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:nsbaseadapter:6.0.2'
-    implementation 'com.github.Dinhvietanhk5.NSCustomUtils:nsbaseadapter:6.0.2'
-//    implementation project(path: ':nscustom')
+//    implementation 'com.github.Dinhvietanhk5.NSCustomUtils:nsbaseadapter:6.0.2'
+    implementation project(path: ':nsbaseadapter')
+    implementation project(path: ':location_manager')
+    implementation project(path: ':nsdatepicker')
+    implementation project(path: ':nsedittext')
+    implementation project(path: ':nsdialog')
+    implementation project(path: ':permission')
+    implementation project(path: ':nsextension')
+    implementation project(path: ':nsswipelayout')
+    implementation project(path: ':nslog')
 
     implementation 'com.github.ihsg:PatternLocker:2.5.7'
 
