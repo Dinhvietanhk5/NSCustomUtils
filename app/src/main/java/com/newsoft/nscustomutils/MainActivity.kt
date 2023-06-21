@@ -26,8 +26,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 //    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
 //        BetterActivityResult.r
 
-    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
-        BetterActivityResult.registerActivityForResult(this)
+//    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
+//        BetterActivityResult.registerActivityForResult(this)
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
