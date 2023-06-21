@@ -16,6 +16,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
     buildFeatures {
         viewBinding = true
@@ -129,7 +132,7 @@ dependencies {
 //    implementation 'com.github.Dinhvietanhk5:NSCustomUtils.nsbaseadapter:6.0.4'
 //    implementation project(path: ':nsbaseadapter')
 //    implementation project(path: ':location_manager')
-//    implementation project(path: ':nsdatepicker')
+    implementation project(path: ':nsdatepicker')
 //    implementation project(path: ':nsedittext')
 //    implementation project(path: ':nsdialog')
 //    implementation project(path: ':permission')
