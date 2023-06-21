@@ -1,8 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-android'
-    id 'maven-publish'
 }
 android {
     compileSdkVersion 33
@@ -26,17 +24,4 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-}
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                groupId = 'com.github.Dinhvietanhk5/NSCustomUtils'
-                artifactId = 'permission'
-                version = '1.0.0'
-            }
-        }
-    }
 }
