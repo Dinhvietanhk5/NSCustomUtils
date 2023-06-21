@@ -1,4 +1,4 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

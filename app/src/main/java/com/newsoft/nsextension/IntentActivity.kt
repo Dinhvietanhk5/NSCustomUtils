@@ -1,4 +1,4 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

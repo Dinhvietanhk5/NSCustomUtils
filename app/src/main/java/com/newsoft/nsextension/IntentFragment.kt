@@ -1,4 +1,4 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

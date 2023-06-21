@@ -7,9 +7,9 @@ plugins {
 
 android {
     compileSdk 33
-    namespace = "com.newsoft.nscustomutils"
+    namespace = "com.newsoft.nsextension"
     defaultConfig {
-        applicationId "com.newsoft.nscustomutils"
+        applicationId "com.newsoft.nsextension"
         minSdk 28
         targetSdk 33
         versionCode 1

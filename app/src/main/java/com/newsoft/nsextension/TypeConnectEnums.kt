@@ -1,4 +1,4 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 enum class TypeConnectEnums {
     CONNECT,

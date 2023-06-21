@@ -21,6 +21,6 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "NSCustomUtils"
+rootProject.name = "NSExtension"
 include ':app'
 include ':nsdatepicker'

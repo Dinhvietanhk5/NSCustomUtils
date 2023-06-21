@@ -1,11 +1,10 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import gun0912.tedimagepicker.builder.TedImagePicker
 
 class GetFileFragment : Fragment() {
 

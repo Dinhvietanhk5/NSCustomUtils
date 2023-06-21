@@ -1,12 +1,11 @@
-package com.newsoft.nscustomutils
+package com.newsoft.nsextension
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
-import com.newsoft.nscustomutils.databinding.ActivityMainBinding
+import com.newsoft.nsextension.databinding.ActivityMainBinding
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
