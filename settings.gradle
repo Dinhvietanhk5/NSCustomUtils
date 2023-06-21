@@ -22,4 +22,10 @@ dependencyResolutionManagement {
 }
 rootProject.name = "NSCustomUtils"
 include ':app'
+include ':nsbaseadapter'
+include ':location_manager'
+include ':nscustom'
 include ':nsdatepicker'
+include ':nsedittext'
+include ':nsdialog'
+include ':permission'

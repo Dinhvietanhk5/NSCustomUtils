@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
+import com.newsoft.nscustom.ext.context.checkHideKeyboardOnTouchScreen
+import com.newsoft.nscustom.ext.context.hideSoftKeyboard
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle4.components.support.RxFragment
 import java.lang.reflect.ParameterizedType
@@ -50,8 +52,8 @@ abstract class BaseFragment<T : ViewBinding> : RxFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         this.savedInstanceState = savedInstanceState
-//        requireActivity().hideSoftKeyboard()
-//        requireActivity().checkHideKeyboardOnTouchScreen(view)
+        requireActivity().hideSoftKeyboard()
+        requireActivity().checkHideKeyboardOnTouchScreen(view)
         onViewCreated(view)
     }
 //

@@ -3,7 +3,7 @@
 //import android.util.Log
 //import androidx.fragment.app.Fragment
 //import android.view.View
-//import com.newsoft.nsextension.ext.context.*
+//import com.newsoft.nscustom.ext.context.*
 //
 //class MainFragment : BaseFragment<Fra>() {
 //

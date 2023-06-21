@@ -14,20 +14,23 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.databinding.DataBindingUtil.setContentView
+import com.newsoft.nscustom.ext.context.*
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult
+import com.newsoft.nscustom.ext.context.launcher_result.BetterActivityResult.Companion.registerForActivityResult
 import com.newsoft.nscustomutils.databinding.ActivityMainBinding
+import com.newsoft.nsdialog.CFAlertDialog
+
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
 //    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
 //        BetterActivityResult.r
 
-//    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
-//        BetterActivityResult.registerActivityForResult(this)
+    protected val activityLauncher: BetterActivityResult<Intent, ActivityResult> =
+        BetterActivityResult.registerActivityForResult(this)
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
-
-//        startActivityExt<>()
 
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))
@@ -211,26 +214,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         onSkip: (() -> Unit)
     ) {
         try {
-//            val view =
-//                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
-//
-//            val dialogRating = CFAlertDialog.Builder(this)
-//                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
-//                .setHeaderView(view)
-//                .create()
-//
-//            val btnChangeToWays = view.findViewById<TextView>(R.id.btnChangeToWays)
-//            val btnSkip = view.findViewById<TextView>(R.id.btnSkip)
-//
-//            btnChangeToWays!!.setOnClickListener {
-//                dialogRating.dismiss()
-//                onChangeToWays.invoke()
-//            }
-//            btnSkip!!.setOnClickListener {
-//                dialogRating.dismiss()
-//                onSkip.invoke()
-//            }
-//            dialogRating.show()
+            val view =
+                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
+
+            val dialogRating = CFAlertDialog.Builder(this)
+                .setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+                .setHeaderView(view)
+                .create()
+
+            val btnChangeToWays = view.findViewById<TextView>(R.id.btnChangeToWays)
+            val btnSkip = view.findViewById<TextView>(R.id.btnSkip)
+
+            btnChangeToWays!!.setOnClickListener {
+                dialogRating.dismiss()
+                onChangeToWays.invoke()
+            }
+            btnSkip!!.setOnClickListener {
+                dialogRating.dismiss()
+                onSkip.invoke()
+            }
+            dialogRating.show()
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }

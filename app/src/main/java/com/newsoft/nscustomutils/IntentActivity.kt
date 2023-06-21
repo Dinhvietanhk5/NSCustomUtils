@@ -2,6 +2,7 @@ package com.newsoft.nscustomutils
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.newsoft.nscustom.ext.context.finishActivityForResultExt
 
 class IntentActivity : AppCompatActivity() {
 
