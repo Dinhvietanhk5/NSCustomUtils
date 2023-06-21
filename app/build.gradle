@@ -7,18 +7,15 @@ plugins {
 
 android {
     compileSdk 33
-    namespace = "com.newsoft.nsextension"
+
     defaultConfig {
-        applicationId "com.newsoft.nsextension"
+        applicationId "com.newsoft.nscustomutils"
         minSdk 28
         targetSdk 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
     }
     buildFeatures {
         viewBinding = true
@@ -39,6 +36,7 @@ android {
     dataBinding {
         enabled = true
     }
+    buildToolsVersion '33.0.0'
 }
 
 dependencies {
@@ -114,7 +112,7 @@ dependencies {
         exclude module: "play-services-safetynet"
     }
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
-    implementation('com.google.firebase:firebase-analytics') {
+    implementation ('com.google.firebase:firebase-analytics'){
         exclude module: "play-services-ads-identifier"
         //TODO Bỏ quyền com.google.android.gms.permission.AD_ID
         exclude module: "play-services-measurement-api"
@@ -128,17 +126,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.3.1'
 
     //TODO Util custom
-//    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:6.0.4'
-//    implementation 'com.github.Dinhvietanhk5:NSCustomUtils.nsbaseadapter:6.0.4'
-//    implementation project(path: ':nsbaseadapter')
-//    implementation project(path: ':location_manager')
+//    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:6.0.1'
     implementation project(path: ':nsdatepicker')
-//    implementation project(path: ':nsedittext')
-//    implementation project(path: ':nsdialog')
-//    implementation project(path: ':permission')
-//    implementation project(path: ':nsextension')
-//    implementation project(path: ':nsswipelayout')
-//    implementation project(path: ':nslog')
 
     implementation 'com.github.ihsg:PatternLocker:2.5.7'
 

@@ -1,12 +1,20 @@
-package com.newsoft.nsextension
+package com.newsoft.nscustomutils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
-import com.newsoft.nsextension.databinding.ActivityMainBinding
-
+import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.databinding.DataBindingUtil.setContentView
+import com.newsoft.nscustomutils.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
@@ -18,9 +26,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
-
-
-
 
 //        startActivityExt<>()
 
@@ -205,7 +210,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         onChangeToWays: (() -> Unit),
         onSkip: (() -> Unit)
     ) {
-//        try {
+        try {
 //            val view =
 //                LayoutInflater.from(this).inflate(R.layout.dialog_check_permission, null, false)
 //
@@ -226,9 +231,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 //                onSkip.invoke()
 //            }
 //            dialogRating.show()
-//        } catch (e: java.lang.Exception) {
-//            e.printStackTrace()
-//        }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")

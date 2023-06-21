@@ -1,4 +1,4 @@
-package com.newsoft.nsextension
+package com.newsoft.nscustomutils
 
 import org.junit.Test
 

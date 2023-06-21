@@ -1,4 +1,4 @@
-//package com.newsoft.nscustomutils
+package com.newsoft.nscustomutils//package com.newsoft.nscustomutils
 //
 //import android.annotation.SuppressLint
 //import android.view.*

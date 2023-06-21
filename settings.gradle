@@ -12,7 +12,6 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        gradlePluginPortal()
         jcenter()
         google()
         mavenCentral()
@@ -21,6 +20,6 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "NSExtension"
+rootProject.name = "NSCustomUtils"
 include ':app'
 include ':nsdatepicker'
