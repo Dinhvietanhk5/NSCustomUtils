@@ -1,110 +1,89 @@
-package com.newsoft.nsswipelayout.adapters;
+package com.newsoft.nsswipelayout.adapters
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import com.newsoft.nsswipelayout.SwipeLayout
+import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl
+import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface
+import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface
+import com.newsoft.nsswipelayout.util.Attributes
 
-import com.newsoft.nsswipelayout.SwipeLayout;
-import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl;
-import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface;
-import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface;
-import com.newsoft.nsswipelayout.util.Attributes;
-
-import java.util.List;
-
-public abstract class BaseSwipeAdapter extends BaseAdapter implements SwipeItemMangerInterface, SwipeAdapterInterface {
-
-    protected SwipeItemMangerImpl mItemManger = new SwipeItemMangerImpl(this);
+abstract class BaseSwipeAdapter : BaseAdapter(), SwipeItemMangerInterface, SwipeAdapterInterface {
+    protected var mItemManger = SwipeItemMangerImpl(this)
 
     /**
-     * return the {@link SwipeLayout} resource id, int the view item.
+     * return the [SwipeLayout] resource id, int the view item.
      * @param position
      * @return
      */
-    public abstract int getSwipeLayoutResourceId(int position);
+    abstract override fun getSwipeLayoutResourceId(position: Int): Int
 
     /**
      * generate a new view item.
      * Never bind SwipeListener or fill values here, every item has a chance to fill value or bind
      * listeners in fillValues.
-     * to fill it in {@code fillValues} method.
+     * to fill it in `fillValues` method.
      * @param position
      * @param parent
      * @return
      */
-    public abstract View generateView(int position, ViewGroup parent);
+    abstract fun generateView(position: Int, parent: ViewGroup?): View
 
     /**
      * fill values or bind listeners to the view.
      * @param position
      * @param convertView
      */
-    public abstract void fillValues(int position, View convertView);
-
-    @Override
-    public void notifyDatasetChanged() {
-        super.notifyDataSetChanged();
+    abstract fun fillValues(position: Int, convertView: View?)
+    override fun notifyDatasetChanged() {
+        super.notifyDataSetChanged()
     }
 
-
-    @Override
-    public final View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        if(v == null){
-            v = generateView(position, parent);
+    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        var v = convertView
+        if (v == null) {
+            v = generateView(position, parent)
         }
-        mItemManger.bind(v, position);
-        fillValues(position, v);
-        return v;
+        mItemManger.bind(v, position)
+        fillValues(position, v)
+        return v
     }
 
-    @Override
-    public void openItem(int position) {
-        mItemManger.openItem(position);
+    override fun openItem(position: Int) {
+        mItemManger.openItem(position)
     }
 
-    @Override
-    public void closeItem(int position) {
-        mItemManger.closeItem(position);
+    override fun closeItem(position: Int) {
+        mItemManger.closeItem(position)
     }
 
-    @Override
-    public void closeAllExcept(SwipeLayout layout) {
-        mItemManger.closeAllExcept(layout);
+    override fun closeAllExcept(layout: SwipeLayout) {
+        mItemManger.closeAllExcept(layout)
     }
 
-    @Override
-    public void closeAllItems() {
-        mItemManger.closeAllItems();
+    override fun closeAllItems() {
+        mItemManger.closeAllItems()
     }
 
-    @Override
-    public List<Integer> getOpenItems() {
-        return mItemManger.getOpenItems();
+    override val openItems: List<Int?>?
+        get() = mItemManger.openItems
+    override val openLayouts: List<SwipeLayout?>?
+        get() = mItemManger.openLayouts
+
+    override fun removeShownLayouts(layout: SwipeLayout?) {
+        mItemManger.removeShownLayouts(layout)
     }
 
-    @Override
-    public List<SwipeLayout> getOpenLayouts() {
-        return mItemManger.getOpenLayouts();
+    override fun isOpen(position: Int): Boolean {
+        return mItemManger.isOpen(position)
     }
 
-    @Override
-    public void removeShownLayouts(SwipeLayout layout) {
-        mItemManger.removeShownLayouts(layout);
+    override fun getMode(): Attributes.Mode? {
+        return mItemManger.mode
     }
 
-    @Override
-    public boolean isOpen(int position) {
-        return mItemManger.isOpen(position);
-    }
-
-    @Override
-    public Attributes.Mode getMode() {
-        return mItemManger.getMode();
-    }
-
-    @Override
-    public void setMode(Attributes.Mode mode) {
-        mItemManger.setMode(mode);
+    override fun setMode(mode: Attributes.Mode) {
+        mItemManger.mode = mode
     }
 }

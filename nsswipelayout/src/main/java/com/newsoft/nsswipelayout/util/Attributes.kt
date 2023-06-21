@@ -1,9 +1,8 @@
-package com.newsoft.nsswipelayout.util;
+package com.newsoft.nsswipelayout.util
 
-
-public class Attributes {
-
-    public enum Mode {
-        Single, Multiple
+class Attributes {
+    enum class Mode {
+        Single,
+        Multiple
     }
 }

@@ -1,144 +1,107 @@
-package com.newsoft.nsswipelayout;
+package com.newsoft.nsswipelayout
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Rect;
-import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.HapticFeedbackConstants;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
+import android.content.Context
+import android.graphics.Rect
+import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.Gravity
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.ViewGroup
+import android.widget.AbsListView
+import android.widget.AdapterView
+import android.widget.FrameLayout
+import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.customview.widget.ViewDragHelper
+import java.util.Arrays
 
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.customview.widget.ViewDragHelper;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+class SwipeLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : FrameLayout(context, attrs, defStyle) {
+    private val mTouchSlop: Int
+    var dragEdge: DragEdge? = DefaultDragEdge
+        private set
+    private val mDragHelper: ViewDragHelper
+    private var mDragDistance = 0
+    private val mDragEdges = LinkedHashMap<DragEdge, View?>()
+    private var mShowMode: ShowMode = ShowMode.PullOut
+    private val mEdgeSwipesOffset = FloatArray(4)
+    private val mSwipeListeners: MutableList<SwipeListener> = ArrayList()
+    private val mSwipeDeniers: MutableList<SwipeDenier> = ArrayList()
+    private val mRevealListeners: MutableMap<View, ArrayList<OnRevealListener>?> = HashMap()
+    private val mShowEntirely: MutableMap<View, Boolean> = HashMap()
+    private val mViewBoundCache: MutableMap<View?, Rect> =
+        HashMap() //save all children's bound, restore in onLayout
+    private var mDoubleClickListener: DoubleClickListener? = null
+    var isSwipeEnabled = true
+    private val mSwipesEnabled = booleanArrayOf(true, true, true, true)
+    var isClickToClose = false
+    /***
+     * Returns the percentage of revealing at which the view below should the view finish opening
+     * if it was already open before dragging
+     *
+     * @returns The percentage of view revealed to trigger, default value is 0.25
+     */
+    /***
+     * Allows to stablish at what percentage of revealing the view below should the view finish opening
+     * if it was already open before dragging
+     *
+     * @param willOpenPercentAfterOpen The percentage of view revealed to trigger, default value is 0.25
+     */
+    var willOpenPercentAfterOpen = 0.75f
+    /***
+     * Returns the percentage of revealing at which the view below should the view finish opening
+     * if it was already closed before dragging
+     *
+     * @returns The percentage of view revealed to trigger, default value is 0.25
+     */
+    /***
+     * Allows to stablish at what percentage of revealing the view below should the view finish opening
+     * if it was already closed before dragging
+     *
+     * @param willOpenPercentAfterClose The percentage of view revealed to trigger, default value is 0.75
+     */
+    var willOpenPercentAfterClose = 0.25f
 
-public class SwipeLayout extends FrameLayout {
-    @Deprecated
-    public static final int EMPTY_LAYOUT = -1;
-    private static final int DRAG_LEFT = 1;
-    private static final int DRAG_RIGHT = 2;
-    private static final int DRAG_TOP = 4;
-    private static final int DRAG_BOTTOM = 8;
-    private static final DragEdge DefaultDragEdge = DragEdge.Right;
-
-    private int mTouchSlop;
-
-    private DragEdge mCurrentDragEdge = DefaultDragEdge;
-    private ViewDragHelper mDragHelper;
-
-    private int mDragDistance = 0;
-    private LinkedHashMap<DragEdge, View> mDragEdges = new LinkedHashMap<>();
-    private ShowMode mShowMode;
-
-    private float[] mEdgeSwipesOffset = new float[4];
-
-    private List<SwipeListener> mSwipeListeners = new ArrayList<>();
-    private List<SwipeDenier> mSwipeDeniers = new ArrayList<>();
-    private Map<View, ArrayList<OnRevealListener>> mRevealListeners = new HashMap<>();
-    private Map<View, Boolean> mShowEntirely = new HashMap<>();
-    private Map<View, Rect> mViewBoundCache = new HashMap<>();//save all children's bound, restore in onLayout
-
-    private DoubleClickListener mDoubleClickListener;
-
-    private boolean mSwipeEnabled = true;
-    private boolean[] mSwipesEnabled = new boolean[]{true, true, true, true};
-    private boolean mClickToClose = false;
-    private float mWillOpenPercentAfterOpen = 0.75f;
-    private float mWillOpenPercentAfterClose = 0.25f;
-
-    public enum DragEdge {
+    enum class DragEdge {
         Left,
         Top,
         Right,
         Bottom
     }
 
-    public enum ShowMode {
+    enum class ShowMode {
         LayDown,
         PullOut
     }
 
-    public SwipeLayout(Context context) {
-        this(context, null);
+    interface SwipeListener {
+        fun onStartOpen(layout: SwipeLayout)
+        fun onOpen(layout: SwipeLayout)
+        fun onStartClose(layout: SwipeLayout?)
+        fun onClose(layout: SwipeLayout?)
+        fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int)
+        fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float)
     }
 
-    public SwipeLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    fun addSwipeListener(l: SwipeListener) {
+        mSwipeListeners.add(l)
     }
 
-    public SwipeLayout(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        mDragHelper = ViewDragHelper.create(this, mDragHelperCallback);
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SwipeLayout);
-        int dragEdgeChoices = a.getInt(R.styleable.SwipeLayout_drag_edge, DRAG_RIGHT);
-        mEdgeSwipesOffset[DragEdge.Left.ordinal()] = a.getDimension(R.styleable.SwipeLayout_leftEdgeSwipeOffset, 0);
-        mEdgeSwipesOffset[DragEdge.Right.ordinal()] = a.getDimension(R.styleable.SwipeLayout_rightEdgeSwipeOffset, 0);
-        mEdgeSwipesOffset[DragEdge.Top.ordinal()] = a.getDimension(R.styleable.SwipeLayout_topEdgeSwipeOffset, 0);
-        mEdgeSwipesOffset[DragEdge.Bottom.ordinal()] = a.getDimension(R.styleable.SwipeLayout_bottomEdgeSwipeOffset, 0);
-        setClickToClose(a.getBoolean(R.styleable.SwipeLayout_clickToClose, mClickToClose));
-
-        if ((dragEdgeChoices & DRAG_LEFT) == DRAG_LEFT) {
-            mDragEdges.put(DragEdge.Left, null);
-        }
-        if ((dragEdgeChoices & DRAG_TOP) == DRAG_TOP) {
-            mDragEdges.put(DragEdge.Top, null);
-        }
-        if ((dragEdgeChoices & DRAG_RIGHT) == DRAG_RIGHT) {
-            mDragEdges.put(DragEdge.Right, null);
-        }
-        if ((dragEdgeChoices & DRAG_BOTTOM) == DRAG_BOTTOM) {
-            mDragEdges.put(DragEdge.Bottom, null);
-        }
-        int ordinal = a.getInt(R.styleable.SwipeLayout_show_mode, ShowMode.PullOut.ordinal());
-        mShowMode = ShowMode.values()[ordinal];
-        a.recycle();
-
+    fun removeSwipeListener(l: SwipeListener) {
+        mSwipeListeners.remove(l)
     }
 
-    public interface SwipeListener {
-        void onStartOpen(SwipeLayout layout);
-
-        void onOpen(SwipeLayout layout);
-
-        void onStartClose(SwipeLayout layout);
-
-        void onClose(SwipeLayout layout);
-
-        void onUpdate(SwipeLayout layout, int leftOffset, int topOffset);
-
-        void onHandRelease(SwipeLayout layout, float xvel, float yvel);
+    fun removeAllSwipeListener() {
+        mSwipeListeners.clear()
     }
 
-    public void addSwipeListener(SwipeListener l) {
-        mSwipeListeners.add(l);
-    }
-
-    public void removeSwipeListener(SwipeListener l) {
-        mSwipeListeners.remove(l);
-    }
-
-    public void removeAllSwipeListener() {
-        mSwipeListeners.clear();
-    }
-
-    public interface SwipeDenier {
+    interface SwipeDenier {
         /*
          * Called in onInterceptTouchEvent Determines if this swipe event should
          * be denied Implement this interface if you are using views with swipe
@@ -146,280 +109,242 @@ public class SwipeLayout extends FrameLayout {
          * 
          * @return true deny false allow
          */
-        boolean shouldDenySwipe(MotionEvent ev);
+        fun shouldDenySwipe(ev: MotionEvent?): Boolean
     }
 
-    public void addSwipeDenier(SwipeDenier denier) {
-        mSwipeDeniers.add(denier);
+    fun addSwipeDenier(denier: SwipeDenier) {
+        mSwipeDeniers.add(denier)
     }
 
-    public void removeSwipeDenier(SwipeDenier denier) {
-        mSwipeDeniers.remove(denier);
+    fun removeSwipeDenier(denier: SwipeDenier) {
+        mSwipeDeniers.remove(denier)
     }
 
-    public void removeAllSwipeDeniers() {
-        mSwipeDeniers.clear();
+    fun removeAllSwipeDeniers() {
+        mSwipeDeniers.clear()
     }
 
-    public interface OnRevealListener {
-        void onReveal(View child, DragEdge edge, float fraction, int distance);
+    interface OnRevealListener {
+        fun onReveal(child: View?, edge: DragEdge?, fraction: Float, distance: Int)
     }
 
     /**
      * bind a view with a specific
-     * {@link com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener}
+     * [com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener]
      *
      * @param childId the view id.
      * @param l       the target
-     *                {@link com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener}
+     * [com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener]
      */
-    public void addRevealListener(int childId, OnRevealListener l) {
-        View child = findViewById(childId);
-        if (child == null) {
-            throw new IllegalArgumentException("Child does not belong to SwipeListener.");
-        }
-
+    fun addRevealListener(childId: Int, l: OnRevealListener) {
+        val child = findViewById<View>(childId)
+            ?: throw IllegalArgumentException("Child does not belong to SwipeListener.")
         if (!mShowEntirely.containsKey(child)) {
-            mShowEntirely.put(child, false);
+            mShowEntirely[child] = false
         }
-        if (mRevealListeners.get(child) == null)
-            mRevealListeners.put(child, new ArrayList<OnRevealListener>());
-
-        mRevealListeners.get(child).add(l);
+        if (mRevealListeners[child] == null) mRevealListeners[child] = ArrayList()
+        mRevealListeners[child]!!.add(l)
     }
 
     /**
      * bind multiple views with an
-     * {@link com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener}.
+     * [com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener].
      *
      * @param childIds the view id.
-     * @param l        the {@link com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener}
+     * @param l        the [com.newsoft.nsswipelayout.SwipeLayout.OnRevealListener]
      */
-    public void addRevealListener(int[] childIds, OnRevealListener l) {
-        for (int i : childIds)
-            addRevealListener(i, l);
+    fun addRevealListener(childIds: IntArray, l: OnRevealListener) {
+        for (i in childIds) addRevealListener(i, l)
     }
 
-    public void removeRevealListener(int childId, OnRevealListener l) {
-        View child = findViewById(childId);
-
-        if (child == null) return;
-
-        mShowEntirely.remove(child);
-        if (mRevealListeners.containsKey(child)) mRevealListeners.get(child).remove(l);
+    fun removeRevealListener(childId: Int, l: OnRevealListener) {
+        val child = findViewById<View>(childId) ?: return
+        mShowEntirely.remove(child)
+        if (mRevealListeners.containsKey(child)) mRevealListeners[child]!!.remove(l)
     }
 
-    public void removeAllRevealListeners(int childId) {
-        View child = findViewById(childId);
+    fun removeAllRevealListeners(childId: Int) {
+        val child = findViewById<View>(childId)
         if (child != null) {
-            mRevealListeners.remove(child);
-            mShowEntirely.remove(child);
+            mRevealListeners.remove(child)
+            mShowEntirely.remove(child)
         }
     }
 
-    private ViewDragHelper.Callback mDragHelperCallback = new ViewDragHelper.Callback() {
+    private val mDragHelperCallback: ViewDragHelper.Callback = object : ViewDragHelper.Callback() {
+        override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
+            if (child === surfaceView) {
+                when (dragEdge) {
+                    DragEdge.Top, DragEdge.Bottom -> return paddingLeft
+                    DragEdge.Left -> {
+                        if (left < paddingLeft) return paddingLeft
+                        if (left > paddingLeft + mDragDistance) return paddingLeft + mDragDistance
+                    }
 
-        @Override
-        public int clampViewPositionHorizontal(View child, int left, int dx) {
-            if (child == getSurfaceView()) {
-                switch (mCurrentDragEdge) {
-                    case Top:
-                    case Bottom:
-                        return getPaddingLeft();
-                    case Left:
-                        if (left < getPaddingLeft()) return getPaddingLeft();
-                        if (left > getPaddingLeft() + mDragDistance)
-                            return getPaddingLeft() + mDragDistance;
-                        break;
-                    case Right:
-                        if (left > getPaddingLeft()) return getPaddingLeft();
-                        if (left < getPaddingLeft() - mDragDistance)
-                            return getPaddingLeft() - mDragDistance;
-                        break;
+                    DragEdge.Right -> {
+                        if (left > paddingLeft) return paddingLeft
+                        if (left < paddingLeft - mDragDistance) return paddingLeft - mDragDistance
+                    }else -> {}
                 }
-            } else if (getCurrentBottomView() == child) {
+            } else if (currentBottomView === child) {
+                when (dragEdge) {
+                    DragEdge.Top, DragEdge.Bottom -> return paddingLeft
+                    DragEdge.Left -> if (mShowMode == ShowMode.PullOut) {
+                        if (left > paddingLeft) return paddingLeft
+                    }
 
-                switch (mCurrentDragEdge) {
-                    case Top:
-                    case Bottom:
-                        return getPaddingLeft();
-                    case Left:
-                        if (mShowMode == ShowMode.PullOut) {
-                            if (left > getPaddingLeft()) return getPaddingLeft();
+                    DragEdge.Right -> if (mShowMode == ShowMode.PullOut) {
+                        if (left < measuredWidth - mDragDistance) {
+                            return measuredWidth - mDragDistance
                         }
-                        break;
-                    case Right:
-                        if (mShowMode == ShowMode.PullOut) {
-                            if (left < getMeasuredWidth() - mDragDistance) {
-                                return getMeasuredWidth() - mDragDistance;
-                            }
-                        }
-                        break;
+                    }
+                    else -> {}
                 }
             }
-            return left;
+            return left
         }
 
-        @Override
-        public int clampViewPositionVertical(View child, int top, int dy) {
-            if (child == getSurfaceView()) {
-                switch (mCurrentDragEdge) {
-                    case Left:
-                    case Right:
-                        return getPaddingTop();
-                    case Top:
-                        if (top < getPaddingTop()) return getPaddingTop();
-                        if (top > getPaddingTop() + mDragDistance)
-                            return getPaddingTop() + mDragDistance;
-                        break;
-                    case Bottom:
-                        if (top < getPaddingTop() - mDragDistance) {
-                            return getPaddingTop() - mDragDistance;
+        override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
+            if (child === surfaceView) {
+                when (dragEdge) {
+                    DragEdge.Left, DragEdge.Right -> return paddingTop
+                    DragEdge.Top -> {
+                        if (top < paddingTop) return paddingTop
+                        if (top > paddingTop + mDragDistance) return paddingTop + mDragDistance
+                    }
+
+                    DragEdge.Bottom -> {
+                        if (top < paddingTop - mDragDistance) {
+                            return paddingTop - mDragDistance
                         }
-                        if (top > getPaddingTop()) {
-                            return getPaddingTop();
+                        if (top > paddingTop) {
+                            return paddingTop
                         }
+                    }
+                    else -> {}
                 }
             } else {
-                View surfaceView = getSurfaceView();
-                int surfaceViewTop = surfaceView == null ? 0 : surfaceView.getTop();
-                switch (mCurrentDragEdge) {
-                    case Left:
-                    case Right:
-                        return getPaddingTop();
-                    case Top:
-                        if (mShowMode == ShowMode.PullOut) {
-                            if (top > getPaddingTop()) return getPaddingTop();
-                        } else {
-                            if (surfaceViewTop + dy < getPaddingTop())
-                                return getPaddingTop();
-                            if (surfaceViewTop + dy > getPaddingTop() + mDragDistance)
-                                return getPaddingTop() + mDragDistance;
-                        }
-                        break;
-                    case Bottom:
-                        if (mShowMode == ShowMode.PullOut) {
-                            if (top < getMeasuredHeight() - mDragDistance)
-                                return getMeasuredHeight() - mDragDistance;
-                        } else {
-                            if (surfaceViewTop + dy >= getPaddingTop())
-                                return getPaddingTop();
-                            if (surfaceViewTop + dy <= getPaddingTop() - mDragDistance)
-                                return getPaddingTop() - mDragDistance;
-                        }
-                }
-            }
-            return top;
-        }
-
-        @Override
-        public boolean tryCaptureView(View child, int pointerId) {
-            boolean result = child == getSurfaceView() || getBottomViews().contains(child);
-            if (result) {
-                isCloseBeforeDrag = getOpenStatus() == Status.Close;
-            }
-            return result;
-        }
-
-        @Override
-        public int getViewHorizontalDragRange(View child) {
-            return mDragDistance;
-        }
-
-        @Override
-        public int getViewVerticalDragRange(View child) {
-            return mDragDistance;
-        }
-
-        boolean isCloseBeforeDrag = true;
-
-        @Override
-        public void onViewReleased(View releasedChild, float xvel, float yvel) {
-            super.onViewReleased(releasedChild, xvel, yvel);
-            processHandRelease(xvel, yvel, isCloseBeforeDrag);
-            for (SwipeListener l : mSwipeListeners) {
-                l.onHandRelease(SwipeLayout.this, xvel, yvel);
-            }
-
-            invalidate();
-        }
-
-        @Override
-        public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
-            View surfaceView = getSurfaceView();
-            if (surfaceView == null) return;
-            View currentBottomView = getCurrentBottomView();
-            int evLeft = surfaceView.getLeft(),
-                    evRight = surfaceView.getRight(),
-                    evTop = surfaceView.getTop(),
-                    evBottom = surfaceView.getBottom();
-            if (changedView == surfaceView) {
-
-                if (mShowMode == ShowMode.PullOut && currentBottomView != null) {
-                    if (mCurrentDragEdge == DragEdge.Left || mCurrentDragEdge == DragEdge.Right) {
-                        currentBottomView.offsetLeftAndRight(dx);
+                val surfaceViewTop = surfaceView?.top ?: 0
+                when (dragEdge) {
+                    DragEdge.Left, DragEdge.Right -> return paddingTop
+                    DragEdge.Top -> if (mShowMode == ShowMode.PullOut) {
+                        if (top > paddingTop) return paddingTop
                     } else {
-                        currentBottomView.offsetTopAndBottom(dy);
-                    }
-                }
-
-            } else if (getBottomViews().contains(changedView)) {
-
-                if (mShowMode == ShowMode.PullOut) {
-                    surfaceView.offsetLeftAndRight(dx);
-                    surfaceView.offsetTopAndBottom(dy);
-                } else {
-                    Rect rect = computeBottomLayDown(mCurrentDragEdge);
-                    if (currentBottomView != null) {
-                        currentBottomView.layout(rect.left, rect.top, rect.right, rect.bottom);
+                        if (surfaceViewTop + dy < paddingTop) return paddingTop
+                        if (surfaceViewTop + dy > paddingTop + mDragDistance) return paddingTop + mDragDistance
                     }
 
-                    int newLeft = surfaceView.getLeft() + dx, newTop = surfaceView.getTop() + dy;
+                    DragEdge.Bottom -> if (mShowMode == ShowMode.PullOut) {
+                        if (top < measuredHeight - mDragDistance) return measuredHeight - mDragDistance
+                    } else {
+                        if (surfaceViewTop + dy >= paddingTop) return paddingTop
+                        if (surfaceViewTop + dy <= paddingTop - mDragDistance) return paddingTop - mDragDistance
+                    }
 
-                    if (mCurrentDragEdge == DragEdge.Left && newLeft < getPaddingLeft())
-                        newLeft = getPaddingLeft();
-                    else if (mCurrentDragEdge == DragEdge.Right && newLeft > getPaddingLeft())
-                        newLeft = getPaddingLeft();
-                    else if (mCurrentDragEdge == DragEdge.Top && newTop < getPaddingTop())
-                        newTop = getPaddingTop();
-                    else if (mCurrentDragEdge == DragEdge.Bottom && newTop > getPaddingTop())
-                        newTop = getPaddingTop();
-
-                    surfaceView.layout(newLeft, newTop, newLeft + getMeasuredWidth(), newTop + getMeasuredHeight());
+                    else -> {}
                 }
             }
-
-            dispatchRevealEvent(evLeft, evTop, evRight, evBottom);
-
-            dispatchSwipeEvent(evLeft, evTop, dx, dy);
-
-            invalidate();
-
-            captureChildrenBound();
+            return top
         }
-    };
+
+        override fun tryCaptureView(child: View, pointerId: Int): Boolean {
+            val result = child === surfaceView || bottomViews.contains(child)
+            if (result) {
+                isCloseBeforeDrag = openStatus == Status.Close
+            }
+            return result
+        }
+
+        override fun getViewHorizontalDragRange(child: View): Int {
+            return mDragDistance
+        }
+
+        override fun getViewVerticalDragRange(child: View): Int {
+            return mDragDistance
+        }
+
+        var isCloseBeforeDrag = true
+        override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
+            super.onViewReleased(releasedChild, xvel, yvel)
+            processHandRelease(xvel, yvel, isCloseBeforeDrag)
+            for (l in mSwipeListeners) {
+                l.onHandRelease(this@SwipeLayout, xvel, yvel)
+            }
+            invalidate()
+        }
+
+        override fun onViewPositionChanged(
+            changedView: View,
+            left: Int,
+            top: Int,
+            dx: Int,
+            dy: Int
+        ) {
+            val surfaceView: View = surfaceView ?: return
+            val currentBottomView: View = currentBottomView!!
+            val evLeft = surfaceView.left
+            val evRight = surfaceView.right
+            val evTop = surfaceView.top
+            val evBottom = surfaceView.bottom
+            if (changedView === surfaceView) {
+                if (mShowMode == ShowMode.PullOut && currentBottomView != null) {
+                    if (dragEdge == DragEdge.Left || dragEdge == DragEdge.Right) {
+                        currentBottomView.offsetLeftAndRight(dx)
+                    } else {
+                        currentBottomView.offsetTopAndBottom(dy)
+                    }
+                }
+            } else if (bottomViews.contains(changedView)) {
+                if (mShowMode == ShowMode.PullOut) {
+                    surfaceView.offsetLeftAndRight(dx)
+                    surfaceView.offsetTopAndBottom(dy)
+                } else {
+                    val rect = computeBottomLayDown(dragEdge)
+                    if (currentBottomView != null) {
+                        currentBottomView.layout(rect.left, rect.top, rect.right, rect.bottom)
+                    }
+                    var newLeft = surfaceView.left + dx
+                    var newTop = surfaceView.top + dy
+                    if (dragEdge == DragEdge.Left && newLeft < paddingLeft) newLeft =
+                        paddingLeft else if (dragEdge == DragEdge.Right && newLeft > paddingLeft) newLeft =
+                        paddingLeft else if (dragEdge == DragEdge.Top && newTop < paddingTop) newTop =
+                        paddingTop else if (dragEdge == DragEdge.Bottom && newTop > paddingTop) newTop =
+                        paddingTop
+                    surfaceView.layout(
+                        newLeft,
+                        newTop,
+                        newLeft + measuredWidth,
+                        newTop + measuredHeight
+                    )
+                }
+            }
+            dispatchRevealEvent(evLeft, evTop, evRight, evBottom)
+            dispatchSwipeEvent(evLeft, evTop, dx, dy)
+            invalidate()
+            captureChildrenBound()
+        }
+    }
 
     /**
-     * save children's bounds, so they can restore the bound in {@link #onLayout(boolean, int, int, int, int)}
+     * save children's bounds, so they can restore the bound in [.onLayout]
      */
-    private void captureChildrenBound() {
-        View currentBottomView = getCurrentBottomView();
-        if (getOpenStatus() == Status.Close) {
-            mViewBoundCache.remove(currentBottomView);
-            return;
+    private fun captureChildrenBound() {
+        val currentBottomView = currentBottomView
+        if (openStatus == Status.Close) {
+            mViewBoundCache.remove(currentBottomView)
+            return
         }
-
-        View[] views = new View[]{getSurfaceView(), currentBottomView};
-        for (View child : views) {
-            Rect rect = mViewBoundCache.get(child);
+        val views = arrayOf(surfaceView, currentBottomView)
+        for (child in views) {
+            var rect = mViewBoundCache[child]
             if (rect == null) {
-                rect = new Rect();
-                mViewBoundCache.put(child, rect);
+                rect = Rect()
+                mViewBoundCache[child] = rect
             }
-            rect.left = child.getLeft();
-            rect.top = child.getTop();
-            rect.right = child.getRight();
-            rect.bottom = child.getBottom();
+            rect.left = child!!.left
+            rect.top = child.top
+            rect.right = child.right
+            rect.bottom = child.bottom
         }
     }
 
@@ -428,141 +353,125 @@ public class SwipeLayout extends FrameLayout {
      * makes the view may not always get the event when the view is totally
      * show( fraction = 1), so , we need to calculate every time.
      */
-    protected boolean isViewTotallyFirstShowed(View child, Rect relativePosition, DragEdge edge, int surfaceLeft,
-                                               int surfaceTop, int surfaceRight, int surfaceBottom) {
-        if (mShowEntirely.get(child)) return false;
-        int childLeft = relativePosition.left;
-        int childRight = relativePosition.right;
-        int childTop = relativePosition.top;
-        int childBottom = relativePosition.bottom;
-        boolean r = false;
-        if (getShowMode() == ShowMode.LayDown) {
-            if ((edge == DragEdge.Right && surfaceRight <= childLeft)
-                    || (edge == DragEdge.Left && surfaceLeft >= childRight)
-                    || (edge == DragEdge.Top && surfaceTop >= childBottom)
-                    || (edge == DragEdge.Bottom && surfaceBottom <= childTop)) r = true;
-        } else if (getShowMode() == ShowMode.PullOut) {
-            if ((edge == DragEdge.Right && childRight <= getWidth())
-                    || (edge == DragEdge.Left && childLeft >= getPaddingLeft())
-                    || (edge == DragEdge.Top && childTop >= getPaddingTop())
-                    || (edge == DragEdge.Bottom && childBottom <= getHeight())) r = true;
+    protected fun isViewTotallyFirstShowed(
+        child: View, relativePosition: Rect, edge: DragEdge?, surfaceLeft: Int,
+        surfaceTop: Int, surfaceRight: Int, surfaceBottom: Int
+    ): Boolean {
+        if (mShowEntirely[child]!!) return false
+        val childLeft = relativePosition.left
+        val childRight = relativePosition.right
+        val childTop = relativePosition.top
+        val childBottom = relativePosition.bottom
+        var r = false
+        if (showMode == ShowMode.LayDown) {
+            if (edge == DragEdge.Right && surfaceRight <= childLeft || edge == DragEdge.Left && surfaceLeft >= childRight || edge == DragEdge.Top && surfaceTop >= childBottom || edge == DragEdge.Bottom && surfaceBottom <= childTop) r =
+                true
+        } else if (showMode == ShowMode.PullOut) {
+            if (edge == DragEdge.Right && childRight <= width || edge == DragEdge.Left && childLeft >= paddingLeft || edge == DragEdge.Top && childTop >= paddingTop || edge == DragEdge.Bottom && childBottom <= height) r =
+                true
         }
-        return r;
+        return r
     }
 
-    protected boolean isViewShowing(View child, Rect relativePosition, DragEdge availableEdge, int surfaceLeft,
-                                    int surfaceTop, int surfaceRight, int surfaceBottom) {
-        int childLeft = relativePosition.left;
-        int childRight = relativePosition.right;
-        int childTop = relativePosition.top;
-        int childBottom = relativePosition.bottom;
-        if (getShowMode() == ShowMode.LayDown) {
-            switch (availableEdge) {
-                case Right:
-                    if (surfaceRight > childLeft && surfaceRight <= childRight) {
-                        return true;
-                    }
-                    break;
-                case Left:
-                    if (surfaceLeft < childRight && surfaceLeft >= childLeft) {
-                        return true;
-                    }
-                    break;
-                case Top:
-                    if (surfaceTop >= childTop && surfaceTop < childBottom) {
-                        return true;
-                    }
-                    break;
-                case Bottom:
-                    if (surfaceBottom > childTop && surfaceBottom <= childBottom) {
-                        return true;
-                    }
-                    break;
+    protected fun isViewShowing(
+        child: View?, relativePosition: Rect, availableEdge: DragEdge?, surfaceLeft: Int,
+        surfaceTop: Int, surfaceRight: Int, surfaceBottom: Int
+    ): Boolean {
+        val childLeft = relativePosition.left
+        val childRight = relativePosition.right
+        val childTop = relativePosition.top
+        val childBottom = relativePosition.bottom
+        if (showMode == ShowMode.LayDown) {
+            when (availableEdge) {
+                DragEdge.Right -> if (surfaceRight > childLeft && surfaceRight <= childRight) {
+                    return true
+                }
+
+                DragEdge.Left -> if (surfaceLeft < childRight && surfaceLeft >= childLeft) {
+                    return true
+                }
+
+                DragEdge.Top -> if (surfaceTop >= childTop && surfaceTop < childBottom) {
+                    return true
+                }
+
+                DragEdge.Bottom -> if (surfaceBottom > childTop && surfaceBottom <= childBottom) {
+                    return true
+                }
+                else -> {}
             }
-        } else if (getShowMode() == ShowMode.PullOut) {
-            switch (availableEdge) {
-                case Right:
-                    if (childLeft <= getWidth() && childRight > getWidth()) return true;
-                    break;
-                case Left:
-                    if (childRight >= getPaddingLeft() && childLeft < getPaddingLeft()) return true;
-                    break;
-                case Top:
-                    if (childTop < getPaddingTop() && childBottom >= getPaddingTop()) return true;
-                    break;
-                case Bottom:
-                    if (childTop < getHeight() && childTop >= getPaddingTop()) return true;
-                    break;
+        } else if (showMode == ShowMode.PullOut) {
+            when (availableEdge) {
+                DragEdge.Right -> if (childLeft <= width && childRight > width) return true
+                DragEdge.Left -> if (childRight >= paddingLeft && childLeft < paddingLeft) return true
+                DragEdge.Top -> if (childTop < paddingTop && childBottom >= paddingTop) return true
+                DragEdge.Bottom -> if (childTop < height && childTop >= paddingTop) return true
+                else -> {}
             }
         }
-        return false;
+        return false
     }
 
-    protected Rect getRelativePosition(View child) {
-        View t = child;
-        Rect r = new Rect(t.getLeft(), t.getTop(), 0, 0);
-        while (t.getParent() != null && t != getRootView()) {
-            t = (View) t.getParent();
-            if (t == this) break;
-            r.left += t.getLeft();
-            r.top += t.getTop();
+    protected fun getRelativePosition(child: View): Rect {
+        var t = child
+        val r = Rect(t.left, t.top, 0, 0)
+        while (t.parent != null && t !== rootView) {
+            t = t.parent as View
+            if (t === this) break
+            r.left += t.left
+            r.top += t.top
         }
-        r.right = r.left + child.getMeasuredWidth();
-        r.bottom = r.top + child.getMeasuredHeight();
-        return r;
+        r.right = r.left + child.measuredWidth
+        r.bottom = r.top + child.measuredHeight
+        return r
     }
 
-    private int mEventCounter = 0;
-
-    protected void dispatchSwipeEvent(int surfaceLeft, int surfaceTop, int dx, int dy) {
-        DragEdge edge = getDragEdge();
-        boolean open = true;
+    private var mEventCounter = 0
+    protected fun dispatchSwipeEvent(surfaceLeft: Int, surfaceTop: Int, dx: Int, dy: Int) {
+        val edge = dragEdge
+        var open = true
         if (edge == DragEdge.Left) {
-            if (dx < 0) open = false;
+            if (dx < 0) open = false
         } else if (edge == DragEdge.Right) {
-            if (dx > 0) open = false;
+            if (dx > 0) open = false
         } else if (edge == DragEdge.Top) {
-            if (dy < 0) open = false;
+            if (dy < 0) open = false
         } else if (edge == DragEdge.Bottom) {
-            if (dy > 0) open = false;
+            if (dy > 0) open = false
         }
-
-        dispatchSwipeEvent(surfaceLeft, surfaceTop, open);
+        dispatchSwipeEvent(surfaceLeft, surfaceTop, open)
     }
 
-    protected void dispatchSwipeEvent(int surfaceLeft, int surfaceTop, boolean open) {
-        safeBottomView();
-        Status status = getOpenStatus();
-
+    protected fun dispatchSwipeEvent(surfaceLeft: Int, surfaceTop: Int, open: Boolean) {
+        safeBottomView()
+        val status = openStatus
         if (!mSwipeListeners.isEmpty()) {
-            mEventCounter++;
-            for (SwipeListener l : mSwipeListeners) {
+            mEventCounter++
+            for (l in mSwipeListeners) {
                 if (mEventCounter == 1) {
                     if (open) {
-                        l.onStartOpen(this);
+                        l.onStartOpen(this)
                     } else {
-                        l.onStartClose(this);
+                        l.onStartClose(this)
                     }
                 }
-                l.onUpdate(SwipeLayout.this, surfaceLeft - getPaddingLeft(), surfaceTop - getPaddingTop());
+                l.onUpdate(this@SwipeLayout, surfaceLeft - paddingLeft, surfaceTop - paddingTop)
             }
-
             if (status == Status.Close) {
-                for (SwipeListener l : mSwipeListeners) {
-                    l.onClose(SwipeLayout.this);
+                for (l in mSwipeListeners) {
+                    l.onClose(this@SwipeLayout)
                 }
-                mEventCounter = 0;
+                mEventCounter = 0
             }
-
             if (status == Status.Open) {
-                View currentBottomView = getCurrentBottomView();
+                val currentBottomView = currentBottomView
                 if (currentBottomView != null) {
-                    currentBottomView.setEnabled(true);
+                    currentBottomView.isEnabled = true
                 }
-                for (SwipeListener l : mSwipeListeners) {
-                    l.onOpen(SwipeLayout.this);
+                for (l in mSwipeListeners) {
+                    l.onOpen(this@SwipeLayout)
                 }
-                mEventCounter = 0;
+                mEventCounter = 0
             }
         }
     }
@@ -570,752 +479,689 @@ public class SwipeLayout extends FrameLayout {
     /**
      * prevent bottom view get any touch event. Especially in LayDown mode.
      */
-    private void safeBottomView() {
-        Status status = getOpenStatus();
-        List<View> bottoms = getBottomViews();
-
+    private fun safeBottomView() {
+        val status = openStatus
+        val bottoms = bottomViews
         if (status == Status.Close) {
-            for (View bottom : bottoms) {
-                if (bottom != null && bottom.getVisibility() != INVISIBLE) {
-                    bottom.setVisibility(INVISIBLE);
+            for (bottom in bottoms) {
+                if (bottom != null && bottom.visibility != INVISIBLE) {
+                    bottom.visibility = INVISIBLE
                 }
             }
         } else {
-            View currentBottomView = getCurrentBottomView();
-            if (currentBottomView != null && currentBottomView.getVisibility() != VISIBLE) {
-                currentBottomView.setVisibility(VISIBLE);
+            val currentBottomView = currentBottomView
+            if (currentBottomView != null && currentBottomView.visibility != VISIBLE) {
+                currentBottomView.visibility = VISIBLE
             }
         }
     }
 
-    protected void dispatchRevealEvent(final int surfaceLeft, final int surfaceTop, final int surfaceRight,
-                                       final int surfaceBottom) {
-        if (mRevealListeners.isEmpty()) return;
-        for (Map.Entry<View, ArrayList<OnRevealListener>> entry : mRevealListeners.entrySet()) {
-            View child = entry.getKey();
-            Rect rect = getRelativePosition(child);
-            if (isViewShowing(child, rect, mCurrentDragEdge, surfaceLeft, surfaceTop,
-                    surfaceRight, surfaceBottom)) {
-                mShowEntirely.put(child, false);
-                int distance = 0;
-                float fraction = 0f;
-                if (getShowMode() == ShowMode.LayDown) {
-                    switch (mCurrentDragEdge) {
-                        case Left:
-                            distance = rect.left - surfaceLeft;
-                            fraction = distance / (float) child.getWidth();
-                            break;
-                        case Right:
-                            distance = rect.right - surfaceRight;
-                            fraction = distance / (float) child.getWidth();
-                            break;
-                        case Top:
-                            distance = rect.top - surfaceTop;
-                            fraction = distance / (float) child.getHeight();
-                            break;
-                        case Bottom:
-                            distance = rect.bottom - surfaceBottom;
-                            fraction = distance / (float) child.getHeight();
-                            break;
+    protected fun dispatchRevealEvent(
+        surfaceLeft: Int, surfaceTop: Int, surfaceRight: Int,
+        surfaceBottom: Int
+    ) {
+        if (mRevealListeners.isEmpty()) return
+        for ((child, value) in mRevealListeners) {
+            val rect = getRelativePosition(child)
+            if (isViewShowing(
+                    child, rect, dragEdge, surfaceLeft, surfaceTop,
+                    surfaceRight, surfaceBottom
+                )
+            ) {
+                mShowEntirely[child] = false
+                var distance = 0
+                var fraction = 0f
+                if (showMode == ShowMode.LayDown) {
+                    when (dragEdge) {
+                        DragEdge.Left -> {
+                            distance = rect.left - surfaceLeft
+                            fraction = distance / child.width.toFloat()
+                        }
+
+                        DragEdge.Right -> {
+                            distance = rect.right - surfaceRight
+                            fraction = distance / child.width.toFloat()
+                        }
+
+                        DragEdge.Top -> {
+                            distance = rect.top - surfaceTop
+                            fraction = distance / child.height.toFloat()
+                        }
+
+                        DragEdge.Bottom -> {
+                            distance = rect.bottom - surfaceBottom
+                            fraction = distance / child.height.toFloat()
+                        }
+                        else -> {}
                     }
-                } else if (getShowMode() == ShowMode.PullOut) {
-                    switch (mCurrentDragEdge) {
-                        case Left:
-                            distance = rect.right - getPaddingLeft();
-                            fraction = distance / (float) child.getWidth();
-                            break;
-                        case Right:
-                            distance = rect.left - getWidth();
-                            fraction = distance / (float) child.getWidth();
-                            break;
-                        case Top:
-                            distance = rect.bottom - getPaddingTop();
-                            fraction = distance / (float) child.getHeight();
-                            break;
-                        case Bottom:
-                            distance = rect.top - getHeight();
-                            fraction = distance / (float) child.getHeight();
-                            break;
+                } else if (showMode == ShowMode.PullOut) {
+                    when (dragEdge) {
+                        DragEdge.Left -> {
+                            distance = rect.right - paddingLeft
+                            fraction = distance / child.width.toFloat()
+                        }
+
+                        DragEdge.Right -> {
+                            distance = rect.left - width
+                            fraction = distance / child.width.toFloat()
+                        }
+
+                        DragEdge.Top -> {
+                            distance = rect.bottom - paddingTop
+                            fraction = distance / child.height.toFloat()
+                        }
+
+                        DragEdge.Bottom -> {
+                            distance = rect.top - height
+                            fraction = distance / child.height.toFloat()
+                        }
+                        else -> {}
                     }
                 }
-
-                for (OnRevealListener l : entry.getValue()) {
-                    l.onReveal(child, mCurrentDragEdge, Math.abs(fraction), distance);
-                    if (Math.abs(fraction) == 1) {
-                        mShowEntirely.put(child, true);
+                for (l in value!!) {
+                    l.onReveal(child, dragEdge, Math.abs(fraction), distance)
+                    if (Math.abs(fraction) == 1f) {
+                        mShowEntirely[child] = true
                     }
                 }
             }
-
-            if (isViewTotallyFirstShowed(child, rect, mCurrentDragEdge, surfaceLeft, surfaceTop,
-                    surfaceRight, surfaceBottom)) {
-                mShowEntirely.put(child, true);
-                for (OnRevealListener l : entry.getValue()) {
-                    if (mCurrentDragEdge == DragEdge.Left
-                            || mCurrentDragEdge == DragEdge.Right)
-                        l.onReveal(child, mCurrentDragEdge, 1, child.getWidth());
-                    else
-                        l.onReveal(child, mCurrentDragEdge, 1, child.getHeight());
+            if (isViewTotallyFirstShowed(
+                    child, rect, dragEdge, surfaceLeft, surfaceTop,
+                    surfaceRight, surfaceBottom
+                )
+            ) {
+                mShowEntirely[child] = true
+                for (l in value!!) {
+                    if (dragEdge == DragEdge.Left
+                        || dragEdge == DragEdge.Right
+                    ) l.onReveal(child, dragEdge, 1f, child.width) else l.onReveal(
+                        child,
+                        dragEdge,
+                        1f,
+                        child.height
+                    )
                 }
             }
-
         }
     }
 
-    @Override
-    public void computeScroll() {
-        super.computeScroll();
+    override fun computeScroll() {
+        super.computeScroll()
         if (mDragHelper.continueSettling(true)) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            ViewCompat.postInvalidateOnAnimation(this)
         }
     }
 
     /**
-     * {@link OnLayoutChangeListener} added in API 11. I need
+     * [OnLayoutChangeListener] added in API 11. I need
      * to support it from API 8.
      */
-    public interface OnLayout {
-        void onLayout(SwipeLayout v);
+    interface OnLayout {
+        fun onLayout(v: SwipeLayout)
     }
 
-    private List<OnLayout> mOnLayoutListeners;
-
-    public void addOnLayoutListener(OnLayout l) {
-        if (mOnLayoutListeners == null) mOnLayoutListeners = new ArrayList<OnLayout>();
-        mOnLayoutListeners.add(l);
+    private var mOnLayoutListeners: MutableList<OnLayout>? = null
+    fun addOnLayoutListener(l: OnLayout) {
+        if (mOnLayoutListeners == null) mOnLayoutListeners = ArrayList()
+        mOnLayoutListeners!!.add(l)
     }
 
-    public void removeOnLayoutListener(OnLayout l) {
-        if (mOnLayoutListeners != null) mOnLayoutListeners.remove(l);
+    fun removeOnLayoutListener(l: OnLayout) {
+        if (mOnLayoutListeners != null) mOnLayoutListeners!!.remove(l)
     }
 
-    public void clearDragEdge() {
-        mDragEdges.clear();
+    fun clearDragEdge() {
+        mDragEdges.clear()
     }
 
-    public void setDrag(DragEdge dragEdge, int childId) {
-        clearDragEdge();
-        addDrag(dragEdge, childId);
+    fun setDrag(dragEdge: DragEdge?, childId: Int) {
+        clearDragEdge()
+        addDrag(dragEdge, childId)
     }
 
-    public void setDrag(DragEdge dragEdge, View child) {
-        clearDragEdge();
-        addDrag(dragEdge, child);
+    fun setDrag(dragEdge: DragEdge?, child: View?) {
+        clearDragEdge()
+        addDrag(dragEdge, child)
     }
 
-    public void addDrag(DragEdge dragEdge, int childId) {
-        addDrag(dragEdge, findViewById(childId), null);
+    fun addDrag(dragEdge: DragEdge?, childId: Int) {
+        addDrag(dragEdge, findViewById(childId), null)
     }
 
-    public void addDrag(DragEdge dragEdge, View child) {
-        addDrag(dragEdge, child, null);
-    }
-
-    public void addDrag(DragEdge dragEdge, View child, ViewGroup.LayoutParams params) {
-        if (child == null) return;
-
+    @JvmOverloads
+    fun addDrag(dragEdge: DragEdge?, child: View?, params: ViewGroup.LayoutParams? = null) {
+        var params = params
+        if (child == null) return
         if (params == null) {
-            params = generateDefaultLayoutParams();
+            params = generateDefaultLayoutParams()
         }
         if (!checkLayoutParams(params)) {
-            params = generateLayoutParams(params);
+            params = generateLayoutParams(params)
         }
-        int gravity = -1;
-        switch (dragEdge) {
-            case Left:
-                gravity = Gravity.LEFT;
-                break;
-            case Right:
-                gravity = Gravity.RIGHT;
-                break;
-            case Top:
-                gravity = Gravity.TOP;
-                break;
-            case Bottom:
-                gravity = Gravity.BOTTOM;
-                break;
+        var gravity = -1
+        when (dragEdge) {
+            DragEdge.Left -> gravity = Gravity.LEFT
+            DragEdge.Right -> gravity = Gravity.RIGHT
+            DragEdge.Top -> gravity = Gravity.TOP
+            DragEdge.Bottom -> gravity = Gravity.BOTTOM
+            else -> {}
         }
-        if (params instanceof LayoutParams) {
-            ((LayoutParams) params).gravity = gravity;
+        if (params is LayoutParams) {
+            params.gravity = gravity
         }
-        addView(child, 0, params);
+        addView(child, 0, params!!)
     }
 
-    @Override
-    public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if (child == null) return;
-        int gravity = Gravity.NO_GRAVITY;
+    override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
+        if (child == null) return
+        var gravity = Gravity.NO_GRAVITY
         try {
-            gravity = (Integer) params.getClass().getField("gravity").get(params);
-        } catch (Exception e) {
-            e.printStackTrace();
+            gravity = params.javaClass.getField("gravity")[params] as Int
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
         if (gravity > 0) {
-            gravity = GravityCompat.getAbsoluteGravity(gravity, ViewCompat.getLayoutDirection(this));
-
-            if ((gravity & Gravity.LEFT) == Gravity.LEFT) {
-                mDragEdges.put(DragEdge.Left, child);
+            gravity = GravityCompat.getAbsoluteGravity(gravity, ViewCompat.getLayoutDirection(this))
+            if (gravity and Gravity.LEFT == Gravity.LEFT) {
+                mDragEdges[DragEdge.Left] = child
             }
-            if ((gravity & Gravity.RIGHT) == Gravity.RIGHT) {
-                mDragEdges.put(DragEdge.Right, child);
+            if (gravity and Gravity.RIGHT == Gravity.RIGHT) {
+                mDragEdges[DragEdge.Right] = child
             }
-            if ((gravity & Gravity.TOP) == Gravity.TOP) {
-                mDragEdges.put(DragEdge.Top, child);
+            if (gravity and Gravity.TOP == Gravity.TOP) {
+                mDragEdges[DragEdge.Top] = child
             }
-            if ((gravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
-                mDragEdges.put(DragEdge.Bottom, child);
+            if (gravity and Gravity.BOTTOM == Gravity.BOTTOM) {
+                mDragEdges[DragEdge.Bottom] = child
             }
         } else {
-            for (Map.Entry<DragEdge, View> entry : mDragEdges.entrySet()) {
-                if (entry.getValue() == null) {
+            for ((key, value) in mDragEdges) {
+                if (value == null) {
                     //means used the drag_edge attr, the no gravity child should be use set
-                    mDragEdges.put(entry.getKey(), child);
-                    break;
+                    mDragEdges[key] = child
+                    break
                 }
             }
         }
-        if (child.getParent() == this) {
-            return;
+        if (child.parent === this) {
+            return
         }
-        super.addView(child, index, params);
+        super.addView(child, index, params)
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        updateBottomViews();
-
-        if (mOnLayoutListeners != null) for (int i = 0; i < mOnLayoutListeners.size(); i++) {
-            mOnLayoutListeners.get(i).onLayout(this);
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        updateBottomViews()
+        if (mOnLayoutListeners != null) for (i in mOnLayoutListeners!!.indices) {
+            mOnLayoutListeners!![i].onLayout(this)
         }
     }
 
-    void layoutPullOut() {
-        View surfaceView = getSurfaceView();
-        Rect surfaceRect = mViewBoundCache.get(surfaceView);
-        if (surfaceRect == null) surfaceRect = computeSurfaceLayoutArea(false);
+    fun layoutPullOut() {
+        val surfaceView = surfaceView
+        var surfaceRect = mViewBoundCache[surfaceView]
+        if (surfaceRect == null) surfaceRect = computeSurfaceLayoutArea(false)
         if (surfaceView != null) {
-            surfaceView.layout(surfaceRect.left, surfaceRect.top, surfaceRect.right, surfaceRect.bottom);
-            bringChildToFront(surfaceView);
+            surfaceView.layout(
+                surfaceRect.left,
+                surfaceRect.top,
+                surfaceRect.right,
+                surfaceRect.bottom
+            )
+            bringChildToFront(surfaceView)
         }
-        View currentBottomView = getCurrentBottomView();
-        Rect bottomViewRect = mViewBoundCache.get(currentBottomView);
-        if (bottomViewRect == null)
-            bottomViewRect = computeBottomLayoutAreaViaSurface(ShowMode.PullOut, surfaceRect);
-        if (currentBottomView != null) {
-            currentBottomView.layout(bottomViewRect.left, bottomViewRect.top, bottomViewRect.right, bottomViewRect.bottom);
-        }
+        val currentBottomView = currentBottomView
+        var bottomViewRect = mViewBoundCache[currentBottomView]
+        if (bottomViewRect == null) bottomViewRect =
+            computeBottomLayoutAreaViaSurface(ShowMode.PullOut, surfaceRect)
+        currentBottomView?.layout(
+            bottomViewRect.left,
+            bottomViewRect.top,
+            bottomViewRect.right,
+            bottomViewRect.bottom
+        )
     }
 
-    void layoutLayDown() {
-        View surfaceView = getSurfaceView();
-        Rect surfaceRect = mViewBoundCache.get(surfaceView);
-        if (surfaceRect == null) surfaceRect = computeSurfaceLayoutArea(false);
+    fun layoutLayDown() {
+        val surfaceView = surfaceView
+        var surfaceRect = mViewBoundCache[surfaceView]
+        if (surfaceRect == null) surfaceRect = computeSurfaceLayoutArea(false)
         if (surfaceView != null) {
-            surfaceView.layout(surfaceRect.left, surfaceRect.top, surfaceRect.right, surfaceRect.bottom);
-            bringChildToFront(surfaceView);
+            surfaceView.layout(
+                surfaceRect.left,
+                surfaceRect.top,
+                surfaceRect.right,
+                surfaceRect.bottom
+            )
+            bringChildToFront(surfaceView)
         }
-        View currentBottomView = getCurrentBottomView();
-        Rect bottomViewRect = mViewBoundCache.get(currentBottomView);
-        if (bottomViewRect == null)
-            bottomViewRect = computeBottomLayoutAreaViaSurface(ShowMode.LayDown, surfaceRect);
-        if (currentBottomView != null) {
-            currentBottomView.layout(bottomViewRect.left, bottomViewRect.top, bottomViewRect.right, bottomViewRect.bottom);
-        }
+        val currentBottomView = currentBottomView
+        var bottomViewRect = mViewBoundCache[currentBottomView]
+        if (bottomViewRect == null) bottomViewRect =
+            computeBottomLayoutAreaViaSurface(ShowMode.LayDown, surfaceRect)
+        currentBottomView?.layout(
+            bottomViewRect.left,
+            bottomViewRect.top,
+            bottomViewRect.right,
+            bottomViewRect.bottom
+        )
     }
 
-    private boolean mIsBeingDragged;
-
-    private void checkCanDrag(MotionEvent ev) {
-        if (mIsBeingDragged) return;
-        if (getOpenStatus() == Status.Middle) {
-            mIsBeingDragged = true;
-            return;
+    private var mIsBeingDragged = false
+    private fun checkCanDrag(ev: MotionEvent) {
+        if (mIsBeingDragged) return
+        if (openStatus == Status.Middle) {
+            mIsBeingDragged = true
+            return
         }
-        Status status = getOpenStatus();
-        float distanceX = ev.getRawX() - sX;
-        float distanceY = ev.getRawY() - sY;
-        float angle = Math.abs(distanceY / distanceX);
-        angle = (float) Math.toDegrees(Math.atan(angle));
-        if (getOpenStatus() == Status.Close) {
-            DragEdge dragEdge;
-            if (angle < 45) {
-                if (distanceX > 0 && isLeftSwipeEnabled()) {
-                    dragEdge = DragEdge.Left;
-                } else if (distanceX < 0 && isRightSwipeEnabled()) {
-                    dragEdge = DragEdge.Right;
-                } else return;
-
+        val status = openStatus
+        val distanceX = ev.rawX - sX
+        val distanceY = ev.rawY - sY
+        var angle = Math.abs(distanceY / distanceX)
+        angle = Math.toDegrees(Math.atan(angle.toDouble())).toFloat()
+        if (openStatus == Status.Close) {
+            val dragEdge: DragEdge
+            dragEdge = if (angle < 45) {
+                if (distanceX > 0 && isLeftSwipeEnabled) {
+                    DragEdge.Left
+                } else if (distanceX < 0 && isRightSwipeEnabled) {
+                    DragEdge.Right
+                } else return
             } else {
-                if (distanceY > 0 && isTopSwipeEnabled()) {
-                    dragEdge = DragEdge.Top;
-                } else if (distanceY < 0 && isBottomSwipeEnabled()) {
-                    dragEdge = DragEdge.Bottom;
-                } else return;
+                if (distanceY > 0 && isTopSwipeEnabled) {
+                    DragEdge.Top
+                } else if (distanceY < 0 && isBottomSwipeEnabled) {
+                    DragEdge.Bottom
+                } else return
             }
-            setCurrentDragEdge(dragEdge);
+            setCurrentDragEdge(dragEdge)
         }
-
-        boolean doNothing = false;
-        if (mCurrentDragEdge == DragEdge.Right) {
-            boolean suitable = (status == Status.Open && distanceX > mTouchSlop)
-                    || (status == Status.Close && distanceX < -mTouchSlop);
-            suitable = suitable || (status == Status.Middle);
-
+        var doNothing = false
+        if (dragEdge == DragEdge.Right) {
+            var suitable =
+                status == Status.Open && distanceX > mTouchSlop || status == Status.Close && distanceX < -mTouchSlop
+            suitable = suitable || status == Status.Middle
             if (angle > 30 || !suitable) {
-                doNothing = true;
+                doNothing = true
             }
         }
-
-        if (mCurrentDragEdge == DragEdge.Left) {
-            boolean suitable = (status == Status.Open && distanceX < -mTouchSlop)
-                    || (status == Status.Close && distanceX > mTouchSlop);
-            suitable = suitable || status == Status.Middle;
-
+        if (dragEdge == DragEdge.Left) {
+            var suitable =
+                status == Status.Open && distanceX < -mTouchSlop || status == Status.Close && distanceX > mTouchSlop
+            suitable = suitable || status == Status.Middle
             if (angle > 30 || !suitable) {
-                doNothing = true;
+                doNothing = true
             }
         }
-
-        if (mCurrentDragEdge == DragEdge.Top) {
-            boolean suitable = (status == Status.Open && distanceY < -mTouchSlop)
-                    || (status == Status.Close && distanceY > mTouchSlop);
-            suitable = suitable || status == Status.Middle;
-
+        if (dragEdge == DragEdge.Top) {
+            var suitable =
+                status == Status.Open && distanceY < -mTouchSlop || status == Status.Close && distanceY > mTouchSlop
+            suitable = suitable || status == Status.Middle
             if (angle < 60 || !suitable) {
-                doNothing = true;
+                doNothing = true
             }
         }
-
-        if (mCurrentDragEdge == DragEdge.Bottom) {
-            boolean suitable = (status == Status.Open && distanceY > mTouchSlop)
-                    || (status == Status.Close && distanceY < -mTouchSlop);
-            suitable = suitable || status == Status.Middle;
-
+        if (dragEdge == DragEdge.Bottom) {
+            var suitable =
+                status == Status.Open && distanceY > mTouchSlop || status == Status.Close && distanceY < -mTouchSlop
+            suitable = suitable || status == Status.Middle
             if (angle < 60 || !suitable) {
-                doNothing = true;
+                doNothing = true
             }
         }
-        mIsBeingDragged = !doNothing;
+        mIsBeingDragged = !doNothing
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!isSwipeEnabled()) {
-            return false;
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (!isSwipeEnabled) {
+            return false
         }
-        if (mClickToClose && getOpenStatus() == Status.Open && isTouchOnSurface(ev)) {
-            return true;
+        if (isClickToClose && openStatus == Status.Open && isTouchOnSurface(ev)) {
+            return true
         }
-        for (SwipeDenier denier : mSwipeDeniers) {
+        for (denier in mSwipeDeniers) {
             if (denier != null && denier.shouldDenySwipe(ev)) {
-                return false;
+                return false
             }
         }
-
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mDragHelper.processTouchEvent(ev);
-                mIsBeingDragged = false;
-                sX = ev.getRawX();
-                sY = ev.getRawY();
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                mDragHelper.processTouchEvent(ev)
+                mIsBeingDragged = false
+                sX = ev.rawX
+                sY = ev.rawY
                 //if the swipe is in middle state(scrolling), should intercept the touch
-                if (getOpenStatus() == Status.Middle) {
-                    mIsBeingDragged = true;
+                if (openStatus == Status.Middle) {
+                    mIsBeingDragged = true
                 }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                boolean beforeCheck = mIsBeingDragged;
-                checkCanDrag(ev);
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val beforeCheck = mIsBeingDragged
+                checkCanDrag(ev)
                 if (mIsBeingDragged) {
-                    ViewParent parent = getParent();
-                    if (parent != null) {
-                        parent.requestDisallowInterceptTouchEvent(true);
-                    }
+                    val parent = parent
+                    parent?.requestDisallowInterceptTouchEvent(true)
                 }
                 if (!beforeCheck && mIsBeingDragged) {
                     //let children has one chance to catch the touch, and request the swipe not intercept
                     //useful when swipeLayout wrap a swipeLayout or other gestural layout
-                    return false;
+                    return false
                 }
-                break;
+            }
 
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                mIsBeingDragged = false;
-                mDragHelper.processTouchEvent(ev);
-                break;
-            default://handle other action, such as ACTION_POINTER_DOWN/UP
-                mDragHelper.processTouchEvent(ev);
+            MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
+                mIsBeingDragged = false
+                mDragHelper.processTouchEvent(ev)
+            }
+
+            else -> mDragHelper.processTouchEvent(ev)
         }
-        return mIsBeingDragged;
+        return mIsBeingDragged
     }
 
-    private float sX = -1, sY = -1;
+    private var sX = -1f
+    private var sY = -1f
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isSwipeEnabled) return super.onTouchEvent(event)
+        val action = event.actionMasked
+        gestureDetector.onTouchEvent(event)
+        when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                mDragHelper.processTouchEvent(event)
+                sX = event.rawX
+                sY = event.rawY
+                run {
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isSwipeEnabled()) return super.onTouchEvent(event);
+                    //the drag state and the direction are already judged at onInterceptTouchEvent
+                    checkCanDrag(event)
+                    if (mIsBeingDragged) {
+                        parent.requestDisallowInterceptTouchEvent(true)
+                        mDragHelper.processTouchEvent(event)
+                    }
+                }
+            }
 
-        int action = event.getActionMasked();
-        gestureDetector.onTouchEvent(event);
-
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mDragHelper.processTouchEvent(event);
-                sX = event.getRawX();
-                sY = event.getRawY();
-
-
-            case MotionEvent.ACTION_MOVE: {
-                //the drag state and the direction are already judged at onInterceptTouchEvent
-                checkCanDrag(event);
+            MotionEvent.ACTION_MOVE -> {
+                checkCanDrag(event)
                 if (mIsBeingDragged) {
-                    getParent().requestDisallowInterceptTouchEvent(true);
-                    mDragHelper.processTouchEvent(event);
+                    parent.requestDisallowInterceptTouchEvent(true)
+                    mDragHelper.processTouchEvent(event)
                 }
-                break;
             }
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                mIsBeingDragged = false;
-                mDragHelper.processTouchEvent(event);
-                break;
 
-            default://handle other action, such as ACTION_POINTER_DOWN/UP
-                mDragHelper.processTouchEvent(event);
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                mIsBeingDragged = false
+                mDragHelper.processTouchEvent(event)
+            }
+
+            else -> mDragHelper.processTouchEvent(event)
+        }
+        return super.onTouchEvent(event) || mIsBeingDragged || action == MotionEvent.ACTION_DOWN
+    }
+
+    var isLeftSwipeEnabled: Boolean
+        get() {
+            val bottomView = mDragEdges[DragEdge.Left]
+            return bottomView != null && bottomView.parent === this && bottomView !== surfaceView && mSwipesEnabled[DragEdge.Left.ordinal]
+        }
+        set(leftSwipeEnabled) {
+            mSwipesEnabled[DragEdge.Left.ordinal] = leftSwipeEnabled
+        }
+    var isRightSwipeEnabled: Boolean
+        get() {
+            val bottomView = mDragEdges[DragEdge.Right]
+            return bottomView != null && bottomView.parent === this && bottomView !== surfaceView && mSwipesEnabled[DragEdge.Right.ordinal]
+        }
+        set(rightSwipeEnabled) {
+            mSwipesEnabled[DragEdge.Right.ordinal] = rightSwipeEnabled
+        }
+    var isTopSwipeEnabled: Boolean
+        get() {
+            val bottomView = mDragEdges[DragEdge.Top]
+            return bottomView != null && bottomView.parent === this && bottomView !== surfaceView && mSwipesEnabled[DragEdge.Top.ordinal]
+        }
+        set(topSwipeEnabled) {
+            mSwipesEnabled[DragEdge.Top.ordinal] = topSwipeEnabled
+        }
+    var isBottomSwipeEnabled: Boolean
+        get() {
+            val bottomView = mDragEdges[DragEdge.Bottom]
+            return bottomView != null && bottomView.parent === this && bottomView !== surfaceView && mSwipesEnabled[DragEdge.Bottom.ordinal]
+        }
+        set(bottomSwipeEnabled) {
+            mSwipesEnabled[DragEdge.Bottom.ordinal] = bottomSwipeEnabled
         }
 
-        return super.onTouchEvent(event) || mIsBeingDragged || action == MotionEvent.ACTION_DOWN;
+    private fun insideAdapterView(): Boolean {
+        return adapterView != null
     }
 
-    public boolean isClickToClose() {
-        return mClickToClose;
-    }
-
-    public void setClickToClose(boolean mClickToClose) {
-        this.mClickToClose = mClickToClose;
-    }
-
-    public void setSwipeEnabled(boolean enabled) {
-        mSwipeEnabled = enabled;
-    }
-
-    public boolean isSwipeEnabled() {
-        return mSwipeEnabled;
-    }
-
-    public boolean isLeftSwipeEnabled() {
-        View bottomView = mDragEdges.get(DragEdge.Left);
-        return bottomView != null && bottomView.getParent() == this
-                && bottomView != getSurfaceView() && mSwipesEnabled[DragEdge.Left.ordinal()];
-    }
-
-    public void setLeftSwipeEnabled(boolean leftSwipeEnabled) {
-        this.mSwipesEnabled[DragEdge.Left.ordinal()] = leftSwipeEnabled;
-    }
-
-    public boolean isRightSwipeEnabled() {
-        View bottomView = mDragEdges.get(DragEdge.Right);
-        return bottomView != null && bottomView.getParent() == this
-                && bottomView != getSurfaceView() && mSwipesEnabled[DragEdge.Right.ordinal()];
-    }
-
-    public void setRightSwipeEnabled(boolean rightSwipeEnabled) {
-        this.mSwipesEnabled[DragEdge.Right.ordinal()] = rightSwipeEnabled;
-    }
-
-    public boolean isTopSwipeEnabled() {
-        View bottomView = mDragEdges.get(DragEdge.Top);
-        return bottomView != null && bottomView.getParent() == this
-                && bottomView != getSurfaceView() && mSwipesEnabled[DragEdge.Top.ordinal()];
-    }
-
-    public void setTopSwipeEnabled(boolean topSwipeEnabled) {
-        this.mSwipesEnabled[DragEdge.Top.ordinal()] = topSwipeEnabled;
-    }
-
-    public boolean isBottomSwipeEnabled() {
-        View bottomView = mDragEdges.get(DragEdge.Bottom);
-        return bottomView != null && bottomView.getParent() == this
-                && bottomView != getSurfaceView() && mSwipesEnabled[DragEdge.Bottom.ordinal()];
-    }
-
-    public void setBottomSwipeEnabled(boolean bottomSwipeEnabled) {
-        this.mSwipesEnabled[DragEdge.Bottom.ordinal()] = bottomSwipeEnabled;
-    }
-
-    /***
-     * Returns the percentage of revealing at which the view below should the view finish opening
-     * if it was already open before dragging
-     *
-     * @returns The percentage of view revealed to trigger, default value is 0.25
-     */
-    public float getWillOpenPercentAfterOpen() {
-        return mWillOpenPercentAfterOpen;
-    }
-
-    /***
-     * Allows to stablish at what percentage of revealing the view below should the view finish opening
-     * if it was already open before dragging
-     *
-     * @param willOpenPercentAfterOpen The percentage of view revealed to trigger, default value is 0.25
-     */
-    public void setWillOpenPercentAfterOpen(float willOpenPercentAfterOpen) {
-        this.mWillOpenPercentAfterOpen = willOpenPercentAfterOpen;
-    }
-
-    /***
-     * Returns the percentage of revealing at which the view below should the view finish opening
-     * if it was already closed before dragging
-     *
-     * @returns The percentage of view revealed to trigger, default value is 0.25
-     */
-    public float getWillOpenPercentAfterClose() {
-        return mWillOpenPercentAfterClose;
-    }
-
-    /***
-     * Allows to stablish at what percentage of revealing the view below should the view finish opening
-     * if it was already closed before dragging
-     *
-     * @param willOpenPercentAfterClose The percentage of view revealed to trigger, default value is 0.75
-     */
-    public void setWillOpenPercentAfterClose(float willOpenPercentAfterClose) {
-        this.mWillOpenPercentAfterClose = willOpenPercentAfterClose;
-    }
-
-    private boolean insideAdapterView() {
-        return getAdapterView() != null;
-    }
-
-    private AdapterView getAdapterView() {
-        ViewParent t = getParent();
-        if (t instanceof AdapterView) {
-            return (AdapterView) t;
+    private val adapterView: AdapterView<*>?
+        private get() {
+            val t = parent
+            return if (t is AdapterView<*>) {
+                t
+            } else null
         }
-        return null;
-    }
 
-    private void performAdapterViewItemClick() {
-        if (getOpenStatus() != Status.Close) return;
-        ViewParent t = getParent();
-        if (t instanceof AdapterView) {
-            AdapterView view = (AdapterView) t;
-            int p = view.getPositionForView(SwipeLayout.this);
+    private fun performAdapterViewItemClick() {
+        if (openStatus != Status.Close) return
+        val t = parent
+        if (t is AdapterView<*>) {
+            val view = t
+            val p = view.getPositionForView(this@SwipeLayout)
             if (p != AdapterView.INVALID_POSITION) {
-                view.performItemClick(view.getChildAt(p - view.getFirstVisiblePosition()), p, view
-                        .getAdapter().getItemId(p));
+                view.performItemClick(
+                    view.getChildAt(p - view.firstVisiblePosition), p, view
+                        .adapter.getItemId(p)
+                )
             }
         }
     }
 
-    private boolean performAdapterViewItemLongClick() {
-        if (getOpenStatus() != Status.Close) return false;
-        ViewParent t = getParent();
-        if (t instanceof AdapterView) {
-            AdapterView view = (AdapterView) t;
-            int p = view.getPositionForView(SwipeLayout.this);
-            if (p == AdapterView.INVALID_POSITION) return false;
-            long vId = view.getItemIdAtPosition(p);
-            boolean handled = false;
+    private fun performAdapterViewItemLongClick(): Boolean {
+        if (openStatus != Status.Close) return false
+        val t = parent
+        if (t is AdapterView<*>) {
+            val view = t
+            val p = view.getPositionForView(this@SwipeLayout)
+            if (p == AdapterView.INVALID_POSITION) return false
+            val vId = view.getItemIdAtPosition(p)
+            var handled = false
             try {
-                Method m = AbsListView.class.getDeclaredMethod("performLongPress", View.class, int.class, long.class);
-                m.setAccessible(true);
-                handled = (boolean) m.invoke(view, SwipeLayout.this, p, vId);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                if (view.getOnItemLongClickListener() != null) {
-                    handled = view.getOnItemLongClickListener().onItemLongClick(view, SwipeLayout.this, p, vId);
+                val m = AbsListView::class.java.getDeclaredMethod(
+                    "performLongPress",
+                    View::class.java,
+                    Int::class.javaPrimitiveType,
+                    Long::class.javaPrimitiveType
+                )
+                m.isAccessible = true
+                handled = m.invoke(view, this@SwipeLayout, p, vId) as Boolean
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (view.onItemLongClickListener != null) {
+                    handled =
+                        view.onItemLongClickListener.onItemLongClick(view, this@SwipeLayout, p, vId)
                 }
                 if (handled) {
-                    view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                 }
             }
-            return handled;
+            return handled
         }
-        return false;
+        return false
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         if (insideAdapterView()) {
             if (clickListener == null) {
-                setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        performAdapterViewItemClick();
-                    }
-                });
+                setOnClickListener { performAdapterViewItemClick() }
             }
             if (longClickListener == null) {
-                setOnLongClickListener(new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        performAdapterViewItemLongClick();
-                        return true;
-                    }
-                });
-            }
-        }
-    }
-
-    OnClickListener clickListener;
-
-    @Override
-    public void setOnClickListener(OnClickListener l) {
-        super.setOnClickListener(l);
-        clickListener = l;
-    }
-
-    OnLongClickListener longClickListener;
-
-    @Override
-    public void setOnLongClickListener(OnLongClickListener l) {
-        super.setOnLongClickListener(l);
-        longClickListener = l;
-    }
-
-    private Rect hitSurfaceRect;
-
-    private boolean isTouchOnSurface(MotionEvent ev) {
-        View surfaceView = getSurfaceView();
-        if (surfaceView == null) {
-            return false;
-        }
-        if (hitSurfaceRect == null) {
-            hitSurfaceRect = new Rect();
-        }
-        surfaceView.getHitRect(hitSurfaceRect);
-        return hitSurfaceRect.contains((int) ev.getX(), (int) ev.getY());
-    }
-
-    private GestureDetector gestureDetector = new GestureDetector(getContext(), new SwipeDetector());
-
-    class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            if (mClickToClose && isTouchOnSurface(e)) {
-                close();
-            }
-            return super.onSingleTapUp(e);
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if (mDoubleClickListener != null) {
-                View target;
-                View bottom = getCurrentBottomView();
-                View surface = getSurfaceView();
-                if (bottom != null && e.getX() > bottom.getLeft() && e.getX() < bottom.getRight()
-                        && e.getY() > bottom.getTop() && e.getY() < bottom.getBottom()) {
-                    target = bottom;
-                } else {
-                    target = surface;
+                setOnLongClickListener {
+                    performAdapterViewItemLongClick()
+                    true
                 }
-                mDoubleClickListener.onDoubleClick(SwipeLayout.this, target == surface);
             }
-            return true;
         }
     }
 
-    /**
-     * set the drag distance, it will force set the bottom view's width or
-     * height via this value.
-     *
-     * @param max max distance in dp unit
-     */
-    public void setDragDistance(int max) {
-        if (max < 0) max = 0;
-        mDragDistance = dp2px(max);
-        requestLayout();
+    var clickListener: OnClickListener? = null
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        clickListener = l
     }
 
-    /**
-     * There are 2 diffirent show mode.
-     * {@link com.newsoft.nsswipelayout.SwipeLayout.ShowMode}.PullOut and
-     * {@link com.newsoft.nsswipelayout.SwipeLayout.ShowMode}.LayDown.
-     *
-     * @param mode
-     */
-    public void setShowMode(ShowMode mode) {
-        mShowMode = mode;
-        requestLayout();
+    var longClickListener: OnLongClickListener? = null
+    override fun setOnLongClickListener(l: OnLongClickListener?) {
+        super.setOnLongClickListener(l)
+        longClickListener = l
     }
 
-    public DragEdge getDragEdge() {
-        return mCurrentDragEdge;
-    }
-
-    public int getDragDistance() {
-        return mDragDistance;
-    }
-
-    public ShowMode getShowMode() {
-        return mShowMode;
-    }
-
-    /**
-     * return null if there is no surface view(no children)
-     */
-    public View getSurfaceView() {
-        if (getChildCount() == 0) return null;
-        return getChildAt(getChildCount() - 1);
-    }
-
-    /**
-     * return null if there is no bottom view
-     */
-    public View getCurrentBottomView() {
-        List<View> bottoms = getBottomViews();
-        if (mCurrentDragEdge.ordinal() < bottoms.size()) {
-            return bottoms.get(mCurrentDragEdge.ordinal());
+    private var hitSurfaceRect: Rect? = null
+    private fun isTouchOnSurface(ev: MotionEvent): Boolean {
+        val surfaceView = surfaceView ?: return false
+        if (hitSurfaceRect == null) {
+            hitSurfaceRect = Rect()
         }
-        return null;
+        surfaceView.getHitRect(hitSurfaceRect)
+        return hitSurfaceRect!!.contains(ev.x.toInt(), ev.y.toInt())
     }
 
-    /**
-     * @return all bottomViews: left, top, right, bottom (may null if the edge is not set)
-     */
-    public List<View> getBottomViews() {
-        ArrayList<View> bottoms = new ArrayList<View>();
-        for (DragEdge dragEdge : DragEdge.values()) {
-            bottoms.add(mDragEdges.get(dragEdge));
+    private val gestureDetector = GestureDetector(getContext(), SwipeDetector())
+
+    init {
+        mDragHelper = ViewDragHelper.create(this, mDragHelperCallback)
+        mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+        val a = context.obtainStyledAttributes(attrs, R.styleable.SwipeLayout)
+        val dragEdgeChoices = a.getInt(R.styleable.SwipeLayout_drag_edge, DRAG_RIGHT)
+        mEdgeSwipesOffset[DragEdge.Left.ordinal] =
+            a.getDimension(R.styleable.SwipeLayout_leftEdgeSwipeOffset, 0f)
+        mEdgeSwipesOffset[DragEdge.Right.ordinal] =
+            a.getDimension(R.styleable.SwipeLayout_rightEdgeSwipeOffset, 0f)
+        mEdgeSwipesOffset[DragEdge.Top.ordinal] =
+            a.getDimension(R.styleable.SwipeLayout_topEdgeSwipeOffset, 0f)
+        mEdgeSwipesOffset[DragEdge.Bottom.ordinal] =
+            a.getDimension(R.styleable.SwipeLayout_bottomEdgeSwipeOffset, 0f)
+        isClickToClose = a.getBoolean(R.styleable.SwipeLayout_clickToClose, isClickToClose)
+        if (dragEdgeChoices and DRAG_LEFT == DRAG_LEFT) {
+            mDragEdges[DragEdge.Left] = null
         }
-        return bottoms;
+        if (dragEdgeChoices and DRAG_TOP == DRAG_TOP) {
+            mDragEdges[DragEdge.Top] = null
+        }
+        if (dragEdgeChoices and DRAG_RIGHT == DRAG_RIGHT) {
+            mDragEdges[DragEdge.Right] = null
+        }
+        if (dragEdgeChoices and DRAG_BOTTOM == DRAG_BOTTOM) {
+            mDragEdges[DragEdge.Bottom] = null
+        }
+        val ordinal = a.getInt(R.styleable.SwipeLayout_show_mode, ShowMode.PullOut.ordinal)
+        mShowMode = ShowMode.values()[ordinal]
+        a.recycle()
     }
 
-    public enum Status {
+    internal inner class SwipeDetector : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            if (isClickToClose && isTouchOnSurface(e)) {
+                close()
+            }
+            return super.onSingleTapUp(e)
+        }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            if (mDoubleClickListener != null) {
+                val target: View
+                val bottom: View = currentBottomView!!
+                val surface: View = surfaceView!!
+                target =
+                    if (e.x > bottom.left && e.x < bottom.right && e.y > bottom.top && e.y < bottom.bottom) {
+                        bottom
+                    } else {
+                        surface
+                    }
+                mDoubleClickListener!!.onDoubleClick(this@SwipeLayout, target === surface)
+            }
+            return true
+        }
+    }
+
+    var dragDistance: Int
+        get() = mDragDistance
+        /**
+         * set the drag distance, it will force set the bottom view's width or
+         * height via this value.
+         *
+         * @param max max distance in dp unit
+         */
+        set(max) {
+            var max = max
+            if (max < 0) max = 0
+            mDragDistance = dp2px(max.toFloat())
+            requestLayout()
+        }
+    var showMode: ShowMode
+        get() = mShowMode
+        /**
+         * There are 2 diffirent show mode.
+         * [com.newsoft.nsswipelayout.SwipeLayout.ShowMode].PullOut and
+         * [com.newsoft.nsswipelayout.SwipeLayout.ShowMode].LayDown.
+         *
+         * @param mode
+         */
+        set(mode) {
+            mShowMode = mode
+            requestLayout()
+        }
+    val surfaceView: View?
+        /**
+         * return null if there is no surface view(no children)
+         */
+        get() = if (childCount == 0) null else getChildAt(childCount - 1)
+    val currentBottomView: View?
+        /**
+         * return null if there is no bottom view
+         */
+        get() {
+            val bottoms = bottomViews
+            return if (dragEdge!!.ordinal < bottoms.size) {
+                bottoms[dragEdge!!.ordinal]
+            } else null
+        }
+    val bottomViews: List<View?>
+        /**
+         * @return all bottomViews: left, top, right, bottom (may null if the edge is not set)
+         */
+        get() {
+            val bottoms = ArrayList<View?>()
+            for (dragEdge in DragEdge.values()) {
+                bottoms.add(mDragEdges[dragEdge])
+            }
+            return bottoms
+        }
+
+    enum class Status {
         Middle,
         Open,
         Close
     }
 
-    /**
-     * get the open status.
-     *
-     * @return {@link com.newsoft.nsswipelayout.SwipeLayout.Status} Open , Close or
-     * Middle.
-     */
-    public Status getOpenStatus() {
-        View surfaceView = getSurfaceView();
-        if (surfaceView == null) {
-            return Status.Close;
+    val openStatus: Status
+        /**
+         * get the open status.
+         *
+         * @return [com.newsoft.nsswipelayout.SwipeLayout.Status] Open , Close or
+         * Middle.
+         */
+        get() {
+            val surfaceView = surfaceView ?: return Status.Close
+            val surfaceLeft = surfaceView.left
+            val surfaceTop = surfaceView.top
+            if (surfaceLeft == paddingLeft && surfaceTop == paddingTop) return Status.Close
+            return if (surfaceLeft == paddingLeft - mDragDistance || surfaceLeft == paddingLeft + mDragDistance || surfaceTop == paddingTop - mDragDistance || surfaceTop == paddingTop + mDragDistance
+            ) Status.Open else Status.Middle
         }
-        int surfaceLeft = surfaceView.getLeft();
-        int surfaceTop = surfaceView.getTop();
-        if (surfaceLeft == getPaddingLeft() && surfaceTop == getPaddingTop()) return Status.Close;
-
-        if (surfaceLeft == (getPaddingLeft() - mDragDistance) || surfaceLeft == (getPaddingLeft() + mDragDistance)
-                || surfaceTop == (getPaddingTop() - mDragDistance) || surfaceTop == (getPaddingTop() + mDragDistance))
-            return Status.Open;
-
-        return Status.Middle;
-    }
-
 
     /**
      * Process the surface release event.
@@ -1324,45 +1170,34 @@ public class SwipeLayout extends FrameLayout {
      * @param yvel                 yVelocity
      * @param isCloseBeforeDragged the open state before drag
      */
-    protected void processHandRelease(float xvel, float yvel, boolean isCloseBeforeDragged) {
-        float minVelocity = mDragHelper.getMinVelocity();
-        View surfaceView = getSurfaceView();
-        DragEdge currentDragEdge = mCurrentDragEdge;
+    protected fun processHandRelease(xvel: Float, yvel: Float, isCloseBeforeDragged: Boolean) {
+        val minVelocity = mDragHelper.minVelocity
+        val surfaceView = surfaceView
+        val currentDragEdge = dragEdge
         if (currentDragEdge == null || surfaceView == null) {
-            return;
+            return
         }
-        float willOpenPercent = (isCloseBeforeDragged ? mWillOpenPercentAfterClose : mWillOpenPercentAfterOpen);
+        val willOpenPercent =
+            if (isCloseBeforeDragged) willOpenPercentAfterClose else willOpenPercentAfterOpen
         if (currentDragEdge == DragEdge.Left) {
-            if (xvel > minVelocity) open();
-            else if (xvel < -minVelocity) close();
-            else {
-                float openPercent = 1f * getSurfaceView().getLeft() / mDragDistance;
-                if (openPercent > willOpenPercent) open();
-                else close();
+            if (xvel > minVelocity) open() else if (xvel < -minVelocity) close() else {
+                val openPercent = 1f * this.surfaceView!!.left / mDragDistance
+                if (openPercent > willOpenPercent) open() else close()
             }
         } else if (currentDragEdge == DragEdge.Right) {
-            if (xvel > minVelocity) close();
-            else if (xvel < -minVelocity) open();
-            else {
-                float openPercent = 1f * (-getSurfaceView().getLeft()) / mDragDistance;
-                if (openPercent > willOpenPercent) open();
-                else close();
+            if (xvel > minVelocity) close() else if (xvel < -minVelocity) open() else {
+                val openPercent = 1f * -this.surfaceView!!.left / mDragDistance
+                if (openPercent > willOpenPercent) open() else close()
             }
         } else if (currentDragEdge == DragEdge.Top) {
-            if (yvel > minVelocity) open();
-            else if (yvel < -minVelocity) close();
-            else {
-                float openPercent = 1f * getSurfaceView().getTop() / mDragDistance;
-                if (openPercent > willOpenPercent) open();
-                else close();
+            if (yvel > minVelocity) open() else if (yvel < -minVelocity) close() else {
+                val openPercent = 1f * this.surfaceView!!.top / mDragDistance
+                if (openPercent > willOpenPercent) open() else close()
             }
         } else if (currentDragEdge == DragEdge.Bottom) {
-            if (yvel > minVelocity) close();
-            else if (yvel < -minVelocity) open();
-            else {
-                float openPercent = 1f * (-getSurfaceView().getTop()) / mDragDistance;
-                if (openPercent > willOpenPercent) open();
-                else close();
+            if (yvel > minVelocity) close() else if (yvel < -minVelocity) open() else {
+                val openPercent = 1f * -this.surfaceView!!.top / mDragDistance
+                if (openPercent > willOpenPercent) open() else close()
             }
         }
     }
@@ -1370,291 +1205,266 @@ public class SwipeLayout extends FrameLayout {
     /**
      * smoothly open surface.
      */
-    public void open() {
-        open(true, true);
-    }
-
-    public void open(boolean smooth) {
-        open(smooth, true);
-    }
-
-    public void open(boolean smooth, boolean notify) {
-        View surface = getSurfaceView(), bottom = getCurrentBottomView();
+    @JvmOverloads
+    fun open(smooth: Boolean = true, notify: Boolean = true) {
+        val surface = surfaceView
+        val bottom = currentBottomView
         if (surface == null) {
-            return;
+            return
         }
-        int dx, dy;
-        Rect rect = computeSurfaceLayoutArea(true);
+        val dx: Int
+        val dy: Int
+        val rect = computeSurfaceLayoutArea(true)
         if (smooth) {
-            mDragHelper.smoothSlideViewTo(surface, rect.left, rect.top);
+            mDragHelper.smoothSlideViewTo(surface, rect.left, rect.top)
         } else {
-            dx = rect.left - surface.getLeft();
-            dy = rect.top - surface.getTop();
-            surface.layout(rect.left, rect.top, rect.right, rect.bottom);
-            if (getShowMode() == ShowMode.PullOut) {
-                Rect bRect = computeBottomLayoutAreaViaSurface(ShowMode.PullOut, rect);
-                if (bottom != null) {
-                    bottom.layout(bRect.left, bRect.top, bRect.right, bRect.bottom);
-                }
+            dx = rect.left - surface.left
+            dy = rect.top - surface.top
+            surface.layout(rect.left, rect.top, rect.right, rect.bottom)
+            if (showMode == ShowMode.PullOut) {
+                val bRect = computeBottomLayoutAreaViaSurface(ShowMode.PullOut, rect)
+                bottom?.layout(bRect.left, bRect.top, bRect.right, bRect.bottom)
             }
             if (notify) {
-                dispatchRevealEvent(rect.left, rect.top, rect.right, rect.bottom);
-                dispatchSwipeEvent(rect.left, rect.top, dx, dy);
+                dispatchRevealEvent(rect.left, rect.top, rect.right, rect.bottom)
+                dispatchSwipeEvent(rect.left, rect.top, dx, dy)
             } else {
-                safeBottomView();
+                safeBottomView()
             }
         }
-        invalidate();
+        invalidate()
     }
 
-    public void open(DragEdge edge) {
-        setCurrentDragEdge(edge);
-        open(true, true);
+    fun open(edge: DragEdge) {
+        setCurrentDragEdge(edge)
+        open(true, true)
     }
 
-    public void open(boolean smooth, DragEdge edge) {
-        setCurrentDragEdge(edge);
-        open(smooth, true);
+    fun open(smooth: Boolean, edge: DragEdge) {
+        setCurrentDragEdge(edge)
+        open(smooth, true)
     }
 
-    public void open(boolean smooth, boolean notify, DragEdge edge) {
-        setCurrentDragEdge(edge);
-        open(smooth, notify);
+    fun open(smooth: Boolean, notify: Boolean, edge: DragEdge) {
+        setCurrentDragEdge(edge)
+        open(smooth, notify)
     }
-
-    /**
-     * smoothly close surface.
-     */
-    public void close() {
-        close(true, true);
-    }
-
-    public void close(boolean smooth) {
-        close(smooth, true);
-    }
-
     /**
      * close surface
      *
      * @param smooth smoothly or not.
      * @param notify if notify all the listeners.
      */
-    public void close(boolean smooth, boolean notify) {
-        View surface = getSurfaceView();
-        if (surface == null) {
-            return;
-        }
-        int dx, dy;
-        if (smooth)
-            mDragHelper.smoothSlideViewTo(getSurfaceView(), getPaddingLeft(), getPaddingTop());
-        else {
-            Rect rect = computeSurfaceLayoutArea(false);
-            dx = rect.left - surface.getLeft();
-            dy = rect.top - surface.getTop();
-            surface.layout(rect.left, rect.top, rect.right, rect.bottom);
+    /**
+     * smoothly close surface.
+     */
+    @JvmOverloads
+    fun close(smooth: Boolean = true, notify: Boolean = true) {
+        val surface = surfaceView ?: return
+        val dx: Int
+        val dy: Int
+        if (smooth) mDragHelper.smoothSlideViewTo(surfaceView!!, paddingLeft, paddingTop) else {
+            val rect = computeSurfaceLayoutArea(false)
+            dx = rect.left - surface.left
+            dy = rect.top - surface.top
+            surface.layout(rect.left, rect.top, rect.right, rect.bottom)
             if (notify) {
-                dispatchRevealEvent(rect.left, rect.top, rect.right, rect.bottom);
-                dispatchSwipeEvent(rect.left, rect.top, dx, dy);
+                dispatchRevealEvent(rect.left, rect.top, rect.right, rect.bottom)
+                dispatchSwipeEvent(rect.left, rect.top, dx, dy)
             } else {
-                safeBottomView();
+                safeBottomView()
             }
         }
-        invalidate();
+        invalidate()
     }
 
-    public void toggle() {
-        toggle(true);
+    @JvmOverloads
+    fun toggle(smooth: Boolean = true) {
+        if (openStatus == Status.Open) close(smooth) else if (openStatus == Status.Close) open(
+            smooth
+        )
     }
-
-    public void toggle(boolean smooth) {
-        if (getOpenStatus() == Status.Open)
-            close(smooth);
-        else if (getOpenStatus() == Status.Close) open(smooth);
-    }
-
 
     /**
      * a helper function to compute the Rect area that surface will hold in.
      *
      * @param open open status or close status.
      */
-    private Rect computeSurfaceLayoutArea(boolean open) {
-        int l = getPaddingLeft(), t = getPaddingTop();
+    private fun computeSurfaceLayoutArea(open: Boolean): Rect {
+        var l = paddingLeft
+        var t = paddingTop
         if (open) {
-            if (mCurrentDragEdge == DragEdge.Left)
-                l = getPaddingLeft() + mDragDistance;
-            else if (mCurrentDragEdge == DragEdge.Right)
-                l = getPaddingLeft() - mDragDistance;
-            else if (mCurrentDragEdge == DragEdge.Top)
-                t = getPaddingTop() + mDragDistance;
-            else t = getPaddingTop() - mDragDistance;
+            if (dragEdge == DragEdge.Left) l =
+                paddingLeft + mDragDistance else if (dragEdge == DragEdge.Right) l =
+                paddingLeft - mDragDistance else if (dragEdge == DragEdge.Top) t =
+                paddingTop + mDragDistance else t = paddingTop - mDragDistance
         }
-        return new Rect(l, t, l + getMeasuredWidth(), t + getMeasuredHeight());
+        return Rect(l, t, l + measuredWidth, t + measuredHeight)
     }
 
-    private Rect computeBottomLayoutAreaViaSurface(ShowMode mode, Rect surfaceArea) {
-        Rect rect = surfaceArea;
-        View bottomView = getCurrentBottomView();
-
-        int bl = rect.left, bt = rect.top, br = rect.right, bb = rect.bottom;
+    private fun computeBottomLayoutAreaViaSurface(mode: ShowMode, surfaceArea: Rect?): Rect {
+        val bottomView = currentBottomView
+        var bl = surfaceArea!!.left
+        var bt = surfaceArea.top
+        var br = surfaceArea.right
+        var bb = surfaceArea.bottom
         if (mode == ShowMode.PullOut) {
-            if (mCurrentDragEdge == DragEdge.Left)
-                bl = rect.left - mDragDistance;
-            else if (mCurrentDragEdge == DragEdge.Right)
-                bl = rect.right;
-            else if (mCurrentDragEdge == DragEdge.Top)
-                bt = rect.top - mDragDistance;
-            else bt = rect.bottom;
-
-            if (mCurrentDragEdge == DragEdge.Left || mCurrentDragEdge == DragEdge.Right) {
-                bb = rect.bottom;
-                br = bl + (bottomView == null ? 0 : bottomView.getMeasuredWidth());
+            if (dragEdge == DragEdge.Left) bl =
+                surfaceArea.left - mDragDistance else if (dragEdge == DragEdge.Right) bl =
+                surfaceArea.right else if (dragEdge == DragEdge.Top) bt =
+                surfaceArea.top - mDragDistance else bt = surfaceArea.bottom
+            if (dragEdge == DragEdge.Left || dragEdge == DragEdge.Right) {
+                bb = surfaceArea.bottom
+                br = bl + (bottomView?.measuredWidth ?: 0)
             } else {
-                bb = bt + (bottomView == null ? 0 : bottomView.getMeasuredHeight());
-                br = rect.right;
+                bb = bt + (bottomView?.measuredHeight ?: 0)
+                br = surfaceArea.right
             }
         } else if (mode == ShowMode.LayDown) {
-            if (mCurrentDragEdge == DragEdge.Left)
-                br = bl + mDragDistance;
-            else if (mCurrentDragEdge == DragEdge.Right)
-                bl = br - mDragDistance;
-            else if (mCurrentDragEdge == DragEdge.Top)
-                bb = bt + mDragDistance;
-            else bt = bb - mDragDistance;
-
+            if (dragEdge == DragEdge.Left) br =
+                bl + mDragDistance else if (dragEdge == DragEdge.Right) bl =
+                br - mDragDistance else if (dragEdge == DragEdge.Top) bb =
+                bt + mDragDistance else bt = bb - mDragDistance
         }
-        return new Rect(bl, bt, br, bb);
-
+        return Rect(bl, bt, br, bb)
     }
 
-    private Rect computeBottomLayDown(DragEdge dragEdge) {
-        int bl = getPaddingLeft(), bt = getPaddingTop();
-        int br, bb;
+    private fun computeBottomLayDown(dragEdge: DragEdge?): Rect {
+        var bl = paddingLeft
+        var bt = paddingTop
+        val br: Int
+        val bb: Int
         if (dragEdge == DragEdge.Right) {
-            bl = getMeasuredWidth() - mDragDistance;
+            bl = measuredWidth - mDragDistance
         } else if (dragEdge == DragEdge.Bottom) {
-            bt = getMeasuredHeight() - mDragDistance;
+            bt = measuredHeight - mDragDistance
         }
         if (dragEdge == DragEdge.Left || dragEdge == DragEdge.Right) {
-            br = bl + mDragDistance;
-            bb = bt + getMeasuredHeight();
+            br = bl + mDragDistance
+            bb = bt + measuredHeight
         } else {
-            br = bl + getMeasuredWidth();
-            bb = bt + mDragDistance;
+            br = bl + measuredWidth
+            bb = bt + mDragDistance
         }
-        return new Rect(bl, bt, br, bb);
+        return Rect(bl, bt, br, bb)
     }
 
-    public void setOnDoubleClickListener(DoubleClickListener doubleClickListener) {
-        mDoubleClickListener = doubleClickListener;
+    fun setOnDoubleClickListener(doubleClickListener: DoubleClickListener?) {
+        mDoubleClickListener = doubleClickListener
     }
 
-    public interface DoubleClickListener {
-        void onDoubleClick(SwipeLayout layout, boolean surface);
+    interface DoubleClickListener {
+        fun onDoubleClick(layout: SwipeLayout?, surface: Boolean)
     }
 
-    private int dp2px(float dp) {
-        return (int) (dp * getContext().getResources().getDisplayMetrics().density + 0.5f);
+    private fun dp2px(dp: Float): Int {
+        return (dp * context.resources.displayMetrics.density + 0.5f).toInt()
     }
-
 
     /**
-     * Deprecated, use {@link #setDrag(DragEdge, View)}
+     * Deprecated, use [.setDrag]
      */
-    @Deprecated
-    public void setDragEdge(DragEdge dragEdge) {
-        clearDragEdge();
-        if (getChildCount() >= 2) {
-            mDragEdges.put(dragEdge, getChildAt(getChildCount() - 2));
+    @Deprecated("")
+    fun setDragEdge(dragEdge: DragEdge) {
+        clearDragEdge()
+        if (childCount >= 2) {
+            mDragEdges[dragEdge] = getChildAt(childCount - 2)
         }
-        setCurrentDragEdge(dragEdge);
+        setCurrentDragEdge(dragEdge)
     }
 
-    public void onViewRemoved(View child) {
-        for (Map.Entry<DragEdge, View> entry : new HashMap<DragEdge, View>(mDragEdges).entrySet()) {
-            if (entry.getValue() == child) {
-                mDragEdges.remove(entry.getKey());
+    override fun onViewRemoved(child: View) {
+        for ((key, value) in HashMap(mDragEdges)) {
+            if (value === child) {
+                mDragEdges.remove(key)
             }
         }
     }
 
-    public Map<DragEdge, View> getDragEdgeMap() {
-        return mDragEdges;
-    }
+    val dragEdgeMap: Map<DragEdge, View?>
+        get() = mDragEdges
 
-    /**
-     * Deprecated, use {@link #getDragEdgeMap()}
-     */
-    @Deprecated
-    public List<DragEdge> getDragEdges() {
-        return new ArrayList<DragEdge>(mDragEdges.keySet());
-    }
-
-    /**
-     * Deprecated, use {@link #setDrag(DragEdge, View)}
-     */
-    @Deprecated
-    public void setDragEdges(List<DragEdge> dragEdges) {
-        clearDragEdge();
-        for (int i = 0, size = Math.min(dragEdges.size(), getChildCount() - 1); i < size; i++) {
-            DragEdge dragEdge = dragEdges.get(i);
-            mDragEdges.put(dragEdge, getChildAt(i));
+    @get:Deprecated("")
+    @set:Deprecated("")
+    var dragEdges: List<DragEdge>
+        /**
+         * Deprecated, use [.getDragEdgeMap]
+         */
+        get() = ArrayList(mDragEdges.keys)
+        /**
+         * Deprecated, use [.setDrag]
+         */
+        set(dragEdges) {
+            clearDragEdge()
+            var i = 0
+            val size = Math.min(dragEdges.size, childCount - 1)
+            while (i < size) {
+                val dragEdge = dragEdges[i]
+                mDragEdges[dragEdge] = getChildAt(i)
+                i++
+            }
+            if (dragEdges.size == 0 || dragEdges.contains(DefaultDragEdge)) {
+                setCurrentDragEdge(DefaultDragEdge)
+            } else {
+                setCurrentDragEdge(dragEdges[0])
+            }
         }
-        if (dragEdges.size() == 0 || dragEdges.contains(DefaultDragEdge)) {
-            setCurrentDragEdge(DefaultDragEdge);
-        } else {
-            setCurrentDragEdge(dragEdges.get(0));
-        }
-    }
 
     /**
-     * Deprecated, use {@link #addDrag(DragEdge, View)}
+     * Deprecated, use [.addDrag]
      */
-    @Deprecated
-    public void setDragEdges(DragEdge... mDragEdges) {
-        clearDragEdge();
-        setDragEdges(Arrays.asList(mDragEdges));
+    @Deprecated("")
+    fun setDragEdges(vararg mDragEdges: DragEdge?) {
+        clearDragEdge()
+        dragEdges = Arrays.asList(*mDragEdges) as List<DragEdge>
     }
 
     /**
-     * Deprecated, use {@link #addDrag(DragEdge, View)}
+     * Deprecated, use [.addDrag]
      * When using multiple drag edges it's a good idea to pass the ids of the views that
      * you're using for the left, right, top bottom views (-1 if you're not using a particular view)
      */
-    @Deprecated
-    public void setBottomViewIds(int leftId, int rightId, int topId, int bottomId) {
-        addDrag(DragEdge.Left, findViewById(leftId));
-        addDrag(DragEdge.Right, findViewById(rightId));
-        addDrag(DragEdge.Top, findViewById(topId));
-        addDrag(DragEdge.Bottom, findViewById(bottomId));
+    @Deprecated("")
+    fun setBottomViewIds(leftId: Int, rightId: Int, topId: Int, bottomId: Int) {
+        addDrag(DragEdge.Left, findViewById(leftId))
+        addDrag(DragEdge.Right, findViewById(rightId))
+        addDrag(DragEdge.Top, findViewById(topId))
+        addDrag(DragEdge.Bottom, findViewById(bottomId))
     }
 
-    private float getCurrentOffset() {
-        if (mCurrentDragEdge == null) return 0;
-        return mEdgeSwipesOffset[mCurrentDragEdge.ordinal()];
+    private val currentOffset: Float
+        private get() = if (dragEdge == null) 0f else mEdgeSwipesOffset[dragEdge!!.ordinal]
+
+    private fun setCurrentDragEdge(dragEdge: DragEdge) {
+        this.dragEdge = dragEdge
+        updateBottomViews()
     }
 
-    private void setCurrentDragEdge(DragEdge dragEdge) {
-        mCurrentDragEdge = dragEdge;
-        updateBottomViews();
-    }
-
-    private void updateBottomViews() {
-        View currentBottomView = getCurrentBottomView();
+    private fun updateBottomViews() {
+        val currentBottomView = currentBottomView
         if (currentBottomView != null) {
-            if (mCurrentDragEdge == DragEdge.Left || mCurrentDragEdge == DragEdge.Right) {
-                mDragDistance = currentBottomView.getMeasuredWidth() - dp2px(getCurrentOffset());
-            } else {
-                mDragDistance = currentBottomView.getMeasuredHeight() - dp2px(getCurrentOffset());
-            }
+            mDragDistance =
+                if (dragEdge == DragEdge.Left || dragEdge == DragEdge.Right) {
+                    currentBottomView.measuredWidth - dp2px(currentOffset)
+                } else {
+                    currentBottomView.measuredHeight - dp2px(currentOffset)
+                }
         }
-
         if (mShowMode == ShowMode.PullOut) {
-            layoutPullOut();
+            layoutPullOut()
         } else if (mShowMode == ShowMode.LayDown) {
-            layoutLayDown();
+            layoutLayDown()
         }
+        safeBottomView()
+    }
 
-        safeBottomView();
+    companion object {
+        @Deprecated("")
+        val EMPTY_LAYOUT = -1
+        private const val DRAG_LEFT = 1
+        private const val DRAG_RIGHT = 2
+        private const val DRAG_TOP = 4
+        private const val DRAG_BOTTOM = 8
+        private val DefaultDragEdge = DragEdge.Right
     }
 }

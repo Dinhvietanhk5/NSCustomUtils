@@ -1,79 +1,56 @@
-package com.newsoft.nsswipelayout.adapters;
+package com.newsoft.nsswipelayout.adapters
 
-import android.view.ViewGroup;
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.newsoft.nsswipelayout.SwipeLayout
+import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl
+import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface
+import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface
+import com.newsoft.nsswipelayout.util.Attributes
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.newsoft.nsswipelayout.SwipeLayout;
-import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl;
-import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface;
-import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface;
-import com.newsoft.nsswipelayout.util.Attributes;
-
-import java.util.List;
-
-public abstract class RecyclerSwipeAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> implements SwipeItemMangerInterface, SwipeAdapterInterface {
-
-    public SwipeItemMangerImpl mItemManger = new SwipeItemMangerImpl(this);
-
-    @Override
-    public abstract VH onCreateViewHolder(ViewGroup parent, int viewType);
-
-    @Override
-    public abstract void onBindViewHolder(VH viewHolder, final int position);
-
-    @Override
-    public void notifyDatasetChanged() {
-        super.notifyDataSetChanged();
+abstract class RecyclerSwipeAdapter<VH : RecyclerView.ViewHolder?> : RecyclerView.Adapter<VH>(),
+    SwipeItemMangerInterface, SwipeAdapterInterface {
+    var mItemManger = SwipeItemMangerImpl(this)
+    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH
+    abstract override fun onBindViewHolder(viewHolder: VH, position: Int)
+    override fun notifyDatasetChanged() {
+        super.notifyDataSetChanged()
     }
 
-    @Override
-    public void openItem(int position) {
-        mItemManger.openItem(position);
+    override fun openItem(position: Int) {
+        mItemManger.openItem(position)
     }
 
-    @Override
-    public void closeItem(int position) {
-        mItemManger.closeItem(position);
+    override fun closeItem(position: Int) {
+        mItemManger.closeItem(position)
     }
 
-    @Override
-    public void closeAllExcept(SwipeLayout layout) {
-        mItemManger.closeAllExcept(layout);
+    override fun closeAllExcept(layout: SwipeLayout) {
+        mItemManger.closeAllExcept(layout)
     }
 
-    @Override
-    public void closeAllItems() {
-        mItemManger.closeAllItems();
+    override fun closeAllItems() {
+        mItemManger.closeAllItems()
     }
 
-    @Override
-    public List<Integer> getOpenItems() {
-        return mItemManger.getOpenItems();
+    override val openItems: List<Int?>?
+        get() = mItemManger.openItems
+    override val openLayouts: List<SwipeLayout?>?
+        get() = mItemManger.openLayouts
+
+    override fun removeShownLayouts(layout: SwipeLayout?) {
+        mItemManger.removeShownLayouts(layout)
     }
 
-    @Override
-    public List<SwipeLayout> getOpenLayouts() {
-        return mItemManger.getOpenLayouts();
+    override fun isOpen(position: Int): Boolean {
+        return mItemManger.isOpen(position)
     }
 
-    @Override
-    public void removeShownLayouts(SwipeLayout layout) {
-        mItemManger.removeShownLayouts(layout);
+    override fun getMode(): Attributes.Mode? {
+        return mItemManger.mode
     }
 
-    @Override
-    public boolean isOpen(int position) {
-        return mItemManger.isOpen(position);
-    }
-
-    @Override
-    public Attributes.Mode getMode() {
-        return mItemManger.getMode();
-    }
-
-    @Override
-    public void setMode(Attributes.Mode mode) {
-        mItemManger.setMode(mode);
+    override fun setMode(mode: Attributes.Mode) {
+        mItemManger.mode = mode
     }
 }

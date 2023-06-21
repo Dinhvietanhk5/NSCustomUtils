@@ -1,29 +1,17 @@
-package com.newsoft.nsswipelayout.interfaces;
+package com.newsoft.nsswipelayout.interfaces
 
-import com.newsoft.nsswipelayout.SwipeLayout;
-import com.newsoft.nsswipelayout.util.Attributes;
+import com.newsoft.nsswipelayout.SwipeLayout
+import com.newsoft.nsswipelayout.util.Attributes
 
-import java.util.List;
-
-public interface SwipeItemMangerInterface {
-
-    void openItem(int position);
-
-    void closeItem(int position);
-
-    void closeAllExcept(SwipeLayout layout);
-    
-    void closeAllItems();
-
-    List<Integer> getOpenItems();
-
-    List<SwipeLayout> getOpenLayouts();
-
-    void removeShownLayouts(SwipeLayout layout);
-
-    boolean isOpen(int position);
-
-    Attributes.Mode getMode();
-
-    void setMode(Attributes.Mode mode);
+interface SwipeItemMangerInterface {
+    fun openItem(position: Int)
+    fun closeItem(position: Int)
+    fun closeAllExcept(layout: SwipeLayout)
+    fun closeAllItems()
+    val openItems: List<Int?>?
+    val openLayouts: List<SwipeLayout?>?
+    fun removeShownLayouts(layout: SwipeLayout?)
+    fun isOpen(position: Int): Boolean
+    fun getMode(): Attributes.Mode?
+    fun setMode(mode: Attributes.Mode)
 }

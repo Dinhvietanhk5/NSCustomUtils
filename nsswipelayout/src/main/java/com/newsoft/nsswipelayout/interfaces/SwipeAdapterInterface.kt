@@ -1,9 +1,6 @@
-package com.newsoft.nsswipelayout.interfaces;
+package com.newsoft.nsswipelayout.interfaces
 
-public interface SwipeAdapterInterface {
-
-    int getSwipeLayoutResourceId(int position);
-
-    void notifyDatasetChanged();
-
+interface SwipeAdapterInterface {
+    fun getSwipeLayoutResourceId(position: Int): Int
+    fun notifyDatasetChanged()
 }

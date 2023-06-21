@@ -1,215 +1,161 @@
-package com.newsoft.nsswipelayout.implments;
+package com.newsoft.nsswipelayout.implments
 
-import android.view.View;
-
-import com.newsoft.nsswipelayout.SimpleSwipeListener;
-import com.newsoft.nsswipelayout.SwipeLayout;
-import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface;
-import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface;
-import com.newsoft.nsswipelayout.util.Attributes;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import android.view.View
+import com.newsoft.nsswipelayout.SimpleSwipeListener
+import com.newsoft.nsswipelayout.SwipeLayout
+import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface
+import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface
+import com.newsoft.nsswipelayout.util.Attributes
 
 /**
  * SwipeItemMangerImpl is a helper class to help all the adapters to maintain open status.
  */
-public class SwipeItemMangerImpl implements SwipeItemMangerInterface {
+class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
+    SwipeItemMangerInterface {
+    var mode = Attributes.Mode.Single
+    val INVALID_POSITION = -1
+    protected var mOpenPosition = INVALID_POSITION
+    protected var mOpenPositions: MutableSet<Int?> = HashSet()
+    protected var mShownLayouts: MutableSet<SwipeLayout?> = HashSet()
+    protected var swipeAdapterInterface: SwipeAdapterInterface
 
-    private Attributes.Mode mode = Attributes.Mode.Single;
-    public final int INVALID_POSITION = -1;
-
-    protected int mOpenPosition = INVALID_POSITION;
-
-    protected Set<Integer> mOpenPositions = new HashSet<Integer>();
-    protected Set<SwipeLayout> mShownLayouts = new HashSet<SwipeLayout>();
-
-    protected SwipeAdapterInterface swipeAdapterInterface;
-
-    public SwipeItemMangerImpl(SwipeAdapterInterface swipeAdapterInterface) {
-        if (swipeAdapterInterface == null)
-            throw new IllegalArgumentException("SwipeAdapterInterface can not be null");
-
-        this.swipeAdapterInterface = swipeAdapterInterface;
+    init {
+        requireNotNull(swipeAdapterInterface) { "SwipeAdapterInterface can not be null" }
+        this.swipeAdapterInterface = swipeAdapterInterface
     }
 
-    public Attributes.Mode getMode() {
-        return mode;
+    override fun getMode(): Attributes.Mode? {
+        return mode
     }
 
-    public void setMode(Attributes.Mode mode) {
-        this.mode = mode;
-        mOpenPositions.clear();
-        mShownLayouts.clear();
-        mOpenPosition = INVALID_POSITION;
+    override fun setMode(mode: Attributes.Mode) {
+        this.mode = mode
+        mOpenPositions.clear()
+        mShownLayouts.clear()
+        mOpenPosition = INVALID_POSITION
     }
 
-    public void bind(View view, int position) {
-        int resId = swipeAdapterInterface.getSwipeLayoutResourceId(position);
-        SwipeLayout swipeLayout = (SwipeLayout) view.findViewById(resId);
-        if (swipeLayout == null)
-            throw new IllegalStateException("can not find SwipeLayout in target view");
-
+    fun bind(view: View, position: Int) {
+        val resId = swipeAdapterInterface.getSwipeLayoutResourceId(position)
+        val swipeLayout = view.findViewById<View>(resId) as SwipeLayout
+            ?: throw IllegalStateException("can not find SwipeLayout in target view")
         if (swipeLayout.getTag(resId) == null) {
-            OnLayoutListener onLayoutListener = new OnLayoutListener(position);
-            SwipeMemory swipeMemory = new SwipeMemory(position);
-            swipeLayout.addSwipeListener(swipeMemory);
-            swipeLayout.addOnLayoutListener(onLayoutListener);
-            swipeLayout.setTag(resId, new ValueBox(position, swipeMemory, onLayoutListener));
-            mShownLayouts.add(swipeLayout);
+            val onLayoutListener: OnLayoutListener = OnLayoutListener(position)
+            val swipeMemory: SwipeMemory = SwipeMemory(position)
+            swipeLayout.addSwipeListener(swipeMemory)
+            swipeLayout.addOnLayoutListener(onLayoutListener)
+            swipeLayout.setTag(resId, ValueBox(position, swipeMemory, onLayoutListener))
+            mShownLayouts.add(swipeLayout)
         } else {
-            ValueBox valueBox = (ValueBox) swipeLayout.getTag(resId);
-            valueBox.swipeMemory.setPosition(position);
-            valueBox.onLayoutListener.setPosition(position);
-            valueBox.position = position;
+            val valueBox = swipeLayout.getTag(resId) as ValueBox
+            valueBox.swipeMemory.setPosition(position)
+            valueBox.onLayoutListener.setPosition(position)
+            valueBox.position = position
         }
     }
 
-    @Override
-    public void openItem(int position) {
+    override fun openItem(position: Int) {
         if (mode == Attributes.Mode.Multiple) {
-            if (!mOpenPositions.contains(position))
-                mOpenPositions.add(position);
+            if (!mOpenPositions.contains(position)) mOpenPositions.add(position)
         } else {
-            mOpenPosition = position;
+            mOpenPosition = position
         }
-        swipeAdapterInterface.notifyDatasetChanged();
+        swipeAdapterInterface.notifyDatasetChanged()
     }
 
-    @Override
-    public void closeItem(int position) {
+    override fun closeItem(position: Int) {
         if (mode == Attributes.Mode.Multiple) {
-            mOpenPositions.remove(position);
+            mOpenPositions.remove(position)
         } else {
-            if (mOpenPosition == position)
-                mOpenPosition = INVALID_POSITION;
+            if (mOpenPosition == position) mOpenPosition = INVALID_POSITION
         }
-        swipeAdapterInterface.notifyDatasetChanged();
+        swipeAdapterInterface.notifyDatasetChanged()
     }
 
-    @Override
-    public void closeAllExcept(SwipeLayout layout) {
-        for (SwipeLayout s : mShownLayouts) {
-            if (s != layout)
-                s.close();
+    override fun closeAllExcept(layout: SwipeLayout) {
+        for (s in mShownLayouts) {
+            if (s !== layout) s!!.close()
         }
     }
 
-    @Override
-    public void closeAllItems() {
+    override fun closeAllItems() {
         if (mode == Attributes.Mode.Multiple) {
-            mOpenPositions.clear();
+            mOpenPositions.clear()
         } else {
-            mOpenPosition = INVALID_POSITION;
+            mOpenPosition = INVALID_POSITION
         }
-        for (SwipeLayout s : mShownLayouts) {
-            s.close();
+        for (s in mShownLayouts) {
+            s!!.close()
         }
     }
 
-    @Override
-    public void removeShownLayouts(SwipeLayout layout) {
-        mShownLayouts.remove(layout);
+    override fun removeShownLayouts(layout: SwipeLayout?) {
+        mShownLayouts.remove(layout)
     }
 
-    @Override
-    public List<Integer> getOpenItems() {
-        if (mode == Attributes.Mode.Multiple) {
-            return new ArrayList<Integer>(mOpenPositions);
+    override val openItems: List<Int?>?
+        get() = if (mode == Attributes.Mode.Multiple) {
+            ArrayList(mOpenPositions)
         } else {
-            return Collections.singletonList(mOpenPosition);
+            listOf(mOpenPosition)
         }
-    }
+    override val openLayouts: List<SwipeLayout?>?
+        get() = ArrayList(mShownLayouts)
 
-    @Override
-    public List<SwipeLayout> getOpenLayouts() {
-        return new ArrayList<SwipeLayout>(mShownLayouts);
-    }
-
-    @Override
-    public boolean isOpen(int position) {
-        if (mode == Attributes.Mode.Multiple) {
-            return mOpenPositions.contains(position);
+    override fun isOpen(position: Int): Boolean {
+        return if (mode == Attributes.Mode.Multiple) {
+            mOpenPositions.contains(position)
         } else {
-            return mOpenPosition == position;
+            mOpenPosition == position
         }
     }
 
-    class ValueBox {
-        OnLayoutListener onLayoutListener;
-        SwipeMemory swipeMemory;
-        int position;
+    internal inner class ValueBox(
+        var position: Int,
+        var swipeMemory: SwipeMemory,
+        var onLayoutListener: OnLayoutListener
+    )
 
-        ValueBox(int position, SwipeMemory swipeMemory, OnLayoutListener onLayoutListener) {
-            this.swipeMemory = swipeMemory;
-            this.onLayoutListener = onLayoutListener;
-            this.position = position;
-        }
-    }
-
-    class OnLayoutListener implements SwipeLayout.OnLayout {
-
-        private int position;
-
-        OnLayoutListener(int position) {
-            this.position = position;
+    internal inner class OnLayoutListener(private var position: Int) : SwipeLayout.OnLayout {
+        fun setPosition(position: Int) {
+            this.position = position
         }
 
-        public void setPosition(int position) {
-            this.position = position;
-        }
-
-        @Override
-        public void onLayout(SwipeLayout v) {
+        override fun onLayout(v: SwipeLayout) {
             if (isOpen(position)) {
-                v.open(false, false);
+                v.open(false, false)
             } else {
-                v.close(false, false);
+                v.close(false, false)
             }
         }
-
     }
 
-    class SwipeMemory extends SimpleSwipeListener {
-
-        private int position;
-
-        SwipeMemory(int position) {
-            this.position = position;
-        }
-
-        @Override
-        public void onClose(SwipeLayout layout) {
+    internal inner class SwipeMemory(private var position: Int) : SimpleSwipeListener() {
+        override fun onClose(layout: SwipeLayout?) {
             if (mode == Attributes.Mode.Multiple) {
-                mOpenPositions.remove(position);
+                mOpenPositions.remove(position)
             } else {
-                mOpenPosition = INVALID_POSITION;
+                mOpenPosition = INVALID_POSITION
             }
         }
 
-        @Override
-        public void onStartOpen(SwipeLayout layout) {
+        override fun onStartOpen(layout: SwipeLayout) {
             if (mode == Attributes.Mode.Single) {
-                closeAllExcept(layout);
+                closeAllExcept(layout)
             }
         }
 
-        @Override
-        public void onOpen(SwipeLayout layout) {
-            if (mode == Attributes.Mode.Multiple)
-                mOpenPositions.add(position);
-            else {
-                closeAllExcept(layout);
-                mOpenPosition = position;
+        override fun onOpen(layout: SwipeLayout) {
+            if (mode == Attributes.Mode.Multiple) mOpenPositions.add(
+                position
+            ) else {
+                closeAllExcept(layout)
+                mOpenPosition = position
             }
         }
 
-        public void setPosition(int position) {
-            this.position = position;
+        fun setPosition(position: Int) {
+            this.position = position
         }
     }
-
 }

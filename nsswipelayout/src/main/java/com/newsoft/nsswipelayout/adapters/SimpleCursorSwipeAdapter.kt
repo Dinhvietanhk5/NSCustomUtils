@@ -1,80 +1,73 @@
-package com.newsoft.nsswipelayout.adapters;
+package com.newsoft.nsswipelayout.adapters
 
-import android.content.Context;
-import android.database.Cursor;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
+import android.content.Context
+import android.database.Cursor
+import android.view.View
+import android.view.ViewGroup
+import android.widget.SimpleCursorAdapter
+import com.newsoft.nsswipelayout.SwipeLayout
+import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl
+import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface
+import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface
+import com.newsoft.nsswipelayout.util.Attributes
 
-import com.newsoft.nsswipelayout.SwipeLayout;
-import com.newsoft.nsswipelayout.implments.SwipeItemMangerImpl;
-import com.newsoft.nsswipelayout.interfaces.SwipeAdapterInterface;
-import com.newsoft.nsswipelayout.interfaces.SwipeItemMangerInterface;
-import com.newsoft.nsswipelayout.util.Attributes;
+abstract class SimpleCursorSwipeAdapter : SimpleCursorAdapter, SwipeItemMangerInterface,
+    SwipeAdapterInterface {
+    private val mItemManger = SwipeItemMangerImpl(this)
 
-import java.util.List;
+    protected constructor(
+        context: Context?,
+        layout: Int,
+        c: Cursor?,
+        from: Array<String?>?,
+        to: IntArray?,
+        flags: Int
+    ) : super(context, layout, c, from, to, flags)
 
-public abstract class SimpleCursorSwipeAdapter extends SimpleCursorAdapter implements SwipeItemMangerInterface, SwipeAdapterInterface {
+    protected constructor(
+        context: Context?,
+        layout: Int,
+        c: Cursor?,
+        from: Array<String?>?,
+        to: IntArray?
+    ) : super(context, layout, c, from, to)
 
-    private SwipeItemMangerImpl mItemManger = new SwipeItemMangerImpl(this);
-
-    protected SimpleCursorSwipeAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
-        super(context, layout, c, from, to, flags);
+    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        val v = super.getView(position, convertView, parent)
+        mItemManger.bind(v, position)
+        return v
     }
 
-    protected SimpleCursorSwipeAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-        super(context, layout, c, from, to);
+    override fun openItem(position: Int) {
+        mItemManger.openItem(position)
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = super.getView(position, convertView, parent);
-        mItemManger.bind(v, position);
-        return v;
+    override fun closeItem(position: Int) {
+        mItemManger.closeItem(position)
     }
 
-    @Override
-    public void openItem(int position) {
-        mItemManger.openItem(position);
+    override fun closeAllExcept(layout: SwipeLayout) {
+        mItemManger.closeAllExcept(layout)
     }
 
-    @Override
-    public void closeItem(int position) {
-        mItemManger.closeItem(position);
+    override val openItems: List<Int?>?
+        get() = mItemManger.openItems
+    override val openLayouts: List<SwipeLayout?>?
+        get() = mItemManger.openLayouts
+
+    override fun removeShownLayouts(layout: SwipeLayout?) {
+        mItemManger.removeShownLayouts(layout)
     }
 
-    @Override
-    public void closeAllExcept(SwipeLayout layout) {
-        mItemManger.closeAllExcept(layout);
+    override fun isOpen(position: Int): Boolean {
+        return mItemManger.isOpen(position)
     }
 
-    @Override
-    public List<Integer> getOpenItems() {
-        return mItemManger.getOpenItems();
+    override fun getMode(): Attributes.Mode? {
+        return mItemManger.mode
     }
 
-    @Override
-    public List<SwipeLayout> getOpenLayouts() {
-        return mItemManger.getOpenLayouts();
-    }
-
-    @Override
-    public void removeShownLayouts(SwipeLayout layout) {
-        mItemManger.removeShownLayouts(layout);
-    }
-
-    @Override
-    public boolean isOpen(int position) {
-        return mItemManger.isOpen(position);
-    }
-
-    @Override
-    public Attributes.Mode getMode() {
-        return mItemManger.getMode();
-    }
-
-    @Override
-    public void setMode(Attributes.Mode mode) {
-        mItemManger.setMode(mode);
+    override fun setMode(mode: Attributes.Mode) {
+        mItemManger.mode = mode
     }
 }
