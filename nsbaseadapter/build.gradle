@@ -36,3 +36,17 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.Dinhvietanhk5:NSCustomUtils'
+                artifactId = 'nsbaseadapter'
+                version = '6.0.4'
+            }
+        }
+    }
+}
