@@ -5,7 +5,7 @@ plugins {
 }
 android {
     compileSdk 33
-
+    namespace = "com.newsoft.permission"
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 33

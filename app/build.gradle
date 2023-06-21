@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdk 33
-
+    namespace = "com.newsoft.nscustomutils"
     defaultConfig {
         applicationId "com.newsoft.nscustomutils"
         minSdk 28
@@ -112,7 +112,7 @@ dependencies {
         exclude module: "play-services-safetynet"
     }
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
-    implementation ('com.google.firebase:firebase-analytics'){
+    implementation('com.google.firebase:firebase-analytics') {
         exclude module: "play-services-ads-identifier"
         //TODO Bỏ quyền com.google.android.gms.permission.AD_ID
         exclude module: "play-services-measurement-api"

@@ -1,9 +1,8 @@
-package com.newsoft
+package com.newsoft.permission
 
 import android.Manifest
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
-import com.newsoft.permission.PermissionX
 import com.newsoft.permission.request.ExplainScope
 import com.newsoft.permission.request.ForwardScope
 
