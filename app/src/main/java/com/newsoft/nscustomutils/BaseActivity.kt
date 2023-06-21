@@ -9,8 +9,6 @@ import android.view.MotionEvent
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.viewbinding.ViewBinding
-import com.newsoft.nsextension.ext.context.hideSoftKeyboard
-import com.newsoft.nsextension.ext.context.setTransparentActivity
 import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 
 
@@ -30,7 +28,7 @@ abstract class BaseActivity<T : ViewBinding>(private val bindingFactory: (Layout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTransparentActivity()
+//        setTransparentActivity()
         getWindow().setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -38,7 +36,7 @@ abstract class BaseActivity<T : ViewBinding>(private val bindingFactory: (Layout
         this.savedInstanceState = savedInstanceState
         _binding = bindingFactory(layoutInflater)
         setContentView(binding.root)
-        hideSoftKeyboard()
+//        hideSoftKeyboard()
         onCreate()
     }
 
@@ -86,7 +84,7 @@ abstract class BaseActivity<T : ViewBinding>(private val bindingFactory: (Layout
 
     override fun onDestroy() {
         super.onDestroy()
-        hideSoftKeyboard()
+//        hideSoftKeyboard()
         _binding = null
     }
 
