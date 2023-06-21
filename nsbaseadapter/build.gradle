@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.Dinhvietanhk5:NSCustomUtils'
+version = '6.0.4'
+
 android {
     namespace 'com.newsoft.nsbaseadapter'
     compileSdk 33
