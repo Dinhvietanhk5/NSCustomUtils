@@ -33,7 +33,7 @@ afterEvaluate {
             // Creates a Maven publication called "release".
             release(MavenPublication) {
                 from components.release
-                groupId = 'Dinhvietanhk5.NSCustomUtils'
+                groupId = 'NSCustomUtils'
                 artifactId = 'permission'
                 version = '1.0'
             }
