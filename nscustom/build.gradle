@@ -38,10 +38,10 @@ dependencies {
 
 
     // Location Manager
-    api project(path: ':location_manager')
-    api project(path: ':permission')
-    api project(path: ':nsdialog')
-    api project(path: ':nsbaseadapter')
-    api project(path: ':nsdatepicker')
-    api project(path: ':nsedittext')
+//    api project(path: ':location_manager')
+//    api project(path: ':permission')
+//    api project(path: ':nsdialog')
+//    api project(path: ':nsbaseadapter')
+//    api project(path: ':nsdatepicker')
+//    api project(path: ':nsedittext')
 }
