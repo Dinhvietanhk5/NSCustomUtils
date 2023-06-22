@@ -52,7 +52,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 }
 
-//group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version ='10.0.4'
 //version = library_version
 //
 //if (android.productFlavors.size() > 0) {
@@ -92,14 +93,11 @@ subprojects {
 }
 afterEvaluate {
     publishing {
-        if ("true" == System.env.JITPACK) {
-            mavenLocal()
-        }
         publications {
             release(MavenPublication) {
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
                 artifactId 'permission'
-                version ='10.0.3'
+                version ='10.0.4'
 
                 from components.release
             }
