@@ -85,6 +85,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
                 artifactId = 'permission'
+                version = '9.0.1'
             }
         }
     }
