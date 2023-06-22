@@ -27,6 +27,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 task sourcesJar(type: Jar) {
@@ -77,16 +84,17 @@ dependencies {
 //        }
 //    }
 //}
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = '9.0.1'
+subprojects {
+    group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+}
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
-                artifactId = 'permission'
-                version = '9.0.1'
                 from components.release
+                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
+                artifactId rootProject.name
+                version = rootProject.version
             }
         }
     }
