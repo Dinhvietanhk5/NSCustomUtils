@@ -77,15 +77,16 @@ dependencies {
 //        }
 //    }
 //}
-
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = '9.0.1'
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
                 artifactId = 'permission'
                 version = '9.0.1'
+                from components.release
             }
         }
     }
