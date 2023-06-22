@@ -128,7 +128,7 @@ dependencies {
     //TODO Util custom
 //    implementation 'com.github.Dinhvietanhk5:NSCustomUtils:6.0.0'
 //    implementation 'com.github.Dinhvietanhk5.NSCustomUtils:permission:1.0.0'
-//    implementation project(path: ':nscustom')
+    implementation project(path: ':permission')
 
     implementation 'com.github.ihsg:PatternLocker:2.5.7'
 
