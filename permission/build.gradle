@@ -92,6 +92,9 @@ subprojects {
 }
 afterEvaluate {
     publishing {
+        if ("true" == System.env.JITPACK) {
+            mavenLocal()
+        }
         publications {
             release(MavenPublication) {
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
