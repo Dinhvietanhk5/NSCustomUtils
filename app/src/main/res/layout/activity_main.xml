@@ -44,14 +44,14 @@
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent"  />-->
 
-    <com.newsoft.nsedittext.NSEdittext
-        android:id="@+id/edtMoney"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gray_text_color"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="12dp"
-        app:inputType="money"/>
+<!--    <com.newsoft.nsedittext.NSEdittext-->
+<!--        android:id="@+id/edtMoney"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/gray_text_color"-->
+<!--        android:paddingHorizontal="10dp"-->
+<!--        android:paddingVertical="12dp"-->
+<!--        app:inputType="money"/>-->
 
     <!--    <ImageView-->
     <!--        android:id="@+id/image"-->

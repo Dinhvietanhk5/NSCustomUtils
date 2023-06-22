@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.newsoft.nscustom.ext.context.getDataExtras
 
 
 class IntentFragment : Fragment() {
@@ -14,7 +13,7 @@ class IntentFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getDataExtras("title", "")
+//        title = getDataExtras("title", "")
     }
 
     override fun onCreateView(
