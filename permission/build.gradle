@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'maven-publish'
+    id 'maven-publish' 
 }
 android {
     compileSdkVersion 33
@@ -21,22 +21,40 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.javaDirectories
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                from components.release
-                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
-                artifactId = 'permission'
-                version = '1.0'
+group = 'com.github.Dinhvietanhk5.NSCustomUtils.permission'
+version = library_version
+
+if (android.productFlavors.size() > 0) {
+    android.libraryVariants.all { variant ->
+        if (variant.name.toLowerCase().contains("debug")) {
+            return
+        }
+
+        def bundleTask = tasks["bundle${variant.name.capitalize()}"]
+
+        artifacts {
+            archives(bundleTask.archivePath) {
+                classifier variant.flavorName
+                builtBy bundleTask
+                name = project.name
             }
         }
+
     }
 }
