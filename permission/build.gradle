@@ -39,27 +39,27 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
-
-if (android.productFlavors.size() > 0) {
-    android.libraryVariants.all { variant ->
-        if (variant.name.toLowerCase().contains("debug")) {
-            return
-        }
-
-        def bundleTask = tasks["bundle${variant.name.capitalize()}"]
-
-        artifacts {
-            archives(bundleTask.archivePath) {
-                classifier variant.flavorName
-                builtBy bundleTask
-                name = project.name
-            }
-        }
-
-    }
-}
+//group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+//version = library_version
+//
+//if (android.productFlavors.size() > 0) {
+//    android.libraryVariants.all { variant ->
+//        if (variant.name.toLowerCase().contains("debug")) {
+//            return
+//        }
+//
+//        def bundleTask = tasks["bundle${variant.name.capitalize()}"]
+//
+//        artifacts {
+//            archives(bundleTask.archivePath) {
+//                classifier variant.flavorName
+//                builtBy bundleTask
+//                name = project.name
+//            }
+//        }
+//
+//    }
+//}
 
 //afterEvaluate {
 //    publishing {
@@ -80,6 +80,8 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
+                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
+                artifactId = 'permission'
             }
         }
     }
