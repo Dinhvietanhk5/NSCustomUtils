@@ -94,10 +94,11 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.release
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
-                artifactId rootProject.name
-                version = rootProject.version
+                artifactId 'permission'
+                version ='10.0.3'
+
+                from components.release
             }
         }
     }
