@@ -29,7 +29,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
         return mode
     }
 
-    override fun setMode(mode: Attributes) {
+    override fun setMode( mode: Attributes) {
         this.mode = mode
         mOpenPositions.clear()
         mShownLayouts.clear()
