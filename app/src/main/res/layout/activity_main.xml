@@ -9,14 +9,14 @@
     android:orientation="vertical"
     tools:context=".TestActivity">
 
-    <TextView
-        android:id="@+id/btnNext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:gravity="center"
-        android:paddingVertical="12dp"
-        android:text="next" />
+<!--    <TextView-->
+<!--        android:id="@+id/btnNext"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/colorPrimary"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingVertical="12dp"-->
+<!--        android:text="next" />-->
 
     <!--    &lt;!&ndash;    <EditText&ndash;&gt;-->
     <!--    &lt;!&ndash;        android:id="@+id/edt"&ndash;&gt;-->
