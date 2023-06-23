@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     namespace 'com.newsoft.nsbaseadapter'
     compileSdk 33
@@ -37,9 +40,6 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }
 
-
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }
