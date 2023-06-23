@@ -10,6 +10,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/location_manager" />
+            <option value="$PROJECT_DIR$/nsbaseadapter" />
+            <option value="$PROJECT_DIR$/nsdatepicker" />
             <option value="$PROJECT_DIR$/nslog" />
             <option value="$PROJECT_DIR$/permission" />
           </set>
