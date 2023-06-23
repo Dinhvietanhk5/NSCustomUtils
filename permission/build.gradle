@@ -12,8 +12,9 @@ android {
     namespace 'com.newsoft.permission'
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 33
+        minSdk 21
+        targetSdk 33
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }

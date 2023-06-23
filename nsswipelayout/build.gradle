@@ -4,8 +4,8 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
+//group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+//version = library_version
 
 android {
     namespace 'com.newsoft.nsswipelayout'
@@ -13,6 +13,7 @@ android {
 
     defaultConfig {
         minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,17 +42,17 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
-
-subprojects {
-    group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-}
+//
+//subprojects {
+//    group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+//}
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
                 groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
                 artifactId 'nsswipelayout'
-                version = library_version
+//                version = library_version
 
                 from components.release
             }
