@@ -39,3 +39,21 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.github.bumptech.glide:glide:4.15.1'
 }
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+subprojects {
+    group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
+                artifactId 'nsextension'
+                version = library_version
+
+                from components.release
+            }
+        }
+    }
+}

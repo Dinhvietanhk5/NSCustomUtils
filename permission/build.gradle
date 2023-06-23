@@ -54,41 +54,7 @@ dependencies {
 }
 
 group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-//version ='10.0.4'
 version = library_version
-//
-//if (android.productFlavors.size() > 0) {
-//    android.libraryVariants.all { variant ->
-//        if (variant.name.toLowerCase().contains("debug")) {
-//            return
-//        }
-//
-//        def bundleTask = tasks["bundle${variant.name.capitalize()}"]
-//
-//        artifacts {
-//            archives(bundleTask.archivePath) {
-//                classifier variant.flavorName
-//                builtBy bundleTask
-//                name = project.name
-//            }
-//        }
-//
-//    }
-//}
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//// Creates a Maven publication called "release".
-//            release(MavenPublication) {
-//                from components.release
-//                groupId = 'com.github.Vipinbalakrishnan'
-//                artifactId = 'ribbonlayout'
-//                version = '1.1'
-//            }
-//        }
-//    }
-//}
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }

@@ -39,3 +39,21 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+subprojects {
+    group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = 'com.github.Dinhvietanhk5.NSCustomUtils'
+                artifactId 'nsedittext'
+                version = library_version
+
+                from components.release
+            }
+        }
+    }
+}
