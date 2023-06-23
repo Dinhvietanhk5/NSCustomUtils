@@ -39,6 +39,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.github.bumptech.glide:glide:4.15.1'
 }
+
 group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 version = library_version
 subprojects {
