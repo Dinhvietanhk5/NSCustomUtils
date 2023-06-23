@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     namespace 'com.newsoft.location_manager'
     compileSdk 33
@@ -37,8 +40,6 @@ dependencies {
 
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }

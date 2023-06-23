@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     namespace 'com.newsoft.nsswipelayout'
     compileSdk 33
@@ -39,8 +42,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }

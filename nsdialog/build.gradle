@@ -4,6 +4,10 @@ plugins {
     id 'maven-publish'
 }
 
+
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     namespace 'com.newsoft.nsdialog'
     compileSdk 33
@@ -37,8 +41,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }

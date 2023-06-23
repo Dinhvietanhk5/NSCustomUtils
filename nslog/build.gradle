@@ -4,6 +4,10 @@ plugins {
     id 'maven-publish'
 }
 
+
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     namespace 'com.newsoft.nslog'
     compileSdk 33

@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
 }
+
+group = 'com.github.Dinhvietanhk5.NSCustomUtils'
+version = library_version
+
 android {
     compileSdk 33
     namespace 'com.newsoft.permission'
@@ -26,17 +30,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
-    }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
+        jvmTarget = '1.8'
     }
 }
 
@@ -44,8 +42,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 }
 
-group = 'com.github.Dinhvietanhk5.NSCustomUtils'
-version = library_version
 subprojects {
     group = 'com.github.Dinhvietanhk5.NSCustomUtils'
 }
