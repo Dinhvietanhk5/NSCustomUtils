@@ -12,7 +12,8 @@ import com.newsoft.nsswipelayout.util.Attributes
  */
 class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
     SwipeItemMangerInterface {
-    var mode = Attributes.Mode.Single
+
+    var mode = Attributes.Single
     val INVALID_POSITION = -1
     protected var mOpenPosition = INVALID_POSITION
     protected var mOpenPositions: MutableSet<Int?> = HashSet()
@@ -24,11 +25,11 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
         this.swipeAdapterInterface = swipeAdapterInterface
     }
 
-    override fun getMode(): Attributes.Mode? {
+    override fun getMode(): Attributes {
         return mode
     }
 
-    override fun setMode(mode: Attributes.Mode) {
+    override fun setMode(mode: Attributes) {
         this.mode = mode
         mOpenPositions.clear()
         mShownLayouts.clear()
@@ -55,7 +56,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
     }
 
     override fun openItem(position: Int) {
-        if (mode == Attributes.Mode.Multiple) {
+        if (mode == Attributes.Multiple) {
             if (!mOpenPositions.contains(position)) mOpenPositions.add(position)
         } else {
             mOpenPosition = position
@@ -64,7 +65,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
     }
 
     override fun closeItem(position: Int) {
-        if (mode == Attributes.Mode.Multiple) {
+        if (mode == Attributes.Multiple) {
             mOpenPositions.remove(position)
         } else {
             if (mOpenPosition == position) mOpenPosition = INVALID_POSITION
@@ -79,7 +80,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
     }
 
     override fun closeAllItems() {
-        if (mode == Attributes.Mode.Multiple) {
+        if (mode == Attributes.Multiple) {
             mOpenPositions.clear()
         } else {
             mOpenPosition = INVALID_POSITION
@@ -94,7 +95,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
     }
 
     override val openItems: List<Int?>?
-        get() = if (mode == Attributes.Mode.Multiple) {
+        get() = if (mode == Attributes.Multiple) {
             ArrayList(mOpenPositions)
         } else {
             listOf(mOpenPosition)
@@ -103,7 +104,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
         get() = ArrayList(mShownLayouts)
 
     override fun isOpen(position: Int): Boolean {
-        return if (mode == Attributes.Mode.Multiple) {
+        return if (mode == Attributes.Multiple) {
             mOpenPositions.contains(position)
         } else {
             mOpenPosition == position
@@ -132,7 +133,7 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
 
     internal inner class SwipeMemory(private var position: Int) : SimpleSwipeListener() {
         override fun onClose(layout: SwipeLayout?) {
-            if (mode == Attributes.Mode.Multiple) {
+            if (mode == Attributes.Multiple) {
                 mOpenPositions.remove(position)
             } else {
                 mOpenPosition = INVALID_POSITION
@@ -140,13 +141,13 @@ class SwipeItemMangerImpl(swipeAdapterInterface: SwipeAdapterInterface?) :
         }
 
         override fun onStartOpen(layout: SwipeLayout) {
-            if (mode == Attributes.Mode.Single) {
+            if (mode == Attributes.Single) {
                 closeAllExcept(layout)
             }
         }
 
         override fun onOpen(layout: SwipeLayout) {
-            if (mode == Attributes.Mode.Multiple) mOpenPositions.add(
+            if (mode == Attributes.Multiple) mOpenPositions.add(
                 position
             ) else {
                 closeAllExcept(layout)

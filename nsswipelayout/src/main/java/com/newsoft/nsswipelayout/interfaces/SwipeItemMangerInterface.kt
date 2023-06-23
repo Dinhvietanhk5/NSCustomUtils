@@ -12,6 +12,6 @@ interface SwipeItemMangerInterface {
     val openLayouts: List<SwipeLayout?>?
     fun removeShownLayouts(layout: SwipeLayout?)
     fun isOpen(position: Int): Boolean
-    fun getMode(): Attributes.Mode?
-    fun setMode(mode: Attributes.Mode)
+    fun getMode(): Attributes?
+    fun setMode(mode: Attributes)
 }

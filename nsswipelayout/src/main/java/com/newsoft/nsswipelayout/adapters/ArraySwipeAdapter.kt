@@ -84,11 +84,11 @@ abstract class ArraySwipeAdapter<T> : ArrayAdapter<Any?>, SwipeItemMangerInterfa
         return mItemManger.isOpen(position)
     }
 
-    override fun getMode(): Attributes.Mode? {
+    override fun getMode(): Attributes? {
         return mItemManger.mode
     }
 
-    override fun setMode(mode: Attributes.Mode) {
+    override fun setMode(mode: Attributes) {
         mItemManger.mode = mode
     }
 }
