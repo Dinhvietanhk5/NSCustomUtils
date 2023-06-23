@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 rootProject.name = "NSCustomUtils"
 include ':app'
 include ':permission'
+include ':nslog'
