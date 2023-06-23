@@ -153,7 +153,7 @@ class NSEdittext : LinearLayout {
 
         val mEdtColor = typedArray.getColor(
             R.styleable.NSEdittext_android_textColor,
-            resources.getColor(R.color.black)
+            ContextCompat.getColor(context, R.color.black)
         )
         val mHint = typedArray.getString(R.styleable.NSEdittext_android_hint)
         val mEdtColorHint =
@@ -206,11 +206,11 @@ class NSEdittext : LinearLayout {
             gravity = mGravity
 
 
-            if (mEdtColorHint != -1) setHintTextColor(resources.getColor(mEdtColorHint))
+            if (mEdtColorHint != -1) setHintTextColor( ContextCompat.getColor(context,mEdtColorHint))
             if (mEdtSize > 0)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, mEdtSize.toFloat())
             if (mText != null)
-                setText(if (mEdtAllCaps) mText.toUpperCase() else mText.toLowerCase())
+                setText(if (mEdtAllCaps) mText.uppercase() else mText.lowercase())
 
             mTypeface?.let {
                 typeface = mTypeface
@@ -240,13 +240,13 @@ class NSEdittext : LinearLayout {
                 }
             }
 
-            setOnEditorActionListener { _: TextView?, actionId: Int, event: KeyEvent? ->
+            setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
                 if (imeOptionsListener == null) return@setOnEditorActionListener false else {
                     imeOptionsListener!!.onClick(actionId)
                     return@setOnEditorActionListener true
                 }
             }
-            setOnTouchListener { view: View?, motionEvent: MotionEvent? ->
+            setOnTouchListener { _: View?, _: MotionEvent? ->
                 showError(false)
                 false
             }
@@ -264,6 +264,7 @@ class NSEdittext : LinearLayout {
                 Constant.TEXT_NUMERIC,
                 Constant.TEXT_NUMERIC_RANGE,
                 Constant.TEXT_FLOAT_NUMERIC_RANGE -> inputType = InputType.TYPE_CLASS_NUMBER
+
                 else -> inputType = InputType.TYPE_CLASS_TEXT
             }
 
@@ -409,7 +410,7 @@ class NSEdittext : LinearLayout {
         val mText = typedArray.getString(R.styleable.NSEdittext_errorText)
         val mColor = typedArray.getColor(
             R.styleable.NSEdittext_errorTextColor,
-            resources.getColor(R.color.red)
+             ContextCompat.getColor(context,R.color.red)
         )
         val mSize =
             typedArray.getDimensionPixelSize(R.styleable.NSEdittext_errorTextSize, mEdtSize)
@@ -504,7 +505,7 @@ class NSEdittext : LinearLayout {
 
             tvError?.apply {
                 text = msgError.ifEmpty {
-                    "Vui lòng nhập " + (if (this@NSEdittext.text!!.isEmpty()) "" else "lại ") + if (hintEdt.isEmpty()) "thông tin" else hintEdt.toLowerCase()
+                    "Vui lòng nhập " + (if (this@NSEdittext.text!!.isEmpty()) "" else "lại ") + if (hintEdt.isEmpty()) "thông tin" else hintEdt.lowercase()
                 }
                 visibility = View.VISIBLE
             }
@@ -528,10 +529,13 @@ class NSEdittext : LinearLayout {
                 Constant.TEXT_NUMERIC -> isValidate = validateTor.isNumeric(text)
                 Constant.TEXT_NUMERIC_RANGE -> isValidate =
                     Utility.isNumericRangeValidator(editText, min, max)
+
                 Constant.TEXT_FLOAT_NUMERIC_RANGE -> isValidate =
                     Utility.isFloatNumericRangeValidator(editText, floatmin, floatmax)
+
                 Constant.TEXT_REGEXP -> isValidate =
                     Utility.isRegexpValidator(editText, customRegexp)
+
                 Constant.TEXT_CREDITCARD -> isValidate = Utility.isCreditCardValidator(editText)
                 Constant.TEXT_EMAIL -> isValidate = validateTor.isEmail(text)
                 Constant.TEXT_PHONE -> isValidate = Utility.isPhone(editText) && text!!.length > 8
@@ -540,11 +544,13 @@ class NSEdittext : LinearLayout {
                 Constant.TEXT_PERSONNAME -> isValidate = Utility.isPersonNameValidator(editText)
                 Constant.TEXT_PERSONFULLNAME -> isValidate =
                     Utility.isPersonFullNameValidator(editText)
+
                 Constant.TEXT_WEBURL -> isValidate = Utility.isWebUrlValidator(editText)
                 Constant.TEXT_DATE -> isValidate = Utility.isDateValidator(editText)
                 Constant.TEXT_TEXT -> isValidate = !validateTor.isEmpty(text)
                 Constant.TEXT_CONTAINS -> isValidate =
                     validateTor.containsSubstring(text, strContains)
+
                 Constant.TEXT_PASS -> {
 
                     if (!TextUtils.isEmpty(pass)) {
@@ -564,6 +570,7 @@ class NSEdittext : LinearLayout {
 //                        } else isValidate = false
 //                    }
                 }
+
                 else -> {
                     isValidate = text!!.isNotEmpty()
                 }
