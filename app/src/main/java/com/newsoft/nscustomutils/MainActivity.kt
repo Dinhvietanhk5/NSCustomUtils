@@ -11,7 +11,10 @@ import android.view.MotionEvent
 import android.view.View.OnTouchListener
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.newsoft.nscustomutils.databinding.ActivityMainBinding
+import com.newsoft.spinner.IconSpinnerAdapter
+import com.newsoft.spinner.IconSpinnerItem
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
@@ -24,6 +27,32 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     @SuppressLint("ClickableViewAccessibility", "WrongThread")
     override fun onCreate() {
+        val items = arrayListOf<String>("1", "2", "3")
+
+        val spinnerItems = ArrayList<IconSpinnerItem>()
+        for (item in  items!!) {
+            spinnerItems.add(
+                IconSpinnerItem(
+                    text = item,
+                    tag = item
+                )
+            )
+        }
+        binding.apply {
+            spinnerViewCity.apply {
+                setSpinnerAdapter(IconSpinnerAdapter(this))
+                setItems(spinnerItems)
+                getSpinnerRecyclerView().layoutManager =
+                    LinearLayoutManager(this@MainActivity)
+                setOnSpinnerItemSelectedListener<IconSpinnerItem> { _, _, _, item ->
+//                    val itemCity = item.tag as CityModel.Item
+//                    city_id = itemCity.id
+//                    iniSpinnerDistrict(itemCity.id)
+                    Log.e("IconSpinnerItem", "${item.tag}")
+                }
+                lifecycleOwner = this@MainActivity
+            }
+        }
 
 //        checkHideKeyboardOnTouchScreen(packed)
 //        switchFragment(newInstance<MainFragment>("type" to TypeConnectEnums.NEW_INVITE))

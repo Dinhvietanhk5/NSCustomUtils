@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".TestActivity">
+    tools:context=".MainActivity">
 
 <!--    <TextView-->
 <!--        android:id="@+id/btnNext"-->
@@ -66,5 +66,20 @@
     <!--        layout="@layout/item_view_empty"-->
     <!--        android:layout_width="wrap_content"-->
     <!--        android:layout_height="wrap_content" />-->
+
+    <com.newsoft.spinner.PowerSpinnerView
+        android:id="@+id/spinnerViewCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:gravity="center"
+        android:hint="Chọn Tỉnh/Thành phố"
+        android:textSize="12sp"
+        app:spinner_arrow_show="true"
+        app:spinner_item_height="46dp"
+        app:spinner_popup_animation="dropdown"
+        app:spinner_popup_background="@color/white"
+        app:spinner_popup_elevation="14dp"
+        app:spinner_popup_max_height="400dp" />
 
 </LinearLayout>

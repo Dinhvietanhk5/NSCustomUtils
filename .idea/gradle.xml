@@ -5,7 +5,7 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="jbr-17" />
+        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -17,10 +17,10 @@
             <option value="$PROJECT_DIR$/nsedittext" />
             <option value="$PROJECT_DIR$/nsextension" />
             <option value="$PROJECT_DIR$/nslog" />
-            <option value="$PROJECT_DIR$/nsswipelayout" />
             <option value="$PROJECT_DIR$/permission" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

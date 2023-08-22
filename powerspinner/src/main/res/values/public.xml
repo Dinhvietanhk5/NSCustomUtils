@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Designed and developed by 2019 skydoves (Jaewoong Eum)
+
+    Licensed under the Stream License;
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <!-- Definitions of attributes to be exposed as public -->
+  <public name="spinner_arrow_drawable" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_arrow_show" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_arrow_gravity" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_arrow_padding" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_arrow_tint" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_arrow_animate_duration" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_divider_show" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_divider_size" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_divider_color" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_background" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_animation" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_animation_style" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_width" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_height" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_max_height" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_item_height" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_elevation" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_item_array" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_dismiss_notified_select" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_debounce_duration" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_preference_name" type="attr" tools:ignore="ResourceName" />
+  <public name="spinner_popup_focusable" type="attr" tools:ignore="ResourceName" />
+
+</resources>
